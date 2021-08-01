@@ -23,13 +23,13 @@ namespace SubmarineMirage.Setting {
 #if UNITY_STANDALONE_WIN || UNITY_WSA
 			SMPlatformType.Windows;
 #elif UNITY_STANDALONE_OSX
-			PlatformType.MacOSX;
+			SMPlatformType.MacOSX;
 #elif UNITY_STANDALONE_LINUX
-			PlatformType.Linux;
+			SMPlatformType.Linux;
 #elif UNITY_ANDROID
-			PlatformType.Android;
+			SMPlatformType.Android;
 #elif UNITY_IOS
-			PlatformType.IOS;
+			SMPlatformType.IOS;
 #endif
 
 
