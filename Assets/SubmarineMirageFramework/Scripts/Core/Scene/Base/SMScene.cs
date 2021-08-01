@@ -21,22 +21,35 @@ namespace SubmarineMirage.Scene {
 	using Extension;
 	using Utility;
 	using Debug;
-
-
-
+	///====================================================================================================
+	/// <summary>
+	/// ■ シーンのクラス
+	/// </summary>
+	///====================================================================================================
 	public abstract class SMScene : SMState {
+		///------------------------------------------------------------------------------------------------
+		/// ● 要素
+		///------------------------------------------------------------------------------------------------
+		/// <summary>シーン管理クラス</summary>
 		public new SMSceneManager _owner { get; private set; }
 
+		/// <summary>シーン名</summary>
 		[SMShowLine] public string _name { get; protected set; }
+		/// <summary>登録イベント名</summary>
 		[SMShow] protected string _registerEventName { get; private set; }
 
+		/// <summary>シーン実行中か？</summary>
 		[SMShow] public bool _isEntered	{ get; private set; }
+		/// <summary>シーン遷移時に、未使用アセットを破棄するか？</summary>
 		[SMShow] protected virtual bool _isUseUnloadUnusedAssets => true;
 
+		/// <summary>タスクの印の管理者</summary>
 		SMTaskMarkerManager _taskMarkers { get; set; }
 
+		/// <summary>生のUnityシーン</summary>
 		[SMShow] public Scene _rawScene { get; protected set; }
 
+		/// <summary>モノ動作を作成するイベント</summary>
 		public readonly SMAsyncEvent _createBehavioursEvent = new SMAsyncEvent();
 
 

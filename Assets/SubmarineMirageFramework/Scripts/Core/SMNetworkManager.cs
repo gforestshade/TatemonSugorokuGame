@@ -74,6 +74,7 @@ namespace SubmarineMirage {
 				.Where( _ => GameAdvertisementManager.s_instance._isInitialized )
 */
 				.Subscribe( _ => {
+					return;
 					SMLog.Debug( $"{this.GetAboutName()} : 安定接続遷移時リフレッシュ", SMLogTag.Server );
 /*
 					GameAdvertisementManager.s_instance.Refresh();

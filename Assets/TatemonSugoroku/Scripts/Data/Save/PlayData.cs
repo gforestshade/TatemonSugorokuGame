@@ -1,9 +1,3 @@
-//---------------------------------------------------------------------------------------------------------
-// ▽ Submarine Mirage Framework for Unity
-//		Copyright (c) 2020 夢想海の水底より(from Seabed of Reverie)
-//		Released under the MIT License :
-//			https://github.com/FromSeabedOfReverie/SubmarineMirageFrameworkForUnity/blob/master/LICENSE
-//---------------------------------------------------------------------------------------------------------
 using System;
 using System.IO;
 using System.Linq;
@@ -21,7 +15,8 @@ using SubmarineMirage.Utility;
 using SubmarineMirage.Setting;
 ///========================================================================================================
 /// <summary>
-/// ■ 遊戯情報のクラス
+/// ■ プレイ情報のクラス
+///		暗号化され、保存される。
 /// </summary>
 ///========================================================================================================
 public class PlayData : BaseSMSaveData {
@@ -34,14 +29,12 @@ public class PlayData : BaseSMSaveData {
 	[SMShow] public bool _isSave;
 	/// <summary>日付</summary>
 	[SMShow] public DateTime _date;
-	/// <summary>プレイヤーの状態</summary>
-//	[SMShow] public PlayerStatus _playerStatus;
-	/// <summary>実行後の、操作説明名一覧</summary>
-	[SMShow] public List<string> _afterHelpNames = new List<string>();
-	/// <summary>実行後の、イベント名一覧</summary>
-	[SMShow] public List<string> _afterEventNames = new List<string>();
-	/// <summary>実行後の、地形名一覧</summary>
-	[SMShow] public List<string> _afterFieldNames = new List<string>();
+
+	/// <summary>勝った回数</summary>
+	[SMShow] public int _winCount;
+	/// <summary>負けた回数</summary>
+	[SMShow] public int _loseCount;
+
 	/// <summary>スクリーンショット画像の、生情報一覧</summary>
 	public List<SMTextureRawData> _pictureRawData = new List<SMTextureRawData>();
 
@@ -71,9 +64,6 @@ public class PlayData : BaseSMSaveData {
 	protected override void DisposeSub() {
 		base.DisposeSub();
 
-		_afterHelpNames.Clear();
-		_afterEventNames.Clear();
-		_afterFieldNames.Clear();
 		ResetRawData();
 		_pictures.Clear();
 	}
@@ -131,26 +121,8 @@ public class PlayData : BaseSMSaveData {
 	}
 
 	///----------------------------------------------------------------------------------------------------
-	/// ● 判定
-	///----------------------------------------------------------------------------------------------------
-	/// <summary>
-	/// ● 操作説明後か？
-	/// </summary>
-	public bool IsAfterHelp( string name )
-		=> _afterHelpNames.Contains( name );
-
-	///----------------------------------------------------------------------------------------------------
 	/// ● 登録、解除
 	///----------------------------------------------------------------------------------------------------
-	/// <summary>
-	/// ● 操作説明イベントを登録
-	/// </summary>
-	public void RegisterAfterHelp( string name ) {
-		if ( _afterHelpNames.Contains( name ) ) { return; }
-
-		_afterHelpNames.Add( name );
-	}
-
 	/// <summary>
 	/// ● 写真を登録
 	/// </summary>

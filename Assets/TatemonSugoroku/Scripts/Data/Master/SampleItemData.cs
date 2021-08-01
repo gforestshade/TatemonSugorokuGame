@@ -1,19 +1,13 @@
-//---------------------------------------------------------------------------------------------------------
-// ▽ Submarine Mirage Framework for Unity
-//		Copyright (c) 2020 夢想海の水底より(from Seabed of Reverie)
-//		Released under the MIT License :
-//			https://github.com/FromSeabedOfReverie/SubmarineMirageFrameworkForUnity/blob/master/LICENSE
-//---------------------------------------------------------------------------------------------------------
 using System.Collections.Generic;
 using KoganeUnityLib;
 using SubmarineMirage;
 using SubmarineMirage.Data;
 ///========================================================================================================
 /// <summary>
-/// ■ アイテムの情報クラス
+/// ■ サンプルアイテムの情報クラス
 /// </summary>
 ///========================================================================================================
-public class ItemData : SMCSVData<string> {
+public class SampleItemData : SMCSVData<string> {
 	///----------------------------------------------------------------------------------------------------
 	/// ● 要素
 	///----------------------------------------------------------------------------------------------------

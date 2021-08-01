@@ -1,9 +1,3 @@
-//---------------------------------------------------------------------------------------------------------
-// ▽ Submarine Mirage Framework for Unity
-//		Copyright (c) 2020 夢想海の水底より(from Seabed of Reverie)
-//		Released under the MIT License :
-//			https://github.com/FromSeabedOfReverie/SubmarineMirageFrameworkForUnity/blob/master/LICENSE
-//---------------------------------------------------------------------------------------------------------
 //#define TestSetting
 using System;
 using System.Linq;
@@ -18,6 +12,7 @@ using SubmarineMirage.Debug;
 ///========================================================================================================
 /// <summary>
 /// ■ 設定情報のクラス
+///		暗号化され、保存される。
 /// </summary>
 ///========================================================================================================
 public class SettingData : BaseSMSaveData {
@@ -76,8 +71,6 @@ public class SettingData : BaseSMSaveData {
 	[SMShow] public float _seVolume;
 	/// <summary>デバッグ表示するか？</summary>
 	[SMShow] public bool  _isViewDebug;
-	/// <summary>広告削除機能を購入したか？</summary>
-	[SMShow] public bool _isPurchasedDeleteAdvertisement;
 	/// <summary>遊戯情報一覧の内、読込中の遊戯情報の添字</summary>
 	[SMShow] public int _playDataIndex;
 
@@ -120,7 +113,6 @@ public class SettingData : BaseSMSaveData {
 
 		_isViewDebug = SMDebugManager.IS_DEVELOP;
 
-		_isPurchasedDeleteAdvertisement = false;
 		_playDataIndex = 0;
 	}
 	///----------------------------------------------------------------------------------------------------

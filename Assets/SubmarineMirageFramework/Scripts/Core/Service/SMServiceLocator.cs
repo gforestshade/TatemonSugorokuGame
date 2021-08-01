@@ -14,16 +14,25 @@ namespace SubmarineMirage.Service {
 	using Utility;
 	using Setting;
 	using Debug;
-
-
-
+	///====================================================================================================
+	/// <summary>
+	/// ■ オブジェクト注入のクラス
+	/// </summary>
+	///====================================================================================================
 	public static class SMServiceLocator {
+		///------------------------------------------------------------------------------------------------
+		/// ● 要素
+		///------------------------------------------------------------------------------------------------
 		[SMShowLine] public static bool s_isDisposed => s_disposables._isDispose;
 		static readonly SMDisposable s_disposables = new SMDisposable();
 		public static readonly Dictionary<Type, ISMService> s_container = new Dictionary<Type, ISMService>();
 
-
-
+		///------------------------------------------------------------------------------------------------
+		/// ● 作成、削除
+		///------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● コンストラクタ
+		/// </summary>
 		static SMServiceLocator() {
 			SMLog.Debug( $"{nameof( SMServiceLocator )}()", SMLogTag.Service );
 
@@ -34,7 +43,11 @@ namespace SubmarineMirage.Service {
 			} );
 		}
 
-		public static void Dispose() => s_disposables.Dispose();
+		/// <summary>
+		/// ● 解放
+		/// </summary>
+		public static void Dispose()
+			=> s_disposables.Dispose();
 
 
 

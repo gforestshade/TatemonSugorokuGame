@@ -1,9 +1,3 @@
-//---------------------------------------------------------------------------------------------------------
-// ▽ Submarine Mirage Framework for Unity
-//		Copyright (c) 2020 夢想海の水底より(from Seabed of Reverie)
-//		Released under the MIT License :
-//			https://github.com/FromSeabedOfReverie/SubmarineMirageFrameworkForUnity/blob/master/LICENSE
-//---------------------------------------------------------------------------------------------------------
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using SubmarineMirage.Service;
@@ -14,7 +8,7 @@ using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 ///========================================================================================================
 /// <summary>
-/// ■ 遊戯情報の管理クラス
+/// ■ プレイ情報の管理クラス
 ///		まとめてファイル保存すると、1つのセーブデータだけ変更なのに、全体を保存し直す事になる。
 ///		それを避ける為、セーブデータごとに、複数ファイルを保存する。
 /// </summary>
