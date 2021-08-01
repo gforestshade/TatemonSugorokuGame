@@ -77,6 +77,7 @@ namespace SubmarineMirage.Data {
 			dataSetting.RegisterDatas( SMDataSettingType.Server );
 
 
+/*
 			// システム情報を登録
 			Register( new SMCSVDataManager<SMSystemInfo, SMSystemInfoData>(
 				"System", "SystemInfo", SMFileLocation.Resource, 1
@@ -94,6 +95,7 @@ namespace SubmarineMirage.Data {
 			// 広告情報を登録
 			Register( new SMCSVDataManager<SMAdvertisementType, SMAdvertisementData>(
 				"System", "AdvertisementIDs", SMFileLocation.Resource, 1 ) );
+*/
 
 
 			// アプリ固有のマスター情報を登録

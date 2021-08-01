@@ -25,15 +25,13 @@ public class SMDataSetting : BaseSMDataSetting {
 			}, {
 				SMDataSettingType.Server,
 				new List<IBaseSMDataManager> {
-					new CMDataManager(),
-					new SMCSVDataManager<int, ApplicationCMData>(
-						SMMainSetting.APPLICATION_CM_DATA_PATH, "", SMFileLocation.Server, 1 ),
+//					new CMDataManager(),
+//					new SMCSVDataManager<int, ApplicationCMData>(
+//						SMMainSetting.APPLICATION_CM_DATA_PATH, "", SMFileLocation.Server, 1 ),
 				}
 			}, {
 				SMDataSettingType.Master,
 				new List<IBaseSMDataManager> {
-//					new AllWordDataManager(),
-//					new AllAIDataManager(),
 					new SMCSVDataManager<string, ItemData>( "Item", "TestItem", SMFileLocation.Resource, 1 ),
 				}
 			},
