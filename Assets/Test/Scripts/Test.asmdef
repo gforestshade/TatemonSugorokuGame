@@ -20,7 +20,7 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
-        "BuildBaseSMLog.dll"
+        "BaseSMLog.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
