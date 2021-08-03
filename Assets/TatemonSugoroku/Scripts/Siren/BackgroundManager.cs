@@ -23,28 +23,18 @@ public class BackgroundManager : SMStandardMonoBehaviour {
 
 
 
-	void Start() {
+	protected override void StartAfterInitialize() {
 		_sprites = GetComponentsInChildren<SpriteRenderer>( true )
 			.Select( r => r.gameObject )
 			.ToList();
 
 #if TestBackground
-		UTask.Void( async () => {
-			var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
-			await framework.WaitInitialize();
-
-			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
-				_showIndex = ( _showIndex + 1 ) % _sprites.Count;
-				_sprites.ForEach( go => go.SetActive( false ) );
-				_sprites[_showIndex].gameObject.SetActive( true );
-			} );
+		var inputManager = SMServiceLocator.Resolve<SMInputManager>();
+		inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
+			_showIndex = ( _showIndex + 1 ) % _sprites.Count;
+			_sprites.ForEach( go => go.SetActive( false ) );
+			_sprites[_showIndex].gameObject.SetActive( true );
 		} );
 #endif
-	}
-
-
-
-	void Update() {
 	}
 }

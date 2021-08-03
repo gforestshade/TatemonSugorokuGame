@@ -49,6 +49,8 @@ public static class ApplicationMain {
 		SMServiceLocator.Register<BaseSMDataSetting>( new SMDataSetting() );
 		// シーン設定を登録
 		SMServiceLocator.Register<BaseSMSceneSetting>( new SMSceneSetting() );
+		// モデル設定を登録
+		SMServiceLocator.Register( new ModelSetting() );
 
 		await UTask.DontWait();
 	}

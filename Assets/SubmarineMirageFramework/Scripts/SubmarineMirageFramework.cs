@@ -6,6 +6,7 @@
 //---------------------------------------------------------------------------------------------------------
 namespace SubmarineMirage {
 	using System;
+	using System.Collections;
 	using UnityEngine;
 	using Cysharp.Threading.Tasks;
 	using UniRx;
@@ -31,7 +32,9 @@ namespace SubmarineMirage {
 		///------------------------------------------------------------------------------------------------
 		/// ● 要素
 		///------------------------------------------------------------------------------------------------
+		/// <summary>初期化済か？</summary>
 		[SMShow] public bool _isInitialized	{ get; private set; }
+		/// <summary>非同期停止の識別子</summary>
 		readonly SMAsyncCanceler _asyncCanceler = new SMAsyncCanceler();
 
 		///------------------------------------------------------------------------------------------------
@@ -136,9 +139,16 @@ namespace SubmarineMirage {
 		}
 
 		/// <summary>
-		/// ● 全機能の初期化を待機
+		/// ● 全機能の初期化を待機（UniTask使用）
 		/// </summary>
 		public UniTask WaitInitialize()
 			=> UTask.WaitWhile( _asyncCanceler, () => !_isInitialized );
+
+		/// <summary>
+		/// ● 全機能の初期化を待機（コルーチン使用）
+		/// </summary>
+		public IEnumerator WaitInitializeCoroutine() {
+			while ( !_isInitialized )	{ yield return null; }
+		}
 	}
 }

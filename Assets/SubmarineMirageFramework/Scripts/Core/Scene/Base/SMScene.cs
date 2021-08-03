@@ -83,7 +83,10 @@ namespace SubmarineMirage.Scene {
 //				await _taskMarkers.InitializeAll();
 
 				if ( isMainScene ) {
-					await uiFade.In();
+					UTask.Void( async () => {
+						await UTask.Delay( _asyncCancelerOnExit, 500 );
+						await uiFade.In();
+					} );
 				}
 
 				_isEntered = true;

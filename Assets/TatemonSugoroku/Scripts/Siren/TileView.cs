@@ -35,7 +35,7 @@ public class TileView : SMStandardMonoBehaviour {
 
 
 
-	void Start() {
+	protected override void StartAfterInitialize() {
 		_renderer = GetComponent<MeshRenderer>();
 	}
 

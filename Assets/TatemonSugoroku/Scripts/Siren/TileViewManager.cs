@@ -32,7 +32,7 @@ public class TileViewManager : SMStandardMonoBehaviour {
 
 
 
-	void Start() {
+	protected override void StartAfterInitialize() {
 		var prefab = Resources.Load<GameObject>( "Prefabs/Tile" );
 
 		Enumerable.Range( 0, MAX_TILE_ID ).ForEach( i => {
@@ -43,25 +43,32 @@ public class TileViewManager : SMStandardMonoBehaviour {
 		} );
 
 #if TestTile
-		UTask.Void( async () => {
-			var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
-			await framework.WaitInitialize();
-
-			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
-				var tile = GetTile( 13 );
-				var i = ( ( int )tile._colorType + 1 ) % EnumUtils.GetLength<TileView.ColorType>();
-				tile.SetColor( ( TileView.ColorType )i );
-			} );
-			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
-				var tile = GetTile( new Vector2Int( 5, 1 ) );
-				var i = ( ( int )tile._colorType + 1 ) % EnumUtils.GetLength<TileView.ColorType>();
-				tile.SetColor( ( TileView.ColorType )i );
-			} );
-			inputManager._touchTileID.Subscribe( id => {
-				SMLog.Debug( id );
-			} );
+		var inputManager = SMServiceLocator.Resolve<SMInputManager>();
+		inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
+			var tile = GetTile( 13 );
+			var i = ( ( int )tile._colorType + 1 ) % EnumUtils.GetLength<TileView.ColorType>();
+			tile.SetColor( ( TileView.ColorType )i );
 		} );
+		inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
+			var tile = GetTile( new Vector2Int( 5, 1 ) );
+			var i = ( ( int )tile._colorType + 1 ) % EnumUtils.GetLength<TileView.ColorType>();
+			tile.SetColor( ( TileView.ColorType )i );
+		} );
+		inputManager._touchTileID.Subscribe( id => {
+			SMLog.Debug( id );
+		} );
+
+		var color = TileView.ColorType.None;
+		inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
+			var i = ( ( int )color + 1 ) % EnumUtils.GetLength<TileView.ColorType>();
+			color = ( TileView.ColorType )i;
+		} );
+		inputManager._touchTileID
+			.Where( id => id != -1 )
+			.Subscribe( id => {
+				var tile = GetTile( id );
+				tile.SetColor( color );
+			} );
 #endif
 	}
 

@@ -27,6 +27,8 @@ public class SMInputSetting : BaseSMInputSetting {
 		var layerManager = SMServiceLocator.Resolve<SMUnityLayerManager>();
 
 		_inputManager.GetKey( SMInputKey.Finger1 )._enablingEvent.AddLast().Subscribe( _ => {
+			if ( Camera.main == null )	{ return; }
+
 			var ray = Camera.main.ScreenPointToRay( _inputManager.GetAxis( SMInputAxis.Mouse ) );
 			var hit = new RaycastHit();
 			var layer = layerManager.GetMask( SMUnityLayer.Tile );

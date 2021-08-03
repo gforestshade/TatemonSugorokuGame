@@ -31,6 +31,9 @@ public class AllModelManager : SMTask, ISMService {
 	/// ● 作成
 	/// </summary>
 	public override void Create() {
+		var setting = SMServiceLocator.Resolve<ModelSetting>();
+		setting.Setup( this );
+		SMServiceLocator.Unregister<ModelSetting>();
 	}
 
 

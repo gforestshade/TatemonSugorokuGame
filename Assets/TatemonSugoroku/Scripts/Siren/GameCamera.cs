@@ -15,12 +15,12 @@ public class GameCamera : SMStandardMonoBehaviour {
 
 
 
-	void Start() {
+	protected override void StartAfterInitialize() {
 	}
 
 
 
-	void Update() {
+	protected override void UpdateAfterInitialize() {
 		transform.LookAt( _lookAtPosition + _offset );
 	}
 
