@@ -19,7 +19,7 @@ namespace SubmarineMirage.Setting {
 
 		/// <summary>未設定</summary>
 		None,
-		/// <summary>タイル地形</summary>
-		TileMap,
+		/// <summary>タイル</summary>
+		Tile,
 	}
 }

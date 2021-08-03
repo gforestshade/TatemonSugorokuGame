@@ -12,9 +12,24 @@ EditorBuildSettings:
     path: Assets/TatemonSugoroku/Scenes/Game.unity
     guid: cdc8ce4c018423d4e9dac7b1dc363a25
   - enabled: 1
-    path: Assets/TatemonSugoroku/Scenes/GameOver.unity
-    guid: c5fc3437e90d4c04593422c03ef2a5fe
-  - enabled: 1
-    path: Assets/TatemonSugoroku/Scenes/GameClear.unity
+    path: Assets/TatemonSugoroku/Scenes/Result.unity
     guid: ad442db9e6f7e7e43a0742a1da5e266b
+  - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/UINone.unity
+    guid: 85a8640f5de284546881505b8135416d
+  - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/UIHelp.unity
+    guid: 60141f100fa184045b81856472c38998
+  - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/Sample/SampleTitle.unity
+    guid: 1714b057243e3834d931ed85cbeec32b
+  - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/Sample/SampleGame.unity
+    guid: 2df46339164b2fa4a9f04689268e47be
+  - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/Sample/SampleGameClear.unity
+    guid: 3ad5cedcde0532d4d801f5a97dba0b31
+  - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/Sample/SampleGameOver.unity
+    guid: c5fc3437e90d4c04593422c03ef2a5fe
   m_configObjects: {}

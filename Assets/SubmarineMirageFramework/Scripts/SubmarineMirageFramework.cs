@@ -14,6 +14,7 @@ namespace SubmarineMirage {
 	using Task;
 	using File;
 	using Data;
+	using UI;
 	using Scene;
 	using Extension;
 	using Utility;
@@ -59,6 +60,8 @@ namespace SubmarineMirage {
 				if ( !isApplicationQuit )			{ return; }
 				if ( SMDebugManager.s_isPlayTest )	{ return; }
 
+				SMLog.Debug( $"{nameof( SubmarineMirageFramework )}.{nameof( Shutdown )} : ゲーム終了" );
+
 				if ( SMDebugManager.IS_UNITY_EDITOR ) {
 					UnityEditor.EditorApplication.isPlaying = false;
 				} else {
@@ -101,6 +104,7 @@ namespace SubmarineMirage {
 			await initializePluginEvent();
 
 			var taskManager = SMServiceLocator.Register( new SMTaskManager() );
+			SMServiceLocator.Register( new SMUIFade() );
 			SMServiceLocator.Register( new SMMainSetting() );
 			SMServiceLocator.Register( new SMDecorationManager() );
 			SMServiceLocator.Register( new SMDebugManager() );
@@ -127,6 +131,14 @@ namespace SubmarineMirage {
 			}
 
 			_isInitialized = true;
+
+			SMLog.Debug( $"{nameof( SubmarineMirageFramework )}.{nameof( Initialize )} : 初期化完了" );
 		}
+
+		/// <summary>
+		/// ● 全機能の初期化を待機
+		/// </summary>
+		public UniTask WaitInitialize()
+			=> UTask.WaitWhile( _asyncCanceler, () => !_isInitialized );
 	}
 }

@@ -40,8 +40,9 @@ namespace SubmarineMirage.Service {
 #endif
 
 			s_disposables.AddFirst( () => {
+#if TestService
 				SMLog.Debug( $"{nameof( SMServiceLocator )}.{nameof( Dispose )}", SMLogTag.Service );
-
+#endif
 				s_container.ForEach( pair => pair.Value?.Dispose() );
 				s_container.Clear();
 			} );

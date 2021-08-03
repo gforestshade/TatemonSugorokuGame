@@ -89,8 +89,7 @@ namespace SubmarineMirage.TestScene {
 			var scenes = new Type[] {
 				typeof( TitleSMScene ),
 				typeof( GameSMScene ),
-				typeof( GameOverSMScene ),
-				typeof( GameClearSMScene ),
+				typeof( ResultSMScene ),
 			};
 			_inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
 				var t = scenes[i];

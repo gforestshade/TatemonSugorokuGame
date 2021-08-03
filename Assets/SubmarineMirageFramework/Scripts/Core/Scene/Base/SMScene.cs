@@ -18,6 +18,7 @@ namespace SubmarineMirage.Scene {
 	using Task;
 	using Task.Marker;
 	using FSM;
+	using UI;
 	using Extension;
 	using Utility;
 	using Debug;
@@ -59,6 +60,8 @@ namespace SubmarineMirage.Scene {
 			ReloadRawScene();
 			_registerEventName = this.GetAboutName();
 
+			var uiFade = SMServiceLocator.Resolve<SMUIFade>();
+			var isMainScene = this is MainSMScene;
 
 			_enterEvent.AddLast( _registerEventName, async canceler => {
 				var isRemove = _owner.RemoveFirstLoaded( this );
@@ -67,7 +70,7 @@ namespace SubmarineMirage.Scene {
 						.ToUniTask( canceler );
 					ReloadRawScene();
 				}
-				if ( this is MainSMScene ) {
+				if ( isMainScene ) {
 					SceneManager.SetActiveScene( _rawScene );
 				}
 
@@ -79,12 +82,20 @@ namespace SubmarineMirage.Scene {
 // TODO : 循環待機になり、永遠に終わらない
 //				await _taskMarkers.InitializeAll();
 
+				if ( isMainScene ) {
+					await uiFade.In();
+				}
+
 				_isEntered = true;
 			} );
 
 
 			_exitEvent.AddLast( _registerEventName, async canceler => {
 				_isEntered = false;
+
+				if ( isMainScene ) {
+					await uiFade.Out();
+				}
 
 //				await _taskMarkers.FinalizeAll();
 				_taskMarkers = null;

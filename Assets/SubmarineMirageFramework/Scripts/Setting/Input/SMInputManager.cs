@@ -45,6 +45,10 @@ namespace SubmarineMirage.Setting {
 		/// <summary>スワイプ時イベントの一覧</summary>
 		[SMShow] readonly Dictionary<SMInputSwipe, SMSwipeInputData> _swipeDatas
 			= new Dictionary<SMInputSwipe, SMSwipeInputData>();
+
+		/// <summary>現在触っているタイル番号</summary>
+		public readonly ReactiveProperty<int> _touchTileID = new ReactiveProperty<int>( -1 );
+
 #region ToString
 		///------------------------------------------------------------------------------------------------
 		/// <summary>
@@ -54,9 +58,9 @@ namespace SubmarineMirage.Setting {
 		public override void SetToString() {
 			base.SetToString();
 
-			_toStringer.SetValue( nameof( _axisDatas ), i => _toStringer.DefaultValue( _axisDatas, i, true ) );
-			_toStringer.SetValue( nameof( _keyDatas ), i => _toStringer.DefaultValue( _keyDatas, i, true ) );
-			_toStringer.SetValue( nameof( _swipeDatas ), i => _toStringer.DefaultValue( _swipeDatas, i, true ) );
+			_toStringer.SetValue( nameof( _axisDatas ),		i => _toStringer.DefaultValue( _axisDatas, i, true ) );
+			_toStringer.SetValue( nameof( _keyDatas ),		i => _toStringer.DefaultValue( _keyDatas, i, true ) );
+			_toStringer.SetValue( nameof( _swipeDatas ),	i => _toStringer.DefaultValue( _swipeDatas, i, true ) );
 		}
 #endregion
 		///------------------------------------------------------------------------------------------------
@@ -113,11 +117,25 @@ namespace SubmarineMirage.Setting {
 			SetAnyOperation();
 			SetDebug();
 
+			var setting = SMServiceLocator.Resolve<BaseSMInputSetting>();
+			setting.Setup( this );
+			SMServiceLocator.Unregister<BaseSMInputSetting>();
+
 			// ● 更新
 			_updateEvent.AddLast().Subscribe( _ => {
-				_axisDatas.ForEach( pair => pair.Value.Update() );
-				_keyDatas.ForEach( pair => pair.Value.Update() );
-				_swipeDatas.ForEach( pair => pair.Value.Update() );
+// TODO : 本当は、配列複製とかしたくない・・・変更対応の構造を考える
+				foreach ( var data in _axisDatas.Values.ToArray() ) {
+					if ( _isDispose )	{ return; }
+					data.Update();
+				}
+				foreach ( var data in _keyDatas.Values.ToArray() ) {
+					if ( _isDispose )	{ return; }
+					data.Update();
+				}
+				foreach ( var data in _swipeDatas.Values.ToArray() ) {
+					if ( _isDispose )	{ return; }
+					data.Update();
+				}
 			} );
 		}
 		///------------------------------------------------------------------------------------------------

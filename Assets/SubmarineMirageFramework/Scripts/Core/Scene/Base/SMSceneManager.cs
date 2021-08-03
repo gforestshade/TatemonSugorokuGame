@@ -49,7 +49,7 @@ namespace SubmarineMirage.Scene {
 			_foreverRawScene = SceneManager.CreateScene( "Forever" );
 
 			_disposables.AddLast( () => {
-				_fsm.Dispose();
+				_fsm?.Dispose();
 			} );
 		}
 

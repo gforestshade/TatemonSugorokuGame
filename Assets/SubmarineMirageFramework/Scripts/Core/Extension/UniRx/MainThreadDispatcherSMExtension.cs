@@ -6,13 +6,14 @@
 //---------------------------------------------------------------------------------------------------------
 namespace SubmarineMirage.Extension {
 	using UniRx;
-	using Event;
+	using Base;
 	using Service;
 
 
-	public class MainThreadDispatcherSMExtension : MonoBehaviourSMExtension, ISMService {
-		readonly SMDisposable _disposables = new SMDisposable();
+
+	public class MainThreadDispatcherSMExtension : SMStandardMonoBehaviour, ISMService {
 		public readonly Subject<Unit> _onGUIEvent = new Subject<Unit>();
+
 
 
 		protected override void Awake() {
@@ -21,15 +22,14 @@ namespace SubmarineMirage.Extension {
 			_disposables.AddFirst( () => {
 				_onGUIEvent.OnCompleted();
 				_onGUIEvent.Dispose();
-				gameObject.Destroy();
 			} );
 		}
 
-		public override void Dispose() => _disposables.Dispose();
 
 
 		void OnGUI() {
-			if ( _disposables._isDispose )	{ return; }
+			if ( _isDispose )	{ return; }
+
 			_onGUIEvent.OnNext( Unit.Default );
 		}
 	}

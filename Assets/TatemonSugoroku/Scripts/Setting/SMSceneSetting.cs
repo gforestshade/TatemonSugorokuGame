@@ -19,18 +19,27 @@ public class SMSceneSetting : BaseSMSceneSetting {
 				typeof( ForeverSMScene )
 			}, {
 				// アクティブ状態とする、メインシーン
-				// ここに、Unityシーンと対応する、クラスを登録（name + SMScene）
+				// ここに、Unityシーンと対応する、クラスを登録（シーン名 + SMScene）
 				new Type[] {
 					typeof( UnknownSMScene ),
+					// たてもんすごろくのシーン
 					typeof( TitleSMScene ),
 					typeof( GameSMScene ),
-					typeof( GameOverSMScene ),
-					typeof( GameClearSMScene ),
+					typeof( ResultSMScene ),
+					// サンプルのシーン
+					typeof( SampleTitleSMScene ),
+					typeof( SampleGameSMScene ),
+					typeof( SampleGameOverSMScene ),
+					typeof( SampleGameClearSMScene ),
 				},
 				typeof( MainSMScene )
 			}, {
 				// UI配置専用のシーン
-				new Type[] { typeof( UISMScene ), },
+				new Type[] {
+					typeof( UINoneSMScene ),
+					// たてもんすごろくの操作説明のシーン
+					typeof( UIHelpSMScene ),
+				},
 				typeof( UISMScene )
 			}, {
 				// デバッグ用のシーン

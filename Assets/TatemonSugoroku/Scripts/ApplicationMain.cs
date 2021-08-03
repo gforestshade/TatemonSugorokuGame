@@ -9,6 +9,7 @@ using SubmarineMirage.Data;
 using SubmarineMirage.Scene;
 using SubmarineMirage.Extension;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 
 /// <summary>
@@ -39,6 +40,11 @@ public static class ApplicationMain {
 	/// ● 設定データを登録
 	/// </summary>
 	static async UniTask RegisterSettings() {
+		// 全モデル管理を登録
+		SMServiceLocator.Register( new AllModelManager() );
+
+		// 入力設定を登録
+		SMServiceLocator.Register<BaseSMInputSetting>( new SMInputSetting() );
 		// データ設定を登録
 		SMServiceLocator.Register<BaseSMDataSetting>( new SMDataSetting() );
 		// シーン設定を登録

@@ -4,7 +4,7 @@
 //		Released under the MIT License :
 //			https://github.com/FromSeabedOfReverie/SubmarineMirageFrameworkForUnity/blob/master/LICENSE
 //---------------------------------------------------------------------------------------------------------
-#define TestData
+//#define TestData
 namespace SubmarineMirage.Data {
 	using System;
 	using System.Linq;
@@ -178,13 +178,11 @@ namespace SubmarineMirage.Data {
 			var saveCache = Get<SMSaveCacheDataManager>();
 			var tempCache = Get<SMTemporaryCacheDataManager>();
 
-// TODO : 実行後、即終了すると、エラーが出る
-			var temp = new Dictionary<Type, IBaseSMDataManager>( _datas );
-			foreach ( var pair in temp ) {
-				if ( _isDispose )	{ break; }
-				await pair.Value._loadEvent.Run( _asyncCancelerOnDispose );
+// TODO : 本当は、配列複製とかしたくない・・・変更対応の構造を考える
+			foreach ( var data in _datas.Values.ToArray() ) {
+				if ( _isDispose )	{ return; }
+				await data._loadEvent.Run( _asyncCancelerOnDispose );
 			}
-			temp.Clear();
 
 			// 更新する必要があり、データをダウンロードした場合、キャッシュ保存
 			if (
@@ -195,9 +193,9 @@ namespace SubmarineMirage.Data {
 			}
 			_fileManager.ResetAllCount();    // 計測初期化
 
+#if TestData
 			SMLog.Debug( $"{nameof( SMAllDataManager )} : 読込完了", SMLogTag.Data );
 
-#if TestData
 			// キャッシュ読込の確認用
 //			SMLog.Debug( tempCache );
 #endif
