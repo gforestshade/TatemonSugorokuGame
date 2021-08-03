@@ -1,3 +1,4 @@
+//#define TestData
 using Cysharp.Threading.Tasks;
 using UniRx;
 using SubmarineMirage.Service;
@@ -46,7 +47,9 @@ public class SettingDataManager : BaseSMDataManager<int, SettingData> {
 			}
 
 			Register( REGISTER_INDEX, data );
+#if TestData
 			SMLog.Debug( $"読込成功\n{nameof( SettingData )}", SMLogTag.Data );
+#endif
 		} );
 
 

@@ -12,19 +12,14 @@ namespace SubmarineMirage.Setting {
 	public enum SMUnityLayer {
 		/// <summary>通常</summary>
 		Default,
-		/// <summary>未設定</summary>
-		None,
-		/// <summary>地面</summary>
-		Ground,
+		TransparentFX,
 		/// <summary>水</summary>
 		Water,
-		/// <summary>AI</summary>
-		AI,
-		/// <summary>プレイヤー</summary>
-		Player,
-		/// <summary>物理衝突</summary>
-		Collider,
-		/// <summary>遠景</summary>
-		DistantView,
+		UI,
+
+		/// <summary>未設定</summary>
+		None,
+		/// <summary>タイル地形</summary>
+		TileMap,
 	}
 }

@@ -1,3 +1,4 @@
+//#define TestData
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using SubmarineMirage.Service;
@@ -79,7 +80,9 @@ public class PlayDataManager : BaseSMDataManager<int, PlayData> {
 
 				// 読み込み成功
 				Register( i, data );
+#if TestData
 				SMLog.Debug( $"読込成功\n{nameof( PlayData )}", SMLogTag.Data );
+#endif
 			}
 
 			// 現在情報を読込
@@ -111,6 +114,8 @@ public class PlayDataManager : BaseSMDataManager<int, PlayData> {
 	/// ● 現在情報を読込
 	/// </summary>
 	public async UniTask LoadCurrentData( int? index = null ) {
+		if ( _setting == null )	{ return; }
+
 		if ( index.HasValue ) {
 			_index = index.Value;
 			await _setting._saveEvent.Run( _allDataManager._asyncCancelerOnDispose );
@@ -123,6 +128,8 @@ public class PlayDataManager : BaseSMDataManager<int, PlayData> {
 	/// ● 現在情報を保存
 	/// </summary>
 	public async UniTask SaveCurrentData( int? index = null ) {
+		if ( _setting == null )	{ return; }
+
 		if ( index.HasValue ) {
 			_index = index.Value;
 			await _setting._saveEvent.Run( _allDataManager._asyncCancelerOnDispose );

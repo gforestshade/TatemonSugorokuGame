@@ -68,9 +68,9 @@ namespace SubmarineMirage.Data {
 
 
 			// アプリのサーバー情報を登録
-			Register( new SMApplicationServerDataManager() );
+//			Register( new SMApplicationServerDataManager() );
 			// 保存キャッシュを登録
-			Register( new SMSaveCacheDataManager() );
+//			Register( new SMSaveCacheDataManager() );
 
 
 			// アプリ固有のサーバー情報を登録
@@ -178,9 +178,13 @@ namespace SubmarineMirage.Data {
 			var saveCache = Get<SMSaveCacheDataManager>();
 			var tempCache = Get<SMTemporaryCacheDataManager>();
 
-			foreach ( var pair in _datas ) {
+// TODO : 実行後、即終了すると、エラーが出る
+			var temp = new Dictionary<Type, IBaseSMDataManager>( _datas );
+			foreach ( var pair in temp ) {
+				if ( _isDispose )	{ break; }
 				await pair.Value._loadEvent.Run( _asyncCancelerOnDispose );
 			}
+			temp.Clear();
 
 			// 更新する必要があり、データをダウンロードした場合、キャッシュ保存
 			if (
