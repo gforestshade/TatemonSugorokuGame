@@ -20,36 +20,45 @@ namespace TatemonSugoroku.Gfshade
         {
             InitUI();
             System.TimeSpan wait1 = System.TimeSpan.FromSeconds(0.2);
+            System.TimeSpan wait2 = System.TimeSpan.FromSeconds(1.0);
 
+            // フェードをoptputする方法はないのだろうか
             await StartEffect();
 
-            int score0 = 0;
-            int score1 = 0;
-            int tatemon0 = 7;
-            int tatemon1 = 7;
+            int[] scores = new int[] {0, 0};
+            int[] tatemons = new int[] {7, 7};
 
             for (int i = 0; i < 7; i++)
             {
-                _UI.SetCurrentPlayerName(playerNames[0]);
-                await UniTask.Delay(wait1);
+                for (int j = 0; j < 2; j++)
+                {
+                    _UI.SetCurrentPlayerName(playerNames[j]);
+                    await UniTask.Delay(wait1);
 
-                await _UI.ChangeTatemon(0, tatemon0, tatemon0 - 1);
-                tatemon0--;
-                await UniTask.Delay(wait1);
+                    int dice = Random.Range(1, 6) + Random.Range(1, 6);
 
-                _UI.SetCurrentPlayerName(playerNames[1]);
-                await UniTask.Delay(wait1);
+                    for (; dice >= 0; dice--)
+                    {
+                        _UI.SetWalkRemaining(dice);
+                        await UniTask.Delay(wait1);
+                    }
 
-                await _UI.ChangeTatemon(1, tatemon1, tatemon1 - 1);
-                tatemon1--;
-                await UniTask.Delay(wait1);
+                    await _UI.ChangeTatemon(j, tatemons[j], tatemons[j] - 1);
+                    tatemons[j]--;
+                    await UniTask.Delay(wait1);
+                }
 
-                var changeScore0 = _UI.ChangeScore(0, score0, score0 + 10);
-                var changeScore1 = _UI.ChangeScore(1, score1, score1 + 10);
-                await UniTask.WhenAll(changeScore0, changeScore1);
-                score0 += 10;
-                score1 += 10;
-                await UniTask.Delay(wait1);
+                List<UniTask> changeScore = new List<UniTask>();
+                for (int j = 0; j < 2; j++)
+                {
+                    changeScore.Add(_UI.ChangeScore(j, scores[j], scores[j] + 10));
+                }
+                await UniTask.WhenAll(changeScore);
+                for (int j = 0; j < 2; j++)
+                {
+                    scores[j] += 10;
+                }
+                await UniTask.Delay(wait2);
             }
 
             await EndEffect();
@@ -66,7 +75,7 @@ namespace TatemonSugoroku.Gfshade
 
         private async UniTask StartEffect()
         {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(1));
+            await UniTask.Delay(System.TimeSpan.FromSeconds(5));
         }
 
         private async UniTask EndEffect()

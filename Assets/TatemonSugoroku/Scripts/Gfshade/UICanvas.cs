@@ -16,8 +16,8 @@ namespace TatemonSugoroku.Scripts
         public TMPro.TextMeshProUGUI PlayerName => _PlayerName;
 
         [SerializeField]
-        TMPro.TextMeshProUGUI _WalkRemaining;
-        public TMPro.TextMeshProUGUI WalkRemaining => _WalkRemaining;
+        WalkRemainingPanel _WalkRemaining;
+        public WalkRemainingPanel WalkRemaining => _WalkRemaining;
 
         [SerializeField]
         PlayerStatusPanel[] _PlayerStatusPanels;
@@ -64,6 +64,13 @@ namespace TatemonSugoroku.Scripts
         public void SetTatemon(int playerId, int num)
         {
             SetInt(PlayerStatusPanels[playerId].Tatemon, num);
+        }
+
+        public void SetWalkRemaining(int num)
+        {
+            _WalkRemaining.Current.gameObject.SetActive(true);
+            _WalkRemaining.Reserved.gameObject.SetActive(false);
+            SetInt(_WalkRemaining.Current, num);
         }
 
 
