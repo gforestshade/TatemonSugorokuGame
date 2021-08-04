@@ -34,7 +34,6 @@ public class ModelSetting : SMStandardBase, ISMService {
 		// ------------------------------------------------------------------------------------------------
 		// こんな感じに
 		Register(new SampleModel());
-		Register(new MainGameManagementModel());
 		Register(new MotionModel());
 		Register(new FieldModel());
 
