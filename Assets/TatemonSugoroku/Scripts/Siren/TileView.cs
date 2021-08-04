@@ -20,7 +20,7 @@ public class TileView : SMStandardMonoBehaviour {
 	public static readonly Vector3 TILE_TO_METER = Vector3.one;
 	public static readonly Vector3 FIRST_POSITION_OFFSET = TILE_TO_METER / 2;
 
-	TileViewManager _manager	{ get; set; }
+	public TileViewManager _manager	{ get; private set; }
 	MeshRenderer _renderer		{ get; set; }
 
 	public int _tileID				{ get; private set; }
@@ -33,10 +33,14 @@ public class TileView : SMStandardMonoBehaviour {
 		{ ColorType.Player2,	Color.red },
 	};
 
+	MoveArrowView _moveArrow { get; set; }
 
+
+
+	void Start() {
+	}
 
 	protected override void StartAfterInitialize() {
-		_renderer = GetComponent<MeshRenderer>();
 	}
 
 	public void Setup( TileViewManager manager, int tileID ) {
@@ -48,9 +52,16 @@ public class TileView : SMStandardMonoBehaviour {
 		gameObject.name = $"Tile {tileID} ( {_tilePosition.x}, {_tilePosition.y} )";
 
 		transform.position = _manager.TileToMeter( _tilePosition );
+
+		_renderer = GetComponent<MeshRenderer>();
+		_moveArrow = GetComponentInChildren<MoveArrowView>( true );
+		_moveArrow.Setup( this );
 	}
 
 
+
+	public Vector3 GetPosition()
+		=> transform.position;
 
 	public void SetColor( ColorType type ) {
 		if ( _colorType == type )	{ return; }
@@ -59,6 +70,6 @@ public class TileView : SMStandardMonoBehaviour {
 		_renderer.material.color = _colors[_colorType];
 	}
 
-	public Vector3 GetPosition()
-		=> transform.position;
+	public void SetArrowState( MoveArrowView.State state )
+		=> _moveArrow.SetState( state );
 }

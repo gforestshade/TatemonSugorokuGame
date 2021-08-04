@@ -7,9 +7,9 @@ using SubmarineMirage.Utility;
 
 
 /// <summary>
-/// ■ ゲームシーンのカメラクラス
+/// ■ ゲームシーンのカメラの描画クラス
 /// </summary>
-public class GameCamera : SMStandardMonoBehaviour {
+public class GameCameraView : SMStandardMonoBehaviour {
 	[SerializeField] Vector3 _offset = new Vector3( 0, 1, 0 );
 	Vector3 _lookAtPosition;
 

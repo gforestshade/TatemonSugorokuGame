@@ -34,8 +34,7 @@ public class ModelSetting : SMStandardBase, ISMService {
 		// こんな感じに
 		Register( new SampleModel() );
 
-
-
+		Register( new DayModel() );
 	}
 
 	/// <summary>

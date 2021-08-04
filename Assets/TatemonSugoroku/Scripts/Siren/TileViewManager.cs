@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage;
 using SubmarineMirage.Base;
@@ -30,6 +31,10 @@ public class TileViewManager : SMStandardMonoBehaviour {
 
 	readonly List<TileView> _tiles = new List<TileView>();
 
+	[SerializeField] Color _normalArrowColor = Color.gray;
+	[SerializeField] Color _flashArrowColor = Color.yellow;
+	public Color _arrowColor { get; private set; }
+	Tween _arrowColorTween { get; set; }
 
 
 	protected override void StartAfterInitialize() {
@@ -41,6 +46,22 @@ public class TileViewManager : SMStandardMonoBehaviour {
 			tile.Setup( this, i );
 			_tiles.Add( tile );
 		} );
+
+		_arrowColor = _normalArrowColor;
+		_arrowColorTween = DOTween.To(
+			() => _arrowColor,
+			c => _arrowColor = c,
+			_flashArrowColor,
+			1
+		)
+		.SetEase( Ease.InOutQuart )
+		.SetLoops( -1, LoopType.Yoyo )
+		.Play();
+
+		_disposables.AddLast( () => {
+			_arrowColorTween?.Kill();
+		} );
+
 
 #if TestTile
 		var inputManager = SMServiceLocator.Resolve<SMInputManager>();
@@ -63,11 +84,18 @@ public class TileViewManager : SMStandardMonoBehaviour {
 			var i = ( ( int )color + 1 ) % EnumUtils.GetLength<TileView.ColorType>();
 			color = ( TileView.ColorType )i;
 		} );
+		var arrowState = MoveArrowView.State.Down;
+		inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
+			var i = ( ( int )arrowState + 1 ) % EnumUtils.GetLength<MoveArrowView.State>();
+			arrowState = ( MoveArrowView.State )i;
+			SMLog.Debug( $"矢印 : {arrowState}" );
+		} );
 		inputManager._touchTileID
 			.Where( id => id != -1 )
 			.Subscribe( id => {
 				var tile = GetTile( id );
 				tile.SetColor( color );
+				tile.SetArrowState( arrowState );
 			} );
 #endif
 	}
