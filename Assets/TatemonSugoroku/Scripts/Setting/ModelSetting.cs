@@ -36,7 +36,6 @@ public class ModelSetting : SMStandardBase, ISMService {
 		Register( new SampleModel() );
 
 		Register( new DayModel() );
-		Register(new SampleModel());
 		Register(new MotionModel());
 		Register(new FieldModel());
 	}

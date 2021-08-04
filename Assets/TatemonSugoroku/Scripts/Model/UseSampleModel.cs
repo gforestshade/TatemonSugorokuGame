@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using SubmarineMirage;
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
+using SubmarineMirage.Utility;
 using SubmarineMirage.Debug;
 
 
@@ -123,6 +124,8 @@ public class UseSampleModel : SMStandardMonoBehaviour {
 
 
 
+
+
 /// <summary>
 /// ■ モデルの使用クラス2
 ///		Modelは、こんな感じで使って下さい。
@@ -133,6 +136,10 @@ public class UseSampleModel2 {
 	byte[] _data { get; set; } = null;
 
 
+
+	/// <summary>
+	/// ● コルーチンによる、初期化
+	/// </summary>
 	public IEnumerator Initialize() {
 		// フレームワーク初期化を、コルーチンで待機する
 		var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
@@ -144,7 +151,42 @@ public class UseSampleModel2 {
 		_data = model.GetData( "Player1" );								// モデルから、データを取得
 	}
 
+	/// <summary>
+	/// ● UniTaskによる、初期化
+	/// </summary>
+	public void Initialize2() {
+		UTask.Void( async () => {
+			// フレームワーク初期化を、UniTaskで待機する
+			var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
+			await framework.WaitInitialize();
+			// フレームワーク初期化前に、アクセスするとエラー
 
+			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
+			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+		} );
+	}
+
+	/// <summary>
+	/// ● UniTaskによる、初期化2
+	///		これが一番やりやすいけど、async/awaitと、UniTaskを知らないと使えない・・・。
+	/// </summary>
+	public async UniTask Initialize3() {
+		// フレームワーク初期化を、UniTaskで待機する
+		var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
+		await framework.WaitInitialize();
+		// フレームワーク初期化前に、アクセスするとエラー
+
+		var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
+		var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
+		_data = model.GetData( "Player1" );                             // モデルから、データを取得
+	}
+
+
+
+	/// <summary>
+	/// ● 更新
+	/// </summary>
 	public void Update() {
 		// フレームワークが初期化されてない場合、処理しない
 		var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
