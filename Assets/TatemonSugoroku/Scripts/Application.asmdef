@@ -7,7 +7,8 @@
         "KoganeUnityLib",
         "GameDevWare.Serialization",
         "BuildBaseSMLog",
-        "SubmarineMirageFramework"
+        "SubmarineMirageFramework",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
