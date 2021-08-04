@@ -27,7 +27,7 @@ namespace TatemonSugoroku.Scripts
         public int BeforeV;
         public int Depth;
     }
-    public class FieldModel
+    public class FieldModel: IModel
     {
         private const int MAX_NUMBER_OF_CELLS = 64;
         private const int MAX_X_DIRECTION_OF_CELLS = 8;
@@ -309,6 +309,11 @@ namespace TatemonSugoroku.Scripts
         public FieldCell[] GetFieldCells()
         {
             return _fieldCells;
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

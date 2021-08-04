@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TatemonSugoroku.Scripts
 {
-    public class MotionModel
+    public class MotionModel: IModel
     {
         private FieldModel _fieldModel;
 
@@ -52,6 +52,11 @@ namespace TatemonSugoroku.Scripts
             }
 
             return -1;
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

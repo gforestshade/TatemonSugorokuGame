@@ -11,9 +11,12 @@ namespace TatemonSugoroku.Scripts
         WhileRollingDice,
         WhileMoving
     }
-    public class MainGameManagementModel
+
+    public class MainGameManagementModel : IModel
+
     {
         private FieldModel _fieldModel;
+
         private MotionModel _motionModel;
         // ScoreModel _scoreModel;
         // DiceModel _diceModel;
@@ -26,7 +29,7 @@ namespace TatemonSugoroku.Scripts
         private ReactiveProperty<bool> _isAllowedToPushDiceButton = new ReactiveProperty<bool>(false);
 
         public IReadOnlyReactiveProperty<int> CurrentPlayerId => _currentPlayerId;
-        
+
         public void SetFieldModel(FieldModel fieldModel)
         {
             _fieldModel = fieldModel;
@@ -39,17 +42,17 @@ namespace TatemonSugoroku.Scripts
 
         public void SetScoreModel()
         {
-            
+
         }
 
         public void SetDiceModel()
         {
-            
+
         }
 
         public void NotifyGameStart()
         {
-            
+
         }
 
         public void NotifyRollingDicesEnd()
@@ -65,11 +68,11 @@ namespace TatemonSugoroku.Scripts
                 {
                     if (_fieldModel.InspectPlayerCanMove(_currentPlayerId.Value, numberOfDice))
                     {
-                        
+
                     }
                     else
                     {
-                        
+
                     }
                 }
             }
@@ -77,6 +80,11 @@ namespace TatemonSugoroku.Scripts
             {
                 Debug.LogError("ダイスロール中以外の場面でこのメソッドを呼び出さないでください。");
             }
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }
