@@ -1,7 +1,7 @@
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
 using SubmarineMirage.Debug;
-
+using TatemonSugoroku.Scripts;
 
 
 /// <summary>
@@ -25,16 +25,17 @@ public class ModelSetting : SMStandardBase, ISMService {
 	/// <summary>
 	/// ● 設定
 	/// </summary>
-	public void Setup( AllModelManager allModelManager ) {
+	public void Setup(AllModelManager allModelManager)
+	{
 		_allModelManager = allModelManager;
 
-		///------------------------------------------------------------------------------------------------
-		// ★ ここに、Modelを登録してください。
-		///------------------------------------------------------------------------------------------------
+		// ------------------------------------------------------------------------------------------------
+		//  ★ ここに、Modelを登録してください。
+		// ------------------------------------------------------------------------------------------------
 		// こんな感じに
-		Register( new SampleModel() );
-
-
+		Register(new SampleModel());
+		Register(new MotionModel());
+		Register(new FieldModel());
 
 	}
 
