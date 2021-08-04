@@ -32,6 +32,9 @@ namespace TatemonSugoroku.Scripts
         private const int MAX_NUMBER_OF_CELLS = 64;
         private const int MAX_X_DIRECTION_OF_CELLS = 8;
         private const int MAX_Y_DIRECTION_OF_CELLS = 8;
+
+        private MotionModel _motionModel;
+        
         private readonly FieldCell[] _fieldCells = new FieldCell[MAX_NUMBER_OF_CELLS];
         private readonly List<int> _playerPosition = new List<int>();
         
@@ -55,6 +58,11 @@ namespace TatemonSugoroku.Scripts
             }
         }
 
+        public void SetMotionModel(MotionModel motionModel)
+        {
+            _motionModel = motionModel;
+        }
+        
         public void Initialize(int numberOfPlayers)
         {
             _playerPosition.Clear();
@@ -296,6 +304,11 @@ namespace TatemonSugoroku.Scripts
             if (canMoveDown) r += 4;
             if (canMoveLeft) r += 8;
             return r;
+        }
+
+        public FieldCell[] GetFieldCells()
+        {
+            return _fieldCells;
         }
     }
 }
