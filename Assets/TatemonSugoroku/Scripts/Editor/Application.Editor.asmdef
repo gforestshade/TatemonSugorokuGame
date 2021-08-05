@@ -1,15 +1,21 @@
 {
     "name": "Application.Editor",
+    "rootNamespace": "",
     "references": [
-        "Application",
-        "GameDevWare.Serialization",
+        "Unity.TextMeshPro",
+        "UniRx",
+        "UniTask",
+        "UniTask.Linq",
+        "UniTask.DOTween",
+        "UniTask.TextMeshPro",
+        "UniTask.Addressables",
         "KoganeUnityLib",
+        "GameDevWare.Serialization",
+        "BuildBaseSMLog",
         "SubmarineMirageFramework",
         "SubmarineMirageFramework.Editor",
-        "UniRx",
-        "UniTask"
+        "Application"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -18,5 +24,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

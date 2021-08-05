@@ -4,7 +4,7 @@ using DG.Tweening;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using TatemonSugoroku.Gfshade.Extension;
+//using TatemonSugoroku.Gfshade.Extension;
 
 
 namespace TatemonSugoroku.Scripts

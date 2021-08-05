@@ -1,5 +1,6 @@
 {
     "name": "SubmarineMirageFramework",
+    "rootNamespace": "",
     "references": [
         "UniRx",
         "UniTask",
@@ -7,12 +8,13 @@
         "GameDevWare.Serialization",
         "BuildBaseSMLog"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -2,13 +2,17 @@
     "name": "Application",
     "rootNamespace": "",
     "references": [
+        "Unity.TextMeshPro",
         "UniRx",
         "UniTask",
+        "UniTask.Linq",
+        "UniTask.DOTween",
+        "UniTask.TextMeshPro",
+        "UniTask.Addressables",
         "KoganeUnityLib",
         "GameDevWare.Serialization",
         "BuildBaseSMLog",
-        "SubmarineMirageFramework",
-        "Unity.TextMeshPro"
+        "SubmarineMirageFramework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

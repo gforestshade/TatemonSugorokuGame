@@ -1,3 +1,4 @@
+/*
 namespace TatemonSugoroku.Gfshade.Extension
 {
     using DG.Tweening;
@@ -313,3 +314,4 @@ namespace TatemonSugoroku.Gfshade.Extension
     }
 
 }
+*/

@@ -3,45 +3,47 @@ using UniRx;
 using SubmarineMirage.Service;
 using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
+namespace TatemonSugoroku.Scripts {
 
 
-
-/// <summary>
-/// ■ 入力の設定クラス
-/// </summary>
-public class SMInputSetting : BaseSMInputSetting {
 
 	/// <summary>
-	/// ● 設定
+	/// ■ 入力の設定クラス
 	/// </summary>
-	public override void Setup( SMInputManager inputManager ) {
-		base.Setup( inputManager );
+	public class SMInputSetting : BaseSMInputSetting {
 
-		SetTouchTile();
-	}
+		/// <summary>
+		/// ● 設定
+		/// </summary>
+		public override void Setup( SMInputManager inputManager ) {
+			base.Setup( inputManager );
 
-	/// <summary>
-	/// ● タイル接触を設定
-	/// </summary>
-	void SetTouchTile() {
-		var layerManager = SMServiceLocator.Resolve<SMUnityLayerManager>();
+			SetTouchTile();
+		}
 
-		_inputManager.GetKey( SMInputKey.Finger1 )._enablingEvent.AddLast().Subscribe( _ => {
-			if ( Camera.main == null )	{ return; }
+		/// <summary>
+		/// ● タイル接触を設定
+		/// </summary>
+		void SetTouchTile() {
+			var layerManager = SMServiceLocator.Resolve<SMUnityLayerManager>();
 
-			var ray = Camera.main.ScreenPointToRay( _inputManager.GetAxis( SMInputAxis.Mouse ) );
-			var hit = new RaycastHit();
-			var layer = layerManager.GetMask( SMUnityLayer.Tile );
-			var isHit = Physics.Raycast( ray, out hit, 100, layer );
+			_inputManager.GetKey( SMInputKey.Finger1 )._enablingEvent.AddLast().Subscribe( _ => {
+				if ( Camera.main == null ) { return; }
 
-			if ( isHit ) {
-				var go = hit.collider.gameObject;
-				var tile = go.GetComponent<TileView>();
-				_inputManager._touchTileID.Value = tile._tileID;
-				return;
-			}
+				var ray = Camera.main.ScreenPointToRay( _inputManager.GetAxis( SMInputAxis.Mouse ) );
+				var hit = new RaycastHit();
+				var layer = layerManager.GetMask( SMUnityLayer.Tile );
+				var isHit = Physics.Raycast( ray, out hit, 100, layer );
 
-			_inputManager._touchTileID.Value = TileViewManager.NONE_TILE_ID;
-		} );
+				if ( isHit ) {
+					var go = hit.collider.gameObject;
+					var tile = go.GetComponent<TileView>();
+					_inputManager._touchTileID.Value = tile._model._tileID;
+					return;
+				}
+
+				_inputManager._touchTileID.Value = TileManagerModel.NONE_ID;
+			} );
+		}
 	}
 }

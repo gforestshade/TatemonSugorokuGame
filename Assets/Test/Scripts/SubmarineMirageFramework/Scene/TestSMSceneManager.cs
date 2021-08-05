@@ -21,6 +21,7 @@ namespace SubmarineMirage.TestScene {
 	using Utility;
 	using Setting;
 	using Debug;
+	using TatemonSugoroku.Scripts;
 	using TestBase;
 
 
