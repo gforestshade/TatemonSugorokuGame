@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TatemonSugoroku.Scripts
+namespace TatemonSugoroku.Scripts.Akio
 {
     public class AkioModelChecker : MonoBehaviour
     {
