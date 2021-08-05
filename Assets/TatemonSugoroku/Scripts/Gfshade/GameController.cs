@@ -13,6 +13,9 @@ namespace TatemonSugoroku.Gfshade
         [SerializeField]
         UICanvas _UI;
 
+        [SerializeField]
+        TatemonRotator _Tatemon;
+
 
         private readonly string[] playerNames = new string[] {"たてお", "たてこ"};
 
@@ -58,9 +61,13 @@ namespace TatemonSugoroku.Gfshade
                 {
                     scores[j] += 10;
                 }
+
+                _Tatemon.Speed += 30f;
+                _Tatemon.IsLookAtCamera = false;
+                _Tatemon.IsRotate = true;
+
                 await UniTask.Delay(wait2);
             }
-
             await EndEffect();
         }
 
