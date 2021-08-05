@@ -10,6 +10,7 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ タイル管理のモデルクラス
 	/// </summary>
 	public class TileManagerModel : SMStandardBase, IModel {
+		public static readonly Vector2Int MIN_SIZE = new Vector2Int( 0, 0 );
 		public static readonly Vector2Int MAX_SIZE = new Vector2Int( 8, 8 );
 		public static readonly int MAX_ID = MAX_SIZE.x * MAX_SIZE.y;
 
@@ -71,5 +72,9 @@ namespace TatemonSugoroku.Scripts {
 					new Vector3( tilePosition.x, 0, -tilePosition.y )
 					* TILE_SCALE_TO_REAL_SCALE
 				);
+
+		public static Vector3 ToRealDirection( Vector2Int tilePosition )
+			=> new Vector3( tilePosition.x, 0, -tilePosition.y )
+				* TILE_SCALE_TO_REAL_SCALE;
 	}
 }
