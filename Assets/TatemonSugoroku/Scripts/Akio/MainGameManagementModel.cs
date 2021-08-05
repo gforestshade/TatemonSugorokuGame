@@ -109,6 +109,7 @@ namespace TatemonSugoroku.Scripts.Akio
             if (_motionModel.InspectInputtingMotionsFinished())
             {
                 _determinedMotionPosition = _motionModel.GetMotionsAsQueue();
+                _gamePhase.Value = MainGamePhase.WhileMovingPlayer;
             }
         }
 
@@ -122,6 +123,8 @@ namespace TatemonSugoroku.Scripts.Akio
             if (_determinedMotionPosition.Count > 0)
             {
                 int position = _determinedMotionPosition.Dequeue();
+
+                _fieldModel.MovePlayer(_currentPlayerId.Value, position);
             }
         }
 

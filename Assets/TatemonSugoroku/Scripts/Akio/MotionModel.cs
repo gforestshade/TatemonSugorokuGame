@@ -42,6 +42,12 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private readonly ReactiveProperty<MotionStatus> _motionStatusLeft =
             new ReactiveProperty<MotionStatus>(MotionStatus.None);
+
+        public IReadOnlyReactiveProperty<MotionStatus> MotionStatusUp => _motionStatusUp;
+        public IReadOnlyReactiveProperty<MotionStatus> MotionStatusRight => _motionStatusRight;
+        public IReadOnlyReactiveProperty<MotionStatus> MotionStatusDown => _motionStatusDown;
+        public IReadOnlyReactiveProperty<MotionStatus> MotionStatusLeft => _motionStatusLeft;
+        
         
         public MotionModel()
         {
