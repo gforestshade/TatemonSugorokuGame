@@ -71,7 +71,7 @@ namespace TatemonSugoroku.Siren {
 			inputManager.GetKey( SMInputKey.Quit )._enabledEvent.AddLast().Subscribe( _ => {
 				var i = ( ( int )diceState + 1 ) % EnumUtils.GetLength<DiceState>();
 				diceState = ( DiceState )i;
-				dice._power.OnNext(
+				dice.SetPower(
 					new Vector3(
 						Random.Range( -1, 1 ),
 						Random.Range( -1, 1 ),

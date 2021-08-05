@@ -11,7 +11,6 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 花火の描画クラス
 	/// </summary>
 	public class FireworkView : SMStandardMonoBehaviour {
-		FireworkManagerView _manager { get; set; }
 		SpriteRenderer _renderer { get; set; }
 		Vector3 _maxScale { get; set; }
 		Tween _rateTween { get; set; }
@@ -20,8 +19,6 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public void Setup( FireworkManagerView manager ) {
-			_manager = manager;
-
 			_renderer = GetComponent<SpriteRenderer>();
 			_maxScale = transform.localScale;
 

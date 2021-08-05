@@ -18,10 +18,7 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 花火の描画クラス
 	/// </summary>
 	public class FireworkManagerView : SMStandardMonoBehaviour {
-		const int MAX_COUNT = 5;
-		const int LAUNCH_HOUR = 19;
-
-		DayModel _dayModel { get; set; }
+		FireworkManagerModel _model { get; set; }
 		readonly List<FireworkView> _fireworks = new List<FireworkView>();
 
 		[SerializeField] GameObject _prefab;
@@ -31,23 +28,18 @@ namespace TatemonSugoroku.Scripts {
 
 
 		protected override void StartAfterInitialize() {
-			MAX_COUNT.Times( i => {
+			_model = SMServiceLocator.Resolve<AllModelManager>().Get<FireworkManagerModel>();
+
+			FireworkManagerModel.MAX_COUNT.Times( i => {
 				var go = _prefab.Instantiate( transform );
 				var f = go.GetComponent<FireworkView>();
 				f.Setup( this );
 				_fireworks.Add( f );
 			} );
 
-			_dayModel = SMServiceLocator.Resolve<AllModelManager>().Get<DayModel>();
-			_dayModel._hour
-				.Select( h => {
-					SMLog.Debug( $"ゲーム内時刻 : {h}" );
-					return h;
-				} )
-				.Where( h => h >= LAUNCH_HOUR )
-				.Subscribe( h => {
-					SetActive( true );
-				} );
+			_model._launch.Subscribe( _ => {
+				SetActive( true );
+			} );
 
 #if TestFirework
 			var inputManager = SMServiceLocator.Resolve<SMInputManager>();

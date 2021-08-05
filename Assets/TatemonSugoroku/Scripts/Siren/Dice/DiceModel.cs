@@ -37,6 +37,13 @@ namespace TatemonSugoroku.Scripts {
 			_total.OnNext( _values.Sum() );
 		}
 
+
+
+		public void SetPower( Vector3 power )
+			=> _power.OnNext( power );
+
+
+
 		public void ChangeState( DiceState state )
 			=> _state.Value = state;
 	}
