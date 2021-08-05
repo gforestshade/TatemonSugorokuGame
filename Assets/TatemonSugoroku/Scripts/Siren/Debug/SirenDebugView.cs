@@ -19,6 +19,9 @@ namespace TatemonSugoroku.Siren {
 			var allModelManager = SMServiceLocator.Resolve<AllModelManager>();
 			var tileManager = allModelManager.Get<TileManagerModel>();
 			var moveArrowManager = allModelManager.Get<MoveArrowManagerModel>();
+			var dice = allModelManager.Get<DiceModel>();
+
+
 
 			// 13番のタイル領域変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
@@ -61,6 +64,24 @@ namespace TatemonSugoroku.Siren {
 					var arrow = moveArrowManager.GetModel( arrowType );
 					arrow._placeTile.Value = tile;
 				} );
+
+
+			// サイコロを投げる
+			var diceState = DiceState.Hide;
+			inputManager.GetKey( SMInputKey.Quit )._enabledEvent.AddLast().Subscribe( _ => {
+				var i = ( ( int )diceState + 1 ) % EnumUtils.GetLength<DiceState>();
+				diceState = ( DiceState )i;
+				dice._power.OnNext(
+					new Vector3(
+						Random.Range( -10, 10 ),
+						Random.Range( -10, 10 ),
+						Random.Range( -10, 10 )
+					)
+				);
+				dice.ChangeState( diceState );
+			} );
+			// サイコロの目を表示
+			dice._total.Subscribe( i => SMLog.Debug( $"出目 : {i}" ) );
 		}
 	}
 }
