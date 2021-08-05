@@ -17,7 +17,7 @@ namespace TatemonSugoroku.Scripts {
 	/// <summary>
 	/// ■ 花火の描画クラス
 	/// </summary>
-	public class FireworkViewManager : SMStandardMonoBehaviour {
+	public class FireworkManagerView : SMStandardMonoBehaviour {
 		const int MAX_COUNT = 5;
 		const int LAUNCH_HOUR = 19;
 

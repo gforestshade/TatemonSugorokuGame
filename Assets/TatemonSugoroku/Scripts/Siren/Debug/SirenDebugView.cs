@@ -20,7 +20,7 @@ namespace TatemonSugoroku.Siren {
 			var tileManager = allModelManager.Get<TileManagerModel>();
 			var moveArrowManager = allModelManager.Get<MoveArrowManagerModel>();
 			var dice = allModelManager.Get<DiceModel>();
-
+			var pieces = allModelManager.Get<PieceManagerModel>();
 
 
 			// 13番のタイル領域変更
@@ -73,15 +73,55 @@ namespace TatemonSugoroku.Siren {
 				diceState = ( DiceState )i;
 				dice._power.OnNext(
 					new Vector3(
-						Random.Range( -10, 10 ),
-						Random.Range( -10, 10 ),
-						Random.Range( -10, 10 )
-					)
+						Random.Range( -1, 1 ),
+						Random.Range( -1, 1 ),
+						Random.Range( -1, 1 )
+					).normalized * 10
 				);
 				dice.ChangeState( diceState );
 			} );
 			// サイコロの目を表示
 			dice._total.Subscribe( i => SMLog.Debug( $"出目 : {i}" ) );
+
+			// コマ1の移動
+			var isMoveFinish1 = true;
+			var piece1 = pieces.GetModel( PieceType.Player1 );
+			piece1._moveFinish.Subscribe( _ => isMoveFinish1 = true );
+			inputManager._updateEvent.AddLast()
+				.Where( _ => isMoveFinish1 )
+				.Select( _ => inputManager.GetAxis( SMInputAxis.Move ) )
+				.Where( move => move != Vector2Int.zero )
+				.Subscribe( move => {
+					var tileMove = new Vector2Int(
+						move.x < 0 ? 1 : 0 < move.x ? -1 : 0,
+						move.y < 0 ? -1 : 0 < move.y ? 1 : 0
+					);
+					if ( tileMove.x != 0 ) {
+						tileMove.y = 0;
+					}
+					isMoveFinish1 = false;
+					piece1.Move( tileMove );
+				} );
+
+			// コマ2の移動
+			var isMoveFinish2 = true;
+			var piece2 = pieces.GetModel( PieceType.Player2 );
+			piece2._moveFinish.Subscribe( _ => isMoveFinish2 = true );
+			inputManager._updateEvent.AddLast()
+				.Where( _ => isMoveFinish2 )
+				.Select( _ => inputManager.GetAxis( SMInputAxis.Debug ) )
+				.Where( move => move != Vector2Int.zero )
+				.Subscribe( move => {
+					var tileMove = new Vector2Int(
+						move.x < 0 ? 1 : 0 < move.x ? -1 : 0,
+						move.y < 0 ? -1 : 0 < move.y ? 1 : 0
+					);
+					if ( tileMove.x != 0 ) {
+						tileMove.y = 0;
+					}
+					isMoveFinish2 = false;
+					piece2.Move( tileMove );
+				} );
 		}
 	}
 }

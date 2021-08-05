@@ -43,6 +43,7 @@ namespace TatemonSugoroku.Scripts {
 			Register( new TileManagerModel() );
 			Register( new MoveArrowManagerModel() );
 			Register( new DiceModel() );
+			Register( new PieceManagerModel() );
 
 			Register(new MotionModel());
 			Register(new FieldModel());
