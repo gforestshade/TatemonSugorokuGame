@@ -12,15 +12,19 @@ namespace TatemonSugoroku.Siren {
 
 	/// <summary>
 	/// ■ Siren用、デバッグの描画クラス
+	///		このスクリプトをOFFにするだけで、デバッグ挙動は無くなります。
 	/// </summary>
 	public class SirenDebugView : SMStandardMonoBehaviour {
 		protected override void StartAfterInitialize() {
+			// 各種モデルを取得
 			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
 			var allModelManager = SMServiceLocator.Resolve<AllModelManager>();
 			var tileManager = allModelManager.Get<TileManagerModel>();
 			var moveArrowManager = allModelManager.Get<MoveArrowManagerModel>();
 			var dice = allModelManager.Get<DiceModel>();
 			var pieces = allModelManager.Get<PieceManagerModel>();
+			var day = allModelManager.Get<DayModel>();
+			var tatemons = allModelManager.Get<TatemonManagerModel>();
 
 
 			// 13番のタイル領域変更
@@ -85,7 +89,7 @@ namespace TatemonSugoroku.Siren {
 
 			// コマ1の移動
 			var isMoveFinish1 = true;
-			var piece1 = pieces.GetModel( PieceType.Player1 );
+			var piece1 = pieces.GetModel( PlayerType.Player1 );
 			piece1._moveFinish.Subscribe( _ => isMoveFinish1 = true );
 			inputManager._updateEvent.AddLast()
 				.Where( _ => isMoveFinish1 )
@@ -105,7 +109,7 @@ namespace TatemonSugoroku.Siren {
 
 			// コマ2の移動
 			var isMoveFinish2 = true;
-			var piece2 = pieces.GetModel( PieceType.Player2 );
+			var piece2 = pieces.GetModel( PlayerType.Player2 );
 			piece2._moveFinish.Subscribe( _ => isMoveFinish2 = true );
 			inputManager._updateEvent.AddLast()
 				.Where( _ => isMoveFinish2 )
@@ -121,6 +125,23 @@ namespace TatemonSugoroku.Siren {
 					}
 					isMoveFinish2 = false;
 					piece2.Move( tileMove );
+				} );
+
+			// 日時を更新
+			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
+				day.UpdateHour();
+			} );
+
+			// タッチしたタイルにたてもんを配置
+			var tatemonPlayer = PlayerType.Player1;
+			inputManager._touchTileID
+				.Where( id => id != -1 )
+				.Subscribe( id => {
+					var m = tatemons.Place( tatemonPlayer, id );
+					SMLog.Debug( $"たてもん : {tatemonPlayer} {m._turnID}" );
+
+					var i = ( ( int )tatemonPlayer + 1 ) % EnumUtils.GetLength<PlayerType>();
+					tatemonPlayer = ( PlayerType )i;
 				} );
 		}
 	}

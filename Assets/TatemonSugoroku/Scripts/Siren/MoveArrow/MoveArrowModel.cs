@@ -8,7 +8,7 @@ namespace TatemonSugoroku.Scripts {
 	/// <summary>
 	/// ■ 移動矢印のモデルクラス
 	/// </summary>
-	public class MoveArrowModel : SMStandardBase, IModel {
+	public class MoveArrowModel : SMStandardBase {
 		public string _name				{ get; private set; }
 		public MoveArrowType _arrowType	{ get; private set; }
 		public Quaternion _rotation		{ get; private set; }

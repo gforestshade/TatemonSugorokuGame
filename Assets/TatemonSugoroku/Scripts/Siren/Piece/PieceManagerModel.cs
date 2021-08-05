@@ -27,13 +27,13 @@ namespace TatemonSugoroku.Scripts {
 
 		public PieceManagerModel() {
 			_models = Enumerable.Range( 0, PLAYER_COUNT )
-				.Select( i => new PieceModel( ( PieceType )i ) )
+				.Select( i => new PieceModel( ( PlayerType )i ) )
 				.ToList();
 		}
 
 
 
-		public PieceModel GetModel( PieceType type )
+		public PieceModel GetModel( PlayerType type )
 			=> _models[( int )type];
 	}
 }

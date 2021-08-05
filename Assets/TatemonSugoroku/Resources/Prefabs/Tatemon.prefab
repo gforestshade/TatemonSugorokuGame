@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9025695656006362394}
-  - component: {fileID: 7602748716812704678}
+  - component: {fileID: -7540274654871432954}
   m_Layer: 0
   m_Name: Tatemon
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7602748716812704678
+--- !u!114 &-7540274654871432954
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,7 +42,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9025695656006362395}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e23a498814c4a014ea4d38dcccda9e12, type: 3}
+  m_Script: {fileID: 11500000, guid: 750b0bb54b43d0946b508ddcb298d3a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &9025695656991273845

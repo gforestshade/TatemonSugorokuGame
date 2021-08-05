@@ -30,7 +30,7 @@ namespace TatemonSugoroku.Scripts {
 			transform.position = TileManagerModel.ToRealPosition( _tilePosition ) + _offset;
 
 #if TestPiece
-			if ( _model._type == PieceType.Player2 ) {
+			if ( _model._playerType == PlayerType.Player2 ) {
 				var renderers = GetComponentsInChildren<Renderer>( true );
 				renderers.ForEach( r => r.material.color = Color.red );
 			}

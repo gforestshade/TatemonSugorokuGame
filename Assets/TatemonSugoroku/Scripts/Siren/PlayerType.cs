@@ -3,9 +3,9 @@ namespace TatemonSugoroku.Scripts {
 
 
 	/// <summary>
-	/// ■ コマのタイプ
+	/// ■ プレイヤーのタイプ
 	/// </summary>
-	public enum PieceType {
+	public enum PlayerType {
 		Player1,
 		Player2,
 	}

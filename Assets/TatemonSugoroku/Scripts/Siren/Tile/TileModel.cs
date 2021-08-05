@@ -8,7 +8,7 @@ namespace TatemonSugoroku.Scripts {
 	/// <summary>
 	/// ■ タイルのモデルクラス
 	/// </summary>
-	public class TileModel : SMStandardBase, IModel {
+	public class TileModel : SMStandardBase {
 		public string _name				{ get; private set; }
 		public int _tileID				{ get; private set; }
 		public Vector2Int _tilePosition	{ get; private set; }

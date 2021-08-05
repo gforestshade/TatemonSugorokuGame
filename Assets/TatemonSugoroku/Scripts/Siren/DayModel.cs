@@ -34,18 +34,6 @@ namespace TatemonSugoroku.Scripts {
 			var delta = END_HOUR - FIRST_HOUR;
 			_hourVeloctiy = ( float )delta / MAX_PLAYER_TURN;
 			_sunsetRate.Value = 1;
-
-#if TestDay
-			UTask.Void( async () => {
-				var framework = SMServiceLocator.Resolve<SubmarineMirageFramework>();
-				await framework.WaitInitialize();
-
-				var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-				inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
-					UpdateHour();
-				} );
-			} );
-#endif
 		}
 
 
