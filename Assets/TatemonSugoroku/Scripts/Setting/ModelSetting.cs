@@ -1,7 +1,10 @@
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
 using SubmarineMirage.Debug;
+
 using Sample;
+using TatemonSugoroku.Scripts;
+using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -40,8 +43,14 @@ namespace TatemonSugoroku.Scripts {
 			Register( new TileManagerModel() );
 			Register( new MoveArrowManagerModel() );
 
-			Register( new MotionModel() );
-			Register( new FieldModel() );
+			Register(new MotionModel());
+			Register(new FieldModel());
+			Register(new ScoreModel());
+			Register(new MainGameManagementModel());
+
+			_allModelManager.Get<MainGameManagementModel>().SetUpMotionModel(_allModelManager.Get<MotionModel>());
+			_allModelManager.Get<MainGameManagementModel>().SetUpFieldModel(_allModelManager.Get<FieldModel>());
+			_allModelManager.Get<MainGameManagementModel>().SetUpScoreModel(_allModelManager.Get<ScoreModel>());
 		}
 
 		/// <summary>
@@ -50,5 +59,6 @@ namespace TatemonSugoroku.Scripts {
 		/// </summary>
 		void Register<T>( T model ) where T : class, IModel
 			=> _allModelManager.Register( model );
+
 	}
 }
