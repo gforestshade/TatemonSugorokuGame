@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using TatemonSugoroku.Scripts.Akio;
 using UniRx;
 using UnityEngine;
 using UnityEditor;
 
-namespace TatemonSugoroku.Scripts
+namespace TatemonSugoroku.Scripts.Akio
 {
     public enum MoveDirection
     {
@@ -99,82 +100,6 @@ namespace TatemonSugoroku.Scripts
             _domainInformation.OnNext(domainInformation);
         }
 
-        public bool InspectPlayerCanMove(int playerId, int numberOfDice)
-        {
-            List<List<int>> graph = new List<List<int>>();
-            for (int i = 0; i < 64; i++)
-            {
-                graph.Add(new List<int>());
-            }
-
-            for (int i = 0; i < 64; i++)
-            {
-                if (_fieldCells[i].TatemonPlayerId >= 0 && _fieldCells[i].TatemonPlayerId != playerId)
-                {
-                    continue;
-                }
-
-                if (i % MAX_X_DIRECTION_OF_CELLS < MAX_X_DIRECTION_OF_CELLS - 1) 
-                {
-                    int j = i + 1;
-                    if (_fieldCells[j].TatemonPlayerId < 0 || _fieldCells[j].TatemonPlayerId == playerId)
-                    {
-                        graph[i].Add(j);
-                        graph[j].Add(i);
-                    }
-                }
-
-                if (i / MAX_Y_DIRECTION_OF_CELLS < MAX_Y_DIRECTION_OF_CELLS - 1)
-                {
-                    int j = i + MAX_X_DIRECTION_OF_CELLS;
-                    if (_fieldCells[j].TatemonPlayerId < 0 || _fieldCells[j].TatemonPlayerId == playerId)
-                    {
-                        graph[i].Add(j);
-                        graph[j].Add(i);
-                    }
-                }
-            }
-
-            HashSet<int> hashSetPositions = new HashSet<int>();
-            
-            Stack<Vertex2> stack = new Stack<Vertex2>();
-
-            stack.Push(new Vertex2
-            {
-                V = _playerPosition[playerId],
-                BeforeV = -1,
-                Depth = 0
-            });
-            
-            while (stack.Count > 0)
-            {
-                Vertex2 v = stack.Pop();
-
-                if (v.Depth >= numberOfDice)
-                {
-                    hashSetPositions.Add(v.V);
-                    continue;
-                }
-
-                foreach (int nv in graph[v.V])
-                {
-                    if (nv == v.BeforeV)
-                    {
-                        continue;
-                    }
-
-                    stack.Push(new Vertex2
-                    {
-                        V = nv,
-                        BeforeV = v.V,
-                        Depth = v.Depth + 1
-                    });
-                }
-            }
-
-            return hashSetPositions.Count > 0;
-        }
-
         public void MovePlayer(int playerId, MoveDirection direction)
         {
             int moveTo = -1;
@@ -235,80 +160,15 @@ namespace TatemonSugoroku.Scripts
                 _fieldCells[i].TatemonSpinPower *= 2;
             }
         }
-
-        public int GetMovableDirections(int playerId, IList<int> vertexes)
-        {
-            bool canMoveUp = false;
-            bool canMoveRight = false;
-            bool canMoveDown = false;
-            bool canMoveLeft = false;
-            
-            List<int> positions = new List<int>();
-
-            positions.Add(_playerPosition[playerId]);
-
-            foreach (int vertex in vertexes)
-            {
-                positions.Add(vertex);
-            }
-
-            int currentPosition = positions[positions.Count - 1];
-            int previousPosition = -1;
-            if (positions.Count >= 2)
-            {
-                previousPosition = positions[positions.Count - 2];
-            }
-
-            if (currentPosition - MAX_X_DIRECTION_OF_CELLS != previousPosition &&
-                currentPosition >= MAX_X_DIRECTION_OF_CELLS)
-            {
-                int toPosition = currentPosition - MAX_X_DIRECTION_OF_CELLS;
-                if (_fieldCells[toPosition].TatemonPlayerId < 0 || _fieldCells[toPosition].TatemonPlayerId == playerId)
-                {
-                    canMoveUp = true;
-                }
-            }
-
-            if (currentPosition + 1 != previousPosition &&
-                currentPosition % MAX_X_DIRECTION_OF_CELLS < MAX_X_DIRECTION_OF_CELLS - 1)
-            {
-                int toPosition = currentPosition + 1;
-                if (_fieldCells[toPosition].TatemonPlayerId < 0 || _fieldCells[toPosition].TatemonPlayerId == playerId)
-                {
-                    canMoveRight = true;
-                }
-            }
-
-            if (currentPosition + MAX_X_DIRECTION_OF_CELLS != previousPosition &&
-                currentPosition / MAX_X_DIRECTION_OF_CELLS < MAX_Y_DIRECTION_OF_CELLS - 1)
-            {
-                int toPosition = currentPosition + MAX_X_DIRECTION_OF_CELLS;
-                if (_fieldCells[toPosition].TatemonPlayerId < 0 || _fieldCells[toPosition].TatemonPlayerId == playerId)
-                {
-                    canMoveDown = true;
-                }
-            }
-
-            if (currentPosition - 1 != previousPosition &&
-                currentPosition % MAX_X_DIRECTION_OF_CELLS > 0)
-            {
-                int toPosition = currentPosition - 1;
-                if (_fieldCells[toPosition].TatemonPlayerId < 0 || _fieldCells[toPosition].TatemonPlayerId == playerId)
-                {
-                    canMoveLeft = true;
-                }
-            }
-            int r = 0;
-            if (canMoveUp) r += 1;
-            if (canMoveRight) r += 2;
-            if (canMoveDown) r += 4;
-            if (canMoveLeft) r += 8;
-            return r;
-        }
-
+        
         public FieldCell[] GetFieldCells()
         {
             return _fieldCells;
+        }
+
+        public int GetCurrentPositionByPlayerId(int playerId)
+        {
+            return _playerPosition[playerId];
         }
 
         public void Dispose()
