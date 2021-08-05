@@ -13,6 +13,7 @@ namespace TatemonSugoroku.Siren {
 	/// <summary>
 	/// ■ Siren用、デバッグの描画クラス
 	///		このスクリプトをOFFにするだけで、デバッグ挙動は無くなります。
+	///		つまり、GameSceneの、DebugゲームオブジェクトをDisableにして下さい。
 	/// </summary>
 	public class SirenDebugView : SMStandardMonoBehaviour {
 		protected override void StartAfterInitialize() {
@@ -25,19 +26,20 @@ namespace TatemonSugoroku.Siren {
 			var pieces = allModelManager.Get<PieceManagerModel>();
 			var day = allModelManager.Get<DayModel>();
 			var tatemons = allModelManager.Get<TatemonManagerModel>();
+			var background = allModelManager.Get<BackgroundModel>();
 
 
 			// 13番のタイル領域変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
 				var tile = tileManager.GetModel( 13 );
 				var i = ( ( int )tile._areaType.Value + 1 ) % EnumUtils.GetLength<TileAreaType>();
-				tile._areaType.Value = ( TileAreaType )i;
+				tile.SetAreaType( ( TileAreaType )i );
 			} );
 			// 座標から、13番のタイル領域変更
 			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
 				var tile = tileManager.GetModel( new Vector2Int( 5, 1 ) );
 				var i = ( ( int )tile._areaType.Value + 1 ) % EnumUtils.GetLength<TileAreaType>();
-				tile._areaType.Value = ( TileAreaType )i;
+				tile.SetAreaType( ( TileAreaType )i );
 			} );
 
 			// タイル領域変更
@@ -63,7 +65,7 @@ namespace TatemonSugoroku.Siren {
 				.Where( id => id != -1 )
 				.Subscribe( id => {
 					var tile = tileManager.GetModel( id );
-					tile._areaType.Value = areaType;
+					tile.SetAreaType( areaType );
 
 					var arrow = moveArrowManager.GetModel( arrowType );
 					arrow._placeTile.Value = tile;
@@ -131,18 +133,32 @@ namespace TatemonSugoroku.Siren {
 			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
 				day.UpdateHour();
 			} );
+			day._hour.Subscribe( h => {
+				SMLog.Debug( $"ゲーム内時刻 : {h}" );
+			} );
 
 			// タッチしたタイルにたてもんを配置
+			var isPlace = true;
+			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
+				isPlace = !isPlace;
+				SMLog.Debug( $"たてもん配置するか？ : {isPlace}" );
+			} );
 			var tatemonPlayer = PlayerType.Player1;
 			inputManager._touchTileID
+				.Where( id => isPlace )
 				.Where( id => id != -1 )
 				.Subscribe( id => {
 					var m = tatemons.Place( tatemonPlayer, id );
-					SMLog.Debug( $"たてもん : {tatemonPlayer} {m._turnID}" );
+					SMLog.Debug( $"たてもん配置 : {tatemonPlayer} {m._turnID}" );
 
 					var i = ( ( int )tatemonPlayer + 1 ) % EnumUtils.GetLength<PlayerType>();
 					tatemonPlayer = ( PlayerType )i;
 				} );
+
+			// 背景絵を変更
+			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
+				background.ChangeImage();
+			} );
 		}
 	}
 }

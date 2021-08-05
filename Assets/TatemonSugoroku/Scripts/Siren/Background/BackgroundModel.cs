@@ -1,40 +1,36 @@
-using UnityEngine;
 using UniRx;
 using SubmarineMirage.Base;
 namespace TatemonSugoroku.Scripts {
 	///========================================================================================================
 	/// <summary>
-	/// ■ 移動矢印のモデルクラス
+	/// ■ 背景のモデルクラス
 	/// </summary>
 	///========================================================================================================
-	public class MoveArrowModel : SMStandardBase {
+	public class BackgroundModel : SMStandardBase, IModel {
 		///----------------------------------------------------------------------------------------------------
 		/// ● 要素
 		///----------------------------------------------------------------------------------------------------
-		/// <summary>ゲームオブジェクトに付ける名前</summary>
-		public string _name				{ get; private set; }
-		/// <summary>矢印のタイプ</summary>
-		public MoveArrowType _arrowType	{ get; private set; }
-		/// <summary>矢印の回転角度</summary>
-		public Quaternion _rotation		{ get; private set; }
-
-		/// <summary>配置タイルのモデル、配置切り替え検知により、更新</summary>
-		public readonly ReactiveProperty<TileModel> _placeTile = new ReactiveProperty<TileModel>();
+		/// <summary>画像を変更する際の、通知</summary>
+		public readonly Subject<Unit> _changeImage = new Subject<Unit>();
 
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// ● コンストラクタ
 		/// </summary>
 		///----------------------------------------------------------------------------------------------------
-		public MoveArrowModel( MoveArrowType arrowType ) {
-			_arrowType = arrowType;
-			_rotation = MoveArrowManagerModel.ARROW_TYPE_TO_ROTATION[_arrowType];
-
-			_name = $"MoveArrow {_arrowType}";
-
+		public BackgroundModel() {
 			_disposables.AddFirst( () => {
-				_placeTile.Dispose();
+				_changeImage.Dispose();
 			} );
+		}
+
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● 画像変更の要求を通知
+		/// </summary>
+		///----------------------------------------------------------------------------------------------------
+		public void ChangeImage() {
+			_changeImage.OnNext( Unit.Default );
 		}
 	}
 }

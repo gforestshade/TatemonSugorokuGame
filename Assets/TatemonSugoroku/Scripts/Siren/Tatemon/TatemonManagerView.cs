@@ -13,14 +13,14 @@ namespace TatemonSugoroku.Scripts {
 
 
 	/// <summary>
-	/// ■ たてもん描画の管理クラス
+	/// ■ たてもん管理の描画クラス
 	/// </summary>
 	public class TatemonManagerView : SMStandardMonoBehaviour {
 		TatemonManagerModel _model { get; set; }
 		readonly List<TatemonView> _views = new List<TatemonView>();
 
 		[SerializeField] GameObject _prefab;
-		[SerializeField] float _speed = 1;
+		[SerializeField] float _speed = 5;
 		Tween _rotateTween { get; set; }
 
 
@@ -48,8 +48,8 @@ namespace TatemonSugoroku.Scripts {
 					1,
 					_speed
 				)
-				.SetEase( Ease.InOutQuart )
-				.SetLoops( -1, LoopType.Yoyo )
+				.SetEase( Ease.Linear )
+				.SetLoops( -1, LoopType.Restart )
 				.Play();
 			} );
 

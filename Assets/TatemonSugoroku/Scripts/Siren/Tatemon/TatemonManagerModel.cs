@@ -10,23 +10,33 @@ using SubmarineMirage.Service;
 using SubmarineMirage.Utility;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
-
-
-
+	///========================================================================================================
 	/// <summary>
 	/// ■ たてもん管理のモデルクラス
 	/// </summary>
+	///========================================================================================================
 	public class TatemonManagerModel : SMStandardBase, IModel {
+		///----------------------------------------------------------------------------------------------------
+		/// ● 要素
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>最大の1プレイヤーの手番</summary>
 		const int MAX_PLAYER_TURN = 7;
 
+		/// <summary>プレイヤーごとの、現在の手番回数</summary>
 		readonly Dictionary<PlayerType, int> _turnCounts = new Dictionary<PlayerType, int>();
+		/// <summary>たてもんのモデル一覧</summary>
 		public readonly Dictionary< PlayerType, List<TatemonModel> > _models;
+		/// <summary>花火で回転したか？</summary>
 		public bool _isFireworkRotated { get; private set; }
 
+		/// <summary>非同期停止の識別子</summary>
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
-
-
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● コンストラクタ
+		/// </summary>
+		///----------------------------------------------------------------------------------------------------
 		public TatemonManagerModel() {
 			_models = EnumUtils.GetValues<PlayerType>().ToDictionary(
 				type => type,
@@ -59,19 +69,35 @@ namespace TatemonSugoroku.Scripts {
 			} );
 		}
 
-
-
+		///----------------------------------------------------------------------------------------------------
+		/// ● 取得
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● プレイヤー番号の、たてもんモデルの一覧を取得
+		/// </summary>
 		public List<TatemonModel> GetModels( PlayerType playerType )
 			=> _models.GetOrDefault( playerType );
 
+		/// <summary>
+		/// ● 全たてもんモデルの一覧を取得
+		/// </summary>
 		public IEnumerable<TatemonModel> GetModels()
 			=> _models.SelectMany( pair => pair.Value );
 
-
-
+		///----------------------------------------------------------------------------------------------------
+		/// ● 配置
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● プレイヤー番号と、タイル番号の場所に、たてもんを配置
+		///		何個目を配置するかは、自動計算。
+		/// </summary>
 		public TatemonModel Place( PlayerType playerType, int tileID )
 			=> Place( playerType, TileManagerModel.ToTilePosition( tileID ) );
 
+		/// <summary>
+		/// ● プレイヤー番号と、タイル位置に、たてもんを配置
+		///		何個目を配置するかは、自動計算。
+		/// </summary>
 		public TatemonModel Place( PlayerType playerType, Vector2Int tilePosition ) {
 			var i = _turnCounts[playerType];
 

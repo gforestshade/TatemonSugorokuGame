@@ -1,4 +1,4 @@
-#define TestMoveArrow
+//#define TestMoveArrow
 using UnityEngine;
 using UniRx;
 using KoganeUnityLib;

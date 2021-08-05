@@ -46,6 +46,7 @@ namespace TatemonSugoroku.Scripts {
 			Register( new PieceManagerModel() );
 			Register( new FireworkManagerModel() );
 			Register( new TatemonManagerModel() );
+			Register( new BackgroundModel() );
 
 			Register(new MotionModel());
 			Register(new FieldModel());

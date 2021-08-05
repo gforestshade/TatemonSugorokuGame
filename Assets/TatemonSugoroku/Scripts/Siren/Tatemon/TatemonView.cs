@@ -29,10 +29,12 @@ namespace TatemonSugoroku.Scripts {
 			} );
 
 #if TestTatemon
+			var renderers = GetComponentsInChildren<SpriteRenderer>();
 			if ( _model._playerType == PlayerType.Player2 ) {
-				var renderers = GetComponentsInChildren<SpriteRenderer>();
 				renderers.ForEach( r => r.material.color = Color.red );
 			}
+//			renderers[2].gameObject.SetActive( false );
+//			renderers[3].gameObject.SetActive( false );
 #endif
 		}
 
