@@ -14,6 +14,12 @@ namespace TatemonSugoroku.Scripts.Akio
         Down,
         Left
     }
+
+    public enum MoveResult
+    {
+        None,
+        OppositeCellEntered
+    }
     
     public class FieldCell
     {
@@ -22,12 +28,7 @@ namespace TatemonSugoroku.Scripts.Akio
         public int DomainPlayerId;
     }
 
-    public class Vertex2
-    {
-        public int V;
-        public int BeforeV;
-        public int Depth;
-    }
+
     public class FieldModel: IModel
     {
         private const int MAX_NUMBER_OF_CELLS = 64;
@@ -64,7 +65,7 @@ namespace TatemonSugoroku.Scripts.Akio
             _motionModel = motionModel;
         }
         
-        public void Initialize(int numberOfPlayers)
+        public void InitializeGame(int numberOfPlayers)
         {
             _playerPosition.Clear();
             foreach (FieldCell fieldCell in _fieldCells)
@@ -100,7 +101,7 @@ namespace TatemonSugoroku.Scripts.Akio
             _domainInformation.OnNext(domainInformation);
         }
 
-        public void MovePlayer(int playerId, MoveDirection direction)
+        public MoveResult MovePlayer(int playerId, MoveDirection direction)
         {
             int moveTo = -1;
             int currentPosition = _playerPosition[playerId];
@@ -133,17 +134,27 @@ namespace TatemonSugoroku.Scripts.Akio
                     break;
             }
 
-            MovePlayer(playerId, moveTo);
+            return MovePlayer(playerId, moveTo);
         }
 
-        public void MovePlayer(int playerId, int moveTo)
+        public MoveResult MovePlayer(int playerId, int moveTo)
         {
             if (moveTo < 0 || moveTo >= MAX_NUMBER_OF_CELLS)
             {
-                return;
+                return MoveResult.None;
             }
 
+            
             _playerPosition[playerId] = moveTo;
+            int previousDomainPlayerId = _fieldCells[moveTo].DomainPlayerId;
+
+            _fieldCells[moveTo].DomainPlayerId = playerId;
+
+            if (previousDomainPlayerId >= 0 && previousDomainPlayerId != playerId)
+            {
+                return MoveResult.OppositeCellEntered;
+            }
+            return MoveResult.None;
         }
 
         public void PutTatemonAtCurrentPosition(int playerId, int spinPower)

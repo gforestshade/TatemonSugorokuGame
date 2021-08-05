@@ -8,7 +8,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
         void Start()
         {
-            _fieldModel.Initialize(2);
+
         }
 
         // Update is called once per frame

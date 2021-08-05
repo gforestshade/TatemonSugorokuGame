@@ -8,10 +8,15 @@ namespace TatemonSugoroku.Scripts.Akio
     public enum MainGamePhase
     {
         Idle,
+        Prepare,
+        WhileShowingTurnCall,
         WaitingRollingDice,
         WhileRollingDice,
         WaitingMovingPlayer,
         WhileMovingPlayer,
+        WhilePuttingTatemon,
+        WhileCalculatingScore,
+        PlayerCannotMove,
         Finish,
     }
     public class MainGameManagementModel : IModel
@@ -56,6 +61,7 @@ namespace TatemonSugoroku.Scripts.Akio
         {
             _scoreModel.InitializeGame(numberOfPlayers);
             _motionModel.InitializeGame();
+            _fieldModel.InitializeGame(numberOfPlayers);
 
             switch (numberOfPlayers)
             {
@@ -69,13 +75,22 @@ namespace TatemonSugoroku.Scripts.Akio
                     _nextPlayerId = new[] {1, 2, 0};
                     break;
             }
+
+            _gamePhase.Value = MainGamePhase.Prepare;
         }
 
-        public void StartPhase()
+        // ゲーム開始時に呼び出して欲しいメソッド
+        public void StartGame()
+        {
+            _currentPlayerId.Value = 0; // todo 後ほどランダムに変更
+            _gamePhase.Value = MainGamePhase.WhileShowingTurnCall;
+        }
+
+        // ターン表示が終われば呼び出して欲しいメソッド（サイコロフェーズに入る）
+        public void NotifyShowingTurnCallFinished()
         {
             _gamePhase.Value = MainGamePhase.WaitingRollingDice;
         }
-        
 
         // サイコロを振り始めて欲しい時に呼び出して欲しいメソッド
         public void InputDicesRoll()
@@ -99,7 +114,7 @@ namespace TatemonSugoroku.Scripts.Akio
             }
             else
             {
-                _gamePhase.Value = MainGamePhase.Finish;
+                _gamePhase.Value = MainGamePhase.PlayerCannotMove;
             }
         }
         
@@ -124,14 +139,21 @@ namespace TatemonSugoroku.Scripts.Akio
             {
                 int position = _determinedMotionPosition.Dequeue();
 
-                _fieldModel.MovePlayer(_currentPlayerId.Value, position);
+                switch (_fieldModel.MovePlayer(_currentPlayerId.Value, position))
+                {
+                    case MoveResult.OppositeCellEntered:
+                        
+                        // todo 相手にスコア加算
+                        
+                        break;
+                }
             }
         }
 
         // プレイヤーの移動が終われば呼び出して欲しいメソッド
         public void NotifyMovingPlayerFinished()
         {
-            
+            _gamePhase.Value = MainGamePhase.WhilePuttingTatemon;
         }
 
         public void PutTatemonAtCurrentPosition()
@@ -140,18 +162,32 @@ namespace TatemonSugoroku.Scripts.Akio
                 _spinPowersOfTatemon[_decidedNumberOfDice.Value]);
         }
 
-        // たてもんの配置が終われば呼び出して欲しいメソッド
+        // たてもんの配置が終われば呼び出して欲しいメソッド（スコア計算フェーズに入る）
         public void NotifyPuttingTatemonFinished()
         {
-            
+            _gamePhase.Value = MainGamePhase.WhileCalculatingScore;
         }
 
-        public void NextPhase()
+        //スコアの計算演出が終われば呼び出して欲しいメソッド（次のターンに進む）
+        public void NotifyCalculatingScoreFinished()
         {
-            _currentPlayerId.Value = _nextPlayerId[_currentPlayerId.Value];
-            StartPhase();
+            if (true) // たてもんの存在判定を確認し、存在するならば、次のターンへ
+            {
+                _currentPlayerId.Value = _nextPlayerId[_currentPlayerId.Value];
+                _gamePhase.Value = MainGamePhase.WhileShowingTurnCall;
+            }
+            else //存在しないならば、ゲーム終了フェーズへ
+            {
+                _gamePhase.Value = MainGamePhase.Finish;
+            }
         }
-        
+
+        // 移動不可能の警告が出されたら、承認したら呼び出して欲しいメソッド（結果フェーズに入る）
+        public void NotifyShowingAlertThatPlayerCannotMove()
+        {
+            _gamePhase.Value = MainGamePhase.Finish;
+        }
+
         public void Dispose()
         {
             

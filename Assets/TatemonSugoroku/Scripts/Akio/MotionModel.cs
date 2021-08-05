@@ -13,6 +13,13 @@ namespace TatemonSugoroku.Scripts.Akio
         Return
     }
     
+    public class Vertex2
+    {
+        public int V;
+        public int BeforeV;
+        public int Depth;
+    }
+    
     public class MotionModel: IModel
     {
         private const int MAX_NUMBER_OF_CELLS = 64;
@@ -47,8 +54,9 @@ namespace TatemonSugoroku.Scripts.Akio
         public IReadOnlyReactiveProperty<MotionStatus> MotionStatusRight => _motionStatusRight;
         public IReadOnlyReactiveProperty<MotionStatus> MotionStatusDown => _motionStatusDown;
         public IReadOnlyReactiveProperty<MotionStatus> MotionStatusLeft => _motionStatusLeft;
-        
-        
+
+        private readonly ReactiveProperty<int> _numberOfMovableCells = new ReactiveProperty<int>(0);
+        public IReadOnlyReactiveProperty<int> NumberOfMovableCells => _numberOfMovableCells;
         public MotionModel()
         {
             for (int i = 0; i < MAX_NUMBER_OF_CELLS; i++)
@@ -59,7 +67,10 @@ namespace TatemonSugoroku.Scripts.Akio
         
         public void InitializeGame()
         {
-            
+            for (int i = 0; i < MAX_NUMBER_OF_CELLS; i++)
+            {
+                _movableField[i] = false;
+            }
         }
         
         public void SetCurrentPlayerId(int playerId)
@@ -287,6 +298,8 @@ namespace TatemonSugoroku.Scripts.Akio
             }
 
             _preparedMotions.OnNext(_listPreparedMotions.ToArray());
+
+            _numberOfMovableCells.Value = _numberOfDice - _listPreparedMotions.Count;
         }
 
         public bool InspectInputtingMotionsFinished()
