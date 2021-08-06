@@ -146,18 +146,12 @@ namespace TatemonSugoroku.Scripts.Akio
             {
                 return MoveResult.None;
             }
-
             
             _playerPosition[playerId] = moveTo;
             int previousDomainPlayerId = _fieldCells[moveTo].DomainPlayerId;
 
             _fieldCells[moveTo].DomainPlayerId = playerId;
-
-            if (previousDomainPlayerId >= 0 && previousDomainPlayerId != playerId)
-            {
-                return MoveResult.OppositeCellEntered;
-            }
-
+            
             int[] domainInformation = new int[MAX_NUMBER_OF_CELLS];
             for (int i = 0; i < MAX_NUMBER_OF_CELLS; i++)
             {
@@ -167,6 +161,12 @@ namespace TatemonSugoroku.Scripts.Akio
             _domainInformation.OnNext(domainInformation);
 
             _playerPositions.OnNext(_playerPosition.ToArray());
+            
+            if (previousDomainPlayerId >= 0 && previousDomainPlayerId != playerId)
+            {
+                return MoveResult.OppositeCellEntered;
+            }
+            
             return MoveResult.None;
         }
 

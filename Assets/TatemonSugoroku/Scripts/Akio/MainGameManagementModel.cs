@@ -141,6 +141,7 @@ namespace TatemonSugoroku.Scripts.Akio
             if (_motionModel.InspectInputtingMotionsFinished())
             {
                 _determinedMotionPosition = _motionModel.GetMotionsAsQueue();
+                _motionModel.ClearMotion();
                 _gamePhase.Value = MainGamePhase.WhileMovingPlayer;
             }
         }

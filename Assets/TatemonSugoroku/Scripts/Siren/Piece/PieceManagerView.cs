@@ -20,8 +20,7 @@ namespace TatemonSugoroku.Scripts
 		PieceManagerModel _model { get; set; }
 		[SerializeField] GameObject _prefab;
 		readonly List<PieceView> _views = new List<PieceView>();
-
-		private readonly List<int> _currentPositions = new List<int>();
+		
 		protected override void StartAfterInitialize()
 		{
 			/* 毎回すみません、せっかく作っていただいたのに残念です。(by Akio）
@@ -47,18 +46,13 @@ namespace TatemonSugoroku.Scripts
 				_views.Add(pieceView);
 			});
 			
-			_currentPositions.Add(0);
-			_currentPositions.Add(63);
+
 
 			fieldModel.PlayerPositions.Subscribe(positions =>
 			{
 				for (int i = 0; i < positions.Length; i++)
 				{
-					if (_currentPositions[i] != positions[i])
-					{
-						_currentPositions[i] = positions[i];
-						_views[i].Move(positions[i]);
-					}
+					_views[i].Move(positions[i]);
 				}
 			});
 		}

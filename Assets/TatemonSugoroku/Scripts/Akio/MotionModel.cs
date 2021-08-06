@@ -319,6 +319,14 @@ namespace TatemonSugoroku.Scripts.Akio
             return _listPreparedMotions.Count >= _numberOfDice;
         }
 
+        public void ClearMotion()
+        {
+            _motionStatusUp.Value = MotionStatus.Unmovable;
+            _motionStatusRight.Value = MotionStatus.Unmovable;
+            _motionStatusDown.Value = MotionStatus.Unmovable;
+            _motionStatusLeft.Value = MotionStatus.Unmovable;
+        }
+
         public Queue<int> GetMotionsAsQueue()
         {
             Queue<int> r = new Queue<int>();
