@@ -9,6 +9,7 @@ using SubmarineMirage.Base;
 using SubmarineMirage.Service;
 using SubmarineMirage.Utility;
 using SubmarineMirage.Debug;
+using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Scripts {
 	///========================================================================================================
 	/// <summary>
@@ -51,7 +52,21 @@ namespace TatemonSugoroku.Scripts {
 
 			UTask.Void( async () => {
 				var allModelManager = await SMServiceLocator.WaitResolve<AllModelManager>( _canceler );
+				await UTask.NextFrame( _canceler );
+				var gameManager = allModelManager.Get<MainGameManagementModel>();
 				var firework = allModelManager.Get<FireworkManagerModel>();
+				var field = allModelManager.Get<FieldModel>();
+
+				gameManager.GamePhase.Subscribe( phase => {
+					switch ( phase ) {
+						case MainGamePhase.WaitingPuttingTatemon:
+							var playerID = gameManager.CurrentPlayerId;
+							var tileID = field.GetCurrentPositionByPlayerId( playerID.Value );
+							Place( ( PlayerType )playerID.Value, tileID );
+							break;
+					}
+				} );
+
 				firework._launch.Subscribe( _ => {
 					_isFireworkRotated = true;
 					GetModels()
