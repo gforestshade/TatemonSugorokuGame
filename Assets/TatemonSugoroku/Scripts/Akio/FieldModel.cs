@@ -47,6 +47,9 @@ namespace TatemonSugoroku.Scripts.Akio
         public IObservable<int[]> TatemonInformation => _tatemonInformation;
         public IObservable<int[]> DomainInformation => _domainInformation;
         
+        private readonly Subject<int[]> _playerPositions = new Subject<int[]>();
+        public IObservable<int[]> PlayerPositions => _playerPositions;
+        
         public FieldModel()
         {
             for (int i = 0; i < MAX_NUMBER_OF_CELLS; i++)
@@ -154,6 +157,16 @@ namespace TatemonSugoroku.Scripts.Akio
             {
                 return MoveResult.OppositeCellEntered;
             }
+
+            int[] domainInformation = new int[MAX_NUMBER_OF_CELLS];
+            for (int i = 0; i < MAX_NUMBER_OF_CELLS; i++)
+            {
+                FieldCell fieldCell = _fieldCells[i];
+                domainInformation[i] = fieldCell.DomainPlayerId;
+            }
+            _domainInformation.OnNext(domainInformation);
+
+            _playerPositions.OnNext(_playerPosition.ToArray());
             return MoveResult.None;
         }
 

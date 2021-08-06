@@ -24,7 +24,7 @@ namespace TatemonSugoroku.Scripts {
 
 		public void Setup( PieceModel model ) {
 			_model = model;
-			_model._tilePosition.Subscribe( v => Move( v ).Forget() );
+			// _model._tilePosition.Subscribe( v => Move( v ).Forget() );
 
 			_tilePosition = _model._tilePosition.Value;
 			transform.position = TileManagerModel.ToRealPosition( _tilePosition ) + _offset;
@@ -62,6 +62,12 @@ namespace TatemonSugoroku.Scripts {
 			transform.position = targetPosition;
 
 			_model.MoveFinish();
+		}
+
+		public void Move(int position)
+		{
+			Vector2Int tilePosition = TileManagerModel.ToTilePosition(position);
+			Move(tilePosition).Forget();
 		}
 	}
 }

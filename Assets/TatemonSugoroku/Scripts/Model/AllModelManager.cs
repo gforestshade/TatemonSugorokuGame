@@ -4,6 +4,8 @@ using KoganeUnityLib;
 using SubmarineMirage;
 using SubmarineMirage.Service;
 using SubmarineMirage.Task;
+using TatemonSugoroku.Scripts.Setting;
+
 namespace TatemonSugoroku.Scripts {
 
 

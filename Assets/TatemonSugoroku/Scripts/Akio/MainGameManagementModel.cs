@@ -14,6 +14,7 @@ namespace TatemonSugoroku.Scripts.Akio
         WhileRollingDice,
         WaitingMovingPlayer,
         WhileMovingPlayer,
+        WaitingPuttingTatemon,
         WhilePuttingTatemon,
         WhileCalculatingScore,
         PlayerCannotMove,
@@ -24,6 +25,7 @@ namespace TatemonSugoroku.Scripts.Akio
         private MotionModel _motionModel;
         private FieldModel _fieldModel;
         private ScoreModel _scoreModel;
+        private DiceModel _diceModel;
 
         private readonly ReactiveProperty<MainGamePhase>
             _gamePhase = new ReactiveProperty<MainGamePhase>(MainGamePhase.Idle);
@@ -55,6 +57,11 @@ namespace TatemonSugoroku.Scripts.Akio
         public void SetUpScoreModel(ScoreModel scoreModel)
         {
             _scoreModel = scoreModel;
+        }
+
+        public void SetUpDiceModel(DiceModel diceModel)
+        {
+            _diceModel = diceModel;
         }
 
         public void InitializeGame(int numberOfPlayers)
@@ -90,24 +97,34 @@ namespace TatemonSugoroku.Scripts.Akio
         public void NotifyShowingTurnCallFinished()
         {
             _gamePhase.Value = MainGamePhase.WaitingRollingDice;
+            _diceModel.ChangeState(DiceState.Rotate);
         }
 
         // サイコロを振り始めて欲しい時に呼び出して欲しいメソッド
         public void InputDicesRoll()
         {
             _gamePhase.Value = MainGamePhase.WhileRollingDice;
+            _diceModel.SetPower(
+                new Vector3(
+                    UnityEngine.Random.Range(-1.0f, 1.0f),
+                    UnityEngine.Random.Range(-1.0f, 1.0f),
+                    UnityEngine.Random.Range(-1.0f, 1.0f)
+                ).normalized * 10.0f
+            );
+            _diceModel.ChangeState(DiceState.Roll);
         }
 
         // サイコロが振り終われば呼び出して欲しいメソッド
-        public void NotifyDiceRollingFinished()
+        public void NotifyDiceRollingFinished(int numberOfDice)
         {
-            _decidedNumberOfDice.Value = 7; // todo Use DiceModel
+            _decidedNumberOfDice.Value = numberOfDice;
             _motionModel.SetCurrentPlayerId(_currentPlayerId.Value);
             _motionModel.SetNumberOfDice(_decidedNumberOfDice.Value);
             _motionModel.SetCurrentPosition(_fieldModel.GetCurrentPositionByPlayerId(_currentPlayerId.Value));
             _motionModel.SetFieldCellsAsMovableField(_fieldModel.GetFieldCells());
             _motionModel.ClearInformation();
-            
+
+            _diceModel.ChangeState(DiceState.Hide);
             if (_motionModel.InspectPlayerCanMove())
             {
                 _gamePhase.Value = MainGamePhase.WaitingMovingPlayer;
@@ -153,9 +170,13 @@ namespace TatemonSugoroku.Scripts.Akio
         // プレイヤーの移動が終われば呼び出して欲しいメソッド
         public void NotifyMovingPlayerFinished()
         {
-            _gamePhase.Value = MainGamePhase.WhilePuttingTatemon;
+            _gamePhase.Value = MainGamePhase.WaitingPuttingTatemon;
         }
 
+        public void NotifyInputPuttingTatemon()
+        {
+            _gamePhase.Value = MainGamePhase.WhilePuttingTatemon;
+        }
         public void PutTatemonAtCurrentPosition()
         {
             _fieldModel.PutTatemonAtCurrentPosition(_currentPlayerId.Value,
