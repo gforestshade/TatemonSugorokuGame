@@ -40,11 +40,16 @@ namespace TatemonSugoroku.Gfshade
 
                     int dice = Random.Range(1, 6) + Random.Range(1, 6);
 
-                    for (; dice >= 0; dice--)
+                    _UI.SetWalkRemaining(dice);
+                    await UniTask.Delay(wait1);
+                    for (dice = dice - 1; dice >= 0; dice--)
                     {
-                        _UI.SetWalkRemaining(dice);
+                        await _UI.ChangeWalkRemaining(dice+1, dice);
                         await UniTask.Delay(wait1);
                     }
+
+                    _UI.HideWalkRemaining();
+                    await UniTask.Delay(wait1);
 
                     await _UI.ChangeTatemon(j, tatemons[j], tatemons[j] - 1);
                     tatemons[j]--;

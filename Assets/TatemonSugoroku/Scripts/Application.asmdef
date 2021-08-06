@@ -12,7 +12,8 @@
         "KoganeUnityLib",
         "GameDevWare.Serialization",
         "BuildBaseSMLog",
-        "SubmarineMirageFramework"
+        "SubmarineMirageFramework",
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
