@@ -68,7 +68,7 @@ namespace TatemonSugoroku.Siren {
 					tile.SetAreaType( areaType );
 
 					var arrow = moveArrowManager.GetModel( arrowType );
-					arrow._placeTile.Value = tile;
+					arrow.Place( tile );
 				} );
 
 
