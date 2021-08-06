@@ -32,31 +32,47 @@ namespace TatemonSugoroku.Scripts.Akio
                         {
                             mainGameManagementModel.NotifyShowingTurnCallFinished();
                         });
-                        _isAllowedInputMotion = false;
                         break;
                     case MainGamePhase.WaitingMovingPlayer:
-                        Debug.Log("移動可能");
-                        _isAllowedInputMotion = true;
                         break;
                     case MainGamePhase.PlayerCannotMove:
                         Debug.Log("プレイヤーはどのルートにも動けません");
-                        _isAllowedInputMotion = false;
                         break;
                     case MainGamePhase.WhileMovingPlayer:
                         Debug.Log("プレイヤー移動フェイズ");
                         mainGameManagementModel.MovePlayer();
                         StartCoroutine(CoroutineMovingPlayer());
-                        _isAllowedInputMotion = false;
                         break;
                     case MainGamePhase.WaitingPuttingTatemon:
                         Debug.Log("たてもんの選択フェイズ");
-                        _isAllowedInputMotion = false;
+                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
+                        {
+                            mainGameManagementModel.NotifyInputPuttingTatemon();
+                        });
                         break;
-                    default:
-                        _isAllowedInputMotion = false;
+                    case MainGamePhase.WhilePuttingTatemon:
+                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
+                        {
+                            mainGameManagementModel.NotifyPuttingTatemonFinished();
+                        });
+                        break;
+                    case MainGamePhase.WhileCalculatingScore:
+                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
+                        {
+                            mainGameManagementModel.NotifyCalculatingScoreFinished();
+                        });
                         break;
                 }
-                
+
+                if (phase == MainGamePhase.WaitingMovingPlayer)
+                {
+                    Debug.Log("移動可能");
+                    _isAllowedInputMotion = true;
+                }
+                else
+                {
+                    _isAllowedInputMotion = false;
+                }
             });
 
             _movingPlayerTimer.Subscribe(_ =>
