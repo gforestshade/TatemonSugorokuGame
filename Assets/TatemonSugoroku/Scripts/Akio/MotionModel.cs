@@ -7,7 +7,6 @@ namespace TatemonSugoroku.Scripts.Akio
 {
     public enum MotionStatus
     {
-        None,
         Unmovable,
         Movable,
         Return
@@ -39,16 +38,16 @@ namespace TatemonSugoroku.Scripts.Akio
         public IObservable<int[]> PreparedMotions => _preparedMotions;
 
         private readonly ReactiveProperty<MotionStatus> _motionStatusUp =
-            new ReactiveProperty<MotionStatus>(MotionStatus.None);
+            new ReactiveProperty<MotionStatus>(MotionStatus.Unmovable);
 
         private readonly ReactiveProperty<MotionStatus> _motionStatusRight =
-            new ReactiveProperty<MotionStatus>(MotionStatus.None);
+            new ReactiveProperty<MotionStatus>(MotionStatus.Unmovable);
         
         private readonly ReactiveProperty<MotionStatus> _motionStatusDown =
-            new ReactiveProperty<MotionStatus>(MotionStatus.None);
+            new ReactiveProperty<MotionStatus>(MotionStatus.Unmovable);
 
         private readonly ReactiveProperty<MotionStatus> _motionStatusLeft =
-            new ReactiveProperty<MotionStatus>(MotionStatus.None);
+            new ReactiveProperty<MotionStatus>(MotionStatus.Unmovable);
 
         public IReadOnlyReactiveProperty<MotionStatus> MotionStatusUp => _motionStatusUp;
         public IReadOnlyReactiveProperty<MotionStatus> MotionStatusRight => _motionStatusRight;
@@ -57,6 +56,9 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private readonly ReactiveProperty<int> _numberOfMovableCells = new ReactiveProperty<int>(0);
         public IReadOnlyReactiveProperty<int> NumberOfMovableCells => _numberOfMovableCells;
+
+        private readonly ReactiveProperty<int> _peekPosition = new ReactiveProperty<int>(0);
+        public IReadOnlyReactiveProperty<int> PeekPosition => _peekPosition;
         public MotionModel()
         {
             for (int i = 0; i < MAX_NUMBER_OF_CELLS; i++)
@@ -236,6 +238,8 @@ namespace TatemonSugoroku.Scripts.Akio
                 currentPosition = _currentPosition;
             }
 
+            Debug.Log(currentPosition);
+            
             if (currentPosition >= MAX_X_DIRECTION_OF_CELLS)
             {
                 int index = currentPosition - MAX_X_DIRECTION_OF_CELLS;
@@ -244,8 +248,7 @@ namespace TatemonSugoroku.Scripts.Akio
                 {
                     _motionStatusUp.Value = MotionStatus.Return;
                 }
-
-                if (_movableField[index])
+                else if (_movableField[index])
                 {
                     _movablePositions.Add(index);
                     _motionStatusUp.Value = MotionStatus.Movable;
@@ -300,6 +303,15 @@ namespace TatemonSugoroku.Scripts.Akio
             _preparedMotions.OnNext(_listPreparedMotions.ToArray());
 
             _numberOfMovableCells.Value = _numberOfDice - _listPreparedMotions.Count;
+
+            if (_listPreparedMotions.Count >= 1)
+            {
+                _peekPosition.Value = _listPreparedMotions[_listPreparedMotions.Count - 1];
+            }
+            else
+            {
+                _peekPosition.Value = _currentPosition;
+            }
         }
 
         public bool InspectInputtingMotionsFinished()

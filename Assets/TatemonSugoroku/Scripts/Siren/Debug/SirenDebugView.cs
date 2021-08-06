@@ -49,6 +49,8 @@ namespace TatemonSugoroku.Siren {
 				areaType = ( TileAreaType )i;
 			} );
 			// 矢印変更
+			
+			/*
 			var arrowType = MoveArrowType.Down;
 			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
 				var i = ( ( int )arrowType + 1 ) % EnumUtils.GetLength<MoveArrowType>();
@@ -56,11 +58,15 @@ namespace TatemonSugoroku.Siren {
 				SMLog.Debug( $"矢印 : {arrowType}" );
 			} );
 
+			*/
+			
 			// タッチしたタイル番号を表示
 			inputManager._touchTileID.Subscribe( id => {
 				SMLog.Debug( id );
 			} );
 			// タッチしたタイルを変更
+			
+			/*
 			inputManager._touchTileID
 				.Where( id => id != -1 )
 				.Subscribe( id => {
@@ -70,7 +76,7 @@ namespace TatemonSugoroku.Siren {
 					var arrow = moveArrowManager.GetModel( arrowType );
 					arrow.Place( tile );
 				} );
-
+			*/
 
 			// サイコロを投げる
 			var diceState = DiceState.Hide;

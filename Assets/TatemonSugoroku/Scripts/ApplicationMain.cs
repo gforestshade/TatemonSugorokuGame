@@ -11,6 +11,8 @@ using SubmarineMirage.Extension;
 using SubmarineMirage.Utility;
 using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
+using TatemonSugoroku.Scripts.Setting;
+
 namespace TatemonSugoroku.Scripts {
 
 

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,6 +6,8 @@ using UniRx;
 using DG.Tweening;
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
+using TatemonSugoroku.Scripts.Akio;
+
 namespace TatemonSugoroku.Scripts {
 
 
@@ -13,7 +16,7 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 花火画面の描画クラス
 	/// </summary>
 	public class UIDiceView : SMStandardMonoBehaviour {
-		DiceModel _model { get; set; }
+		// DiceModel _diceModel { get; set; }
 		CanvasGroup _group { get; set; }
 
 
@@ -26,9 +29,10 @@ namespace TatemonSugoroku.Scripts {
 		}
 
 		protected override void StartAfterInitialize() {
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<DiceModel>();
+			/* 誠に勝手ながら、こちらの方で変えさせてもらいます。（Akioより）
+			_diceModel = SMServiceLocator.Resolve<AllModelManager>().Get<DiceModel>();
 
-			_model._state.Subscribe( s => {
+			_diceModel._state.Subscribe( s => {
 				switch ( s ) {
 					case DiceState.Hide:
 					case DiceState.Roll:
@@ -47,15 +51,57 @@ namespace TatemonSugoroku.Scripts {
 
 			var button = GetComponentInChildren<Button>();
 			button.onClick.AddListener( () => {
-				_model.SetPower(
+				_diceModel.SetPower(
 					new Vector3(
 						Random.Range( -1, 1 ),
 						Random.Range( -1, 1 ),
 						Random.Range( -1, 1 )
 					).normalized * 10
 				);
-				_model.ChangeState( DiceState.Roll );
+				_diceModel.ChangeState( DiceState.Roll );
 			} );
+			*/
+
+			AllModelManager allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+			MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
+			DiceModel diceModel = allModelManager.Get<DiceModel>();
+
+			mainGameManagementModel.GamePhase.Subscribe(phase =>
+			{
+				switch (phase)
+				{
+					case MainGamePhase.WaitingRollingDice:
+						_group.alpha = 1.0f;
+						_group.blocksRaycasts = true;
+						_group.interactable = true;
+						break;
+					case MainGamePhase.WhileRollingDice:
+						_group.alpha = 1.0f;
+						_group.blocksRaycasts = true;
+						_group.interactable = false;
+						break;
+					default:
+						_group.alpha = 0.0f;
+						_group.blocksRaycasts = false;
+						_group.interactable = false;
+						break;
+				}
+			});
+
+			Button button = GetComponentInChildren<Button>();
+			
+			button.onClick.AddListener(() =>
+			{
+				mainGameManagementModel.InputDicesRoll();
+			});
+
+			diceModel._total.Subscribe(numberOfDice =>
+			{
+				Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
+				{
+					mainGameManagementModel.NotifyDiceRollingFinished(numberOfDice);
+				});
+			});
 		}
 	}
 }
