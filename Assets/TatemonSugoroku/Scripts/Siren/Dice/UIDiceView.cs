@@ -18,6 +18,7 @@ namespace TatemonSugoroku.Scripts {
 	public class UIDiceView : SMStandardMonoBehaviour {
 		// DiceModel _diceModel { get; set; }
 		CanvasGroup _group { get; set; }
+		Text _text { get; set; }
 
 
 
@@ -26,6 +27,8 @@ namespace TatemonSugoroku.Scripts {
 			_group.alpha = 0;
 			_group.blocksRaycasts = false;
 			_group.interactable = false;
+
+			_text = GetComponentInChildren<Text>();
 		}
 
 		protected override void StartAfterInitialize() {
@@ -86,7 +89,9 @@ namespace TatemonSugoroku.Scripts {
 						_group.interactable = false;
 						break;
 				}
-			});
+
+				_text.text = $"サイコロ";
+			} );
 
 			Button button = GetComponentInChildren<Button>();
 			
@@ -97,6 +102,7 @@ namespace TatemonSugoroku.Scripts {
 
 			diceModel._total.Subscribe(numberOfDice =>
 			{
+				_text.text = $"{numberOfDice}";
 				Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
 				{
 					mainGameManagementModel.NotifyDiceRollingFinished(numberOfDice);

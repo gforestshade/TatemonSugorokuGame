@@ -63,6 +63,7 @@ namespace TatemonSugoroku.Scripts {
 							var playerID = gameManager.CurrentPlayerId;
 							var tileID = field.GetCurrentPositionByPlayerId( playerID.Value );
 							Place( ( PlayerType )playerID.Value, tileID );
+							field.PutTatemonAtCurrentPosition( playerID.Value, 0 );
 							break;
 					}
 				} );
