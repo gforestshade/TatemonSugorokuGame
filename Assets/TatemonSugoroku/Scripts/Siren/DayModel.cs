@@ -54,22 +54,20 @@ namespace TatemonSugoroku.Scripts {
 			_hourVeloctiy = ( float )delta / MAX_PLAYER_TURN;
 			_sunsetRate.Value = 1;
 
-			UTask.Void( async () => {
-				var allModelManager = await SMServiceLocator.WaitResolve<AllModelManager>( _canceler );
-				await UTask.NextFrame( _canceler );
-				var gameManager = allModelManager.Get<MainGameManagementModel>();
-
-				gameManager.GamePhase.Subscribe( phase => {
-					switch ( phase ) {
-						case MainGamePhase.WhileShowingTurnCall:
-							UpdateHour();
-							break;
-					}
-				} );
-			} );
-
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();
+			} );
+		}
+
+		public void Initialize( AllModelManager manager ) {
+			var gameManager = manager.Get<MainGameManagementModel>();
+
+			gameManager.GamePhase.Subscribe( phase => {
+				switch ( phase ) {
+					case MainGamePhase.WhileShowingTurnCall:
+						UpdateHour();
+						break;
+				}
 			} );
 		}
 

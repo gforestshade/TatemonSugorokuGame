@@ -32,7 +32,7 @@ namespace TatemonSugoroku.Scripts {
 
 		protected override void StartAfterInitialize() {
 			/* こちらも誠に勝手ながら変更させていただきます。(by Akio)
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<TileManagerModel>();
+			_model = AllModelManager.s_instance.Get<TileManagerModel>();
 			_model._models.ForEach( m => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<TileView>();
@@ -41,12 +41,12 @@ namespace TatemonSugoroku.Scripts {
 			} );
 			*/
 
-			for (int i = 0; i < _fieldColor.Length; i++)
+			for ( int i = 0; i < _fieldColor.Length; i++)
 			{
 				_fieldColor[i] = -1;
 			}
 			
-			AllModelManager allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+			AllModelManager allModelManager = AllModelManager.s_instance;
 			MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
 			TileManagerModel tileManagerModel = allModelManager.Get<TileManagerModel>();
 			FieldModel fieldModel = allModelManager.Get<FieldModel>();

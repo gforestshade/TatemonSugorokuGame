@@ -19,7 +19,7 @@ namespace TatemonSugoroku.Siren {
 		protected override void StartAfterInitialize() {
 			// 各種モデルを取得
 			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			var allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+			var allModelManager = AllModelManager.s_instance;
 			var tileManager = allModelManager.Get<TileManagerModel>();
 			var moveArrowManager = allModelManager.Get<MoveArrowManagerModel>();
 			var dice = allModelManager.Get<DiceModel>();

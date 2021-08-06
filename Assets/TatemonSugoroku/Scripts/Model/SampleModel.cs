@@ -25,6 +25,14 @@ namespace Sample {
 		}
 
 		/// <summary>
+		/// ● 初期化
+		///		モデル管理クラスから、呼ばれます。
+		///		他のモデル取得に、ご活用下さい。
+		/// </summary>
+		public void Initialize( AllModelManager manager ) {
+		}
+
+		/// <summary>
 		/// ● 解放
 		///		AllModelManager内部で破棄するので、必ず実装して下さい。
 		/// </summary>

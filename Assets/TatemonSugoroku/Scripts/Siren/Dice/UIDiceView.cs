@@ -33,7 +33,7 @@ namespace TatemonSugoroku.Scripts {
 
 		protected override void StartAfterInitialize() {
 			/* 誠に勝手ながら、こちらの方で変えさせてもらいます。（Akioより）
-			_diceModel = SMServiceLocator.Resolve<AllModelManager>().Get<DiceModel>();
+			_diceModel = AllModelManager.s_instance.Get<DiceModel>();
 
 			_diceModel._state.Subscribe( s => {
 				switch ( s ) {
@@ -65,7 +65,7 @@ namespace TatemonSugoroku.Scripts {
 			} );
 			*/
 
-			AllModelManager allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+			AllModelManager allModelManager = AllModelManager.s_instance;
 			MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
 			DiceModel diceModel = allModelManager.Get<DiceModel>();
 

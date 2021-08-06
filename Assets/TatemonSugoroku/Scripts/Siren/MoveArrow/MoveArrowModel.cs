@@ -33,7 +33,7 @@ namespace TatemonSugoroku.Scripts {
 		/// ● コンストラクタ
 		/// </summary>
 		///----------------------------------------------------------------------------------------------------
-		public MoveArrowModel( MoveArrowType arrowType ) {
+		public MoveArrowModel( AllModelManager allModelManager, MoveArrowType arrowType ) {
 			_arrowType = arrowType;
 			_rotation = MoveArrowManagerModel.ARROW_TYPE_TO_ROTATION[_arrowType];
 
@@ -44,10 +44,7 @@ namespace TatemonSugoroku.Scripts {
 				_canceler.Dispose();
 			} );
 
-			UTask.Void( async () => {
-				var allModelManager = await SMServiceLocator.WaitResolve<AllModelManager>( _canceler );
-				_tileManagerModel = allModelManager.Get<TileManagerModel>();
-			} );
+			_tileManagerModel = allModelManager.Get<TileManagerModel>();
 		}
 
 		///----------------------------------------------------------------------------------------------------

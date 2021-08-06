@@ -24,7 +24,7 @@ namespace TatemonSugoroku.Scripts
 		protected override void StartAfterInitialize()
 		{
 			/* 毎回すみません、せっかく作っていただいたのに残念です。(by Akio）
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<PieceManagerModel>();
+			_model = AllModelManager.s_instance.Get<PieceManagerModel>();
 
 			_model._models.ForEach(m =>
 			{
@@ -35,7 +35,7 @@ namespace TatemonSugoroku.Scripts
 			});
 			*/
 
-			AllModelManager allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+			AllModelManager allModelManager = AllModelManager.s_instance;
 			PieceManagerModel pieceManagerModel = allModelManager.Get<PieceManagerModel>();
 			FieldModel fieldModel = allModelManager.Get<FieldModel>();
 			

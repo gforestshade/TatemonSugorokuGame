@@ -35,9 +35,8 @@ namespace Sample {
 			// StartAfterInitializeは、フレームワーク初期化を待機してから、呼ばれます。
 			// なので、初期化を意識せず、Start()と同じように、普通に使えます！
 
-			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+			var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );							// モデルから、データを取得
 		}
 
 
@@ -49,9 +48,8 @@ namespace Sample {
 			yield return _framework.WaitInitializeCoroutine();
 			// フレームワーク初期化前に、アクセスするとエラー
 
-			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+			var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );							// モデルから、データを取得
 		}
 
 
@@ -64,9 +62,8 @@ namespace Sample {
 			if ( !_isFrameworkInitialized ) { return; }
 			// フレームワーク初期化前に、アクセスするとエラー
 
-			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+			var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );							// モデルから、データを取得
 		}
 
 
@@ -79,9 +76,8 @@ namespace Sample {
 			await _framework.WaitInitialize();
 			// フレームワーク初期化前に、アクセスするとエラー
 
-			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+			var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );							// モデルから、データを取得
 		}
 
 
@@ -148,9 +144,8 @@ namespace Sample {
 			yield return framework.WaitInitializeCoroutine();
 			// フレームワーク初期化前に、アクセスするとエラー
 
-			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+			var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );							// モデルから、データを取得
 		}
 
 		/// <summary>
@@ -163,9 +158,8 @@ namespace Sample {
 				await framework.WaitInitialize();
 				// フレームワーク初期化前に、アクセスするとエラー
 
-				var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-				var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-				_data = model.GetData( "Player1" );                             // モデルから、データを取得
+				var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+				_data = model.GetData( "Player1" );							// モデルから、データを取得
 			} );
 		}
 
@@ -179,9 +173,8 @@ namespace Sample {
 			await framework.WaitInitialize();
 			// フレームワーク初期化前に、アクセスするとエラー
 
-			var modelManager = SMServiceLocator.Resolve<AllModelManager>(); // サービスロケーターから、モデル管理クラスを取得
-			var model = modelManager.Get<SampleModel>();                    // モデル管理クラスから、モデルを取得
-			_data = model.GetData( "Player1" );                             // モデルから、データを取得
+			var model = AllModelManager.s_instance.Get<SampleModel>();	// モデル管理クラスから、モデルを取得
+			_data = model.GetData( "Player1" );							// モデルから、データを取得
 		}
 
 

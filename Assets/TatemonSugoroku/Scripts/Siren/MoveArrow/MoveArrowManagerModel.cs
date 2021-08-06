@@ -28,9 +28,9 @@ namespace TatemonSugoroku.Scripts {
 			};
 
 		/// <summary>矢印モデルの一覧</summary>
-		public readonly Dictionary<MoveArrowType, MoveArrowModel> _models;
+		public Dictionary<MoveArrowType, MoveArrowModel> _models { get; private set; }
 
-		public readonly List<MoveArrowModel> Models = new List<MoveArrowModel>();
+		public List<MoveArrowModel> Models = new List<MoveArrowModel>();
 
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>
@@ -38,19 +38,21 @@ namespace TatemonSugoroku.Scripts {
 		/// </summary>
 		///----------------------------------------------------------------------------------------------------
 		public MoveArrowManagerModel() {
-			_models = EnumUtils.GetValues<MoveArrowType>().ToDictionary(
-				type => type,
-				type => new MoveArrowModel( type )
-			);
-
-			Models.Add(new MoveArrowModel(MoveArrowType.Up));
-			Models.Add(new MoveArrowModel(MoveArrowType.Right));
-			Models.Add(new MoveArrowModel(MoveArrowType.Down));
-			Models.Add(new MoveArrowModel(MoveArrowType.Left));
-			
 			_disposables.AddFirst( () => {
 				_models.ForEach( pair => pair.Value.Dispose() );
 			} );
+		}
+
+		public void Initialize( AllModelManager manager ) {
+			_models = EnumUtils.GetValues<MoveArrowType>().ToDictionary(
+				type => type,
+				type => new MoveArrowModel( manager, type )
+			);
+
+			Models.Add( new MoveArrowModel( manager, MoveArrowType.Up ) );
+			Models.Add( new MoveArrowModel( manager, MoveArrowType.Right ) );
+			Models.Add( new MoveArrowModel( manager, MoveArrowType.Down ) );
+			Models.Add( new MoveArrowModel( manager, MoveArrowType.Left ) );
 		}
 
 		///----------------------------------------------------------------------------------------------------

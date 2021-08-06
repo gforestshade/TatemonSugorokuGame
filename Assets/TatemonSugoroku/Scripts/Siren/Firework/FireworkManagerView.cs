@@ -28,7 +28,7 @@ namespace TatemonSugoroku.Scripts {
 
 
 		protected override void StartAfterInitialize() {
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<FireworkManagerModel>();
+			_model = AllModelManager.s_instance.Get<FireworkManagerModel>();
 
 			FireworkManagerModel.MAX_COUNT.Times( i => {
 				var go = _prefab.Instantiate( transform );

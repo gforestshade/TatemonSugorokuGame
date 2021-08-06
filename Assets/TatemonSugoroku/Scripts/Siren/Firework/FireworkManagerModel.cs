@@ -31,20 +31,19 @@ namespace TatemonSugoroku.Scripts {
 		/// </summary>
 		///----------------------------------------------------------------------------------------------------
 		public FireworkManagerModel() {
-			UTask.Void( async () => {
-				var allModelManager = await SMServiceLocator.WaitResolve<AllModelManager>( _canceler );
-				var day = allModelManager.Get<DayModel>();
-				day._hour
-					.Where( h => h >= LAUNCH_HOUR )
-					.Subscribe( h => {
-						_launch.OnNext( Unit.Default );
-					} );
-			} );
-
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();
 				_launch.Dispose();
 			} );
+		}
+
+		public void Initialize( AllModelManager manager ) {
+			var day = manager.Get<DayModel>();
+			day._hour
+				.Where( h => h >= LAUNCH_HOUR )
+				.Subscribe( h => {
+					_launch.OnNext( Unit.Default );
+				} );
 		}
 	}
 }

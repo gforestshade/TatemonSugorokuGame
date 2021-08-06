@@ -27,7 +27,7 @@ namespace TatemonSugoroku.Scripts {
 
 
 		protected override void StartAfterInitialize() {
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<DiceModel>();
+			_model = AllModelManager.s_instance.Get<DiceModel>();
 
 			DiceModel.MAX_COUNT.Times( i => {
 				var go = _prefab.Instantiate( transform );

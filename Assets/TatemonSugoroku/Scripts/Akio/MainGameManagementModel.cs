@@ -44,24 +44,11 @@ namespace TatemonSugoroku.Scripts.Akio
         private readonly int[] _spinPowersOfTatemon = {0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1};
 
 
-        public void SetUpMotionModel(MotionModel motionModel)
-        {
-            _motionModel = motionModel;
-        }
-
-        public void SetUpFieldModel(FieldModel fieldModel)
-        {
-            _fieldModel = fieldModel;
-        }
-
-        public void SetUpScoreModel(ScoreModel scoreModel)
-        {
-            _scoreModel = scoreModel;
-        }
-
-        public void SetUpDiceModel(DiceModel diceModel)
-        {
-            _diceModel = diceModel;
+        public void Initialize( AllModelManager manager ) {
+            _motionModel = manager.Get<MotionModel>();
+            _fieldModel = manager.Get<FieldModel>();
+            _scoreModel = manager.Get<ScoreModel>();
+            _diceModel = manager.Get<DiceModel>();
         }
 
         public void InitializeGame(int numberOfPlayers)

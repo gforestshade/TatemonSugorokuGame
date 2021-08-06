@@ -67,6 +67,9 @@ namespace TatemonSugoroku.Scripts.Akio
         {
             _motionModel = motionModel;
         }
+
+        public void Initialize( AllModelManager manager ) {
+        }
         
         public void InitializeGame(int numberOfPlayers)
         {

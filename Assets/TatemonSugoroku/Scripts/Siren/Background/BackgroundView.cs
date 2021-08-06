@@ -28,8 +28,8 @@ namespace TatemonSugoroku.Scripts {
 
 
 		protected override void StartAfterInitialize() {
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<BackgroundModel>();
-			_dayModel = SMServiceLocator.Resolve<AllModelManager>().Get<DayModel>();
+			_model = AllModelManager.s_instance.Get<BackgroundModel>();
+			_dayModel = AllModelManager.s_instance.Get<DayModel>();
 
 			_renderers = GetComponentsInChildren<SpriteRenderer>( true );
 

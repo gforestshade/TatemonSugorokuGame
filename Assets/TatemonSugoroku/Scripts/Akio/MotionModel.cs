@@ -66,6 +66,9 @@ namespace TatemonSugoroku.Scripts.Akio
                 _movableField[i] = false;
             }
         }
+
+        public void Initialize( AllModelManager manager ) {
+        }
         
         public void InitializeGame()
         {

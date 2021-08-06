@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using KoganeUnityLib;
 using SubmarineMirage;
-using SubmarineMirage.Service;
-using SubmarineMirage.Task;
+using SubmarineMirage.Utility;
+using SubmarineMirage.Debug;
 using TatemonSugoroku.Scripts.Setting;
 
 namespace TatemonSugoroku.Scripts {
@@ -13,9 +13,7 @@ namespace TatemonSugoroku.Scripts {
 	/// <summary>
 	/// ■ 全モデルの管理クラス
 	/// </summary>
-	public class AllModelManager : SMTask, ISMService {
-		/// <summary>タスク実行タイプ（生成のみ）</summary>
-		public override SMTaskRunType _type => SMTaskRunType.Dont;
+	public class AllModelManager : Singleton<AllModelManager> {
 		/// <summary>全モデルの辞書</summary>
 		[SMShow] readonly Dictionary<Type, IModel> _models = new Dictionary<Type, IModel>();
 
@@ -35,19 +33,20 @@ namespace TatemonSugoroku.Scripts {
 		/// ● コンストラクタ
 		/// </summary>
 		public AllModelManager() {
-			_disposables.AddLast( () => {
+			var setting = new ModelSetting();
+			setting._registerModels.ForEach( m => {
+				Register( m.GetType(), m );
+			} );
+			setting.Dispose();
+
+			_models.ForEach( pair => {
+				pair.Value.Initialize( this );
+			} );
+
+			_disposables.AddFirst( () => {
 				_models.ForEach( pair => pair.Value?.Dispose() );
 				_models.Clear();
 			} );
-		}
-
-		/// <summary>
-		/// ● 作成
-		/// </summary>
-		public override void Create() {
-			var setting = SMServiceLocator.Resolve<ModelSetting>();
-			setting.Setup( this );
-			SMServiceLocator.Unregister<ModelSetting>();
 		}
 
 
@@ -56,10 +55,13 @@ namespace TatemonSugoroku.Scripts {
 		/// ● モデルを登録
 		///		モデルのTypeを鍵とする。
 		/// </summary>
-		public T Register<T>( T model ) where T : class, IModel {
+		public T Register<T>( T model ) where T : class, IModel
+			=> Register( typeof( T ), model ) as T;
+
+		public IModel Register( Type modelType, IModel model ) {
 			CheckDisposeError( nameof( Register ) );
 
-			var key = typeof( T );
+			var key = modelType;
 
 			var last = _models.GetOrDefault( key );
 			if ( last != null ) {

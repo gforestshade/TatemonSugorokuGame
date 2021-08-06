@@ -40,6 +40,9 @@ namespace TatemonSugoroku.Scripts {
 				.ToList();
 		}
 
+		public void Initialize( AllModelManager manager ) {
+		}
+
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// ● モデルを取得

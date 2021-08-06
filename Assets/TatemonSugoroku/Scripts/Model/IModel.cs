@@ -7,5 +7,6 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ モデルのインターフェース
 	/// </summary>
 	public interface IModel : IDisposable {
+		void Initialize( AllModelManager manager );
 	}
 }

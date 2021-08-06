@@ -45,17 +45,12 @@ namespace TatemonSugoroku.Scripts {
 		/// ● 設定データを登録
 		/// </summary>
 		static async UniTask RegisterSettings() {
-			// 全モデル管理を登録
-			SMServiceLocator.Register( new AllModelManager() );
-
 			// 入力設定を登録
 			SMServiceLocator.Register<BaseSMInputSetting>( new SMInputSetting() );
 			// データ設定を登録
 			SMServiceLocator.Register<BaseSMDataSetting>( new SMDataSetting() );
 			// シーン設定を登録
 			SMServiceLocator.Register<BaseSMSceneSetting>( new SMSceneSetting() );
-			// モデル設定を登録
-			SMServiceLocator.Register( new ModelSetting() );
 
 			await UTask.DontWait();
 		}

@@ -30,7 +30,7 @@ namespace TatemonSugoroku.Scripts
 
 		protected override void StartAfterInitialize()
 		{
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<TatemonManagerModel>();
+			_model = AllModelManager.s_instance.Get<TatemonManagerModel>();
 			_model.GetModels().ForEach(m =>
 			{
 				var go = _prefab.Instantiate(transform);
@@ -40,7 +40,7 @@ namespace TatemonSugoroku.Scripts
 			});
 
 
-			var firework = SMServiceLocator.Resolve<AllModelManager>().Get<FireworkManagerModel>();
+			var firework = AllModelManager.s_instance.Get<FireworkManagerModel>();
 			firework._launch.Subscribe(_ =>
 			{
 				_rotateTween?.Kill();

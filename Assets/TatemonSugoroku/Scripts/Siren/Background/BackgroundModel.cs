@@ -23,6 +23,8 @@ namespace TatemonSugoroku.Scripts {
 				_changeImage.Dispose();
 			} );
 		}
+		public void Initialize( AllModelManager manager ) {
+		}
 
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>

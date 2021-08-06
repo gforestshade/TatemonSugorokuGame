@@ -16,7 +16,7 @@ namespace TatemonSugoroku.Scripts.Akio
         protected override void StartAfterInitialize()
         {
             SMInputManager inputManager = SMServiceLocator.Resolve<SMInputManager>();
-            AllModelManager allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+            AllModelManager allModelManager = AllModelManager.s_instance;
             MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
             MotionModel motionModel = allModelManager.Get<MotionModel>();
             

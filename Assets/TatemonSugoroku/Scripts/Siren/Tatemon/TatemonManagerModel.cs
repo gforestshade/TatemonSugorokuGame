@@ -50,38 +50,36 @@ namespace TatemonSugoroku.Scripts {
 				type => 0
 			);
 
-			UTask.Void( async () => {
-				var allModelManager = await SMServiceLocator.WaitResolve<AllModelManager>( _canceler );
-				await UTask.NextFrame( _canceler );
-				var gameManager = allModelManager.Get<MainGameManagementModel>();
-				var firework = allModelManager.Get<FireworkManagerModel>();
-				var field = allModelManager.Get<FieldModel>();
-
-				gameManager.GamePhase.Subscribe( phase => {
-					switch ( phase ) {
-						case MainGamePhase.WaitingPuttingTatemon:
-							var playerID = gameManager.CurrentPlayerId;
-							var tileID = field.GetCurrentPositionByPlayerId( playerID.Value );
-							Place( ( PlayerType )playerID.Value, tileID );
-							field.PutTatemonAtCurrentPosition( playerID.Value, 0 );
-							break;
-					}
-				} );
-
-				firework._launch.Subscribe( _ => {
-					_isFireworkRotated = true;
-					GetModels()
-						.Where( m => m._isPlaced )
-						.ForEach( m => m.ChangeState( TatemonState.FireworkRotate ) );
-				} );
-			} );
-
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();
 				_models
 					.SelectMany( pair => pair.Value )
 					.ForEach( m => m.Dispose() );
 				_models.Clear();
+			} );
+		}
+
+		public void Initialize( AllModelManager manager ) {
+			var gameManager = manager.Get<MainGameManagementModel>();
+			var firework = manager.Get<FireworkManagerModel>();
+			var field = manager.Get<FieldModel>();
+
+			gameManager.GamePhase.Subscribe( phase => {
+				switch ( phase ) {
+					case MainGamePhase.WaitingPuttingTatemon:
+						var playerID = gameManager.CurrentPlayerId;
+						var tileID = field.GetCurrentPositionByPlayerId( playerID.Value );
+						Place( ( PlayerType )playerID.Value, tileID );
+						field.PutTatemonAtCurrentPosition( playerID.Value, 0 );
+						break;
+				}
+			} );
+
+			firework._launch.Subscribe( _ => {
+				_isFireworkRotated = true;
+				GetModels()
+					.Where( m => m._isPlaced )
+					.ForEach( m => m.ChangeState( TatemonState.FireworkRotate ) );
 			} );
 		}
 

@@ -37,7 +37,7 @@ namespace TatemonSugoroku.Scripts {
 		private int _peekPosition;
 		protected override void StartAfterInitialize() {
 			/* すみませんね。毎回変えさせてもらって。 (by Akio)
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<MoveArrowManagerModel>();
+			_model = AllModelManager.s_instance.Get<MoveArrowManagerModel>();
 			_model._models.ForEach( pair => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<MoveArrowView>();
@@ -65,7 +65,7 @@ namespace TatemonSugoroku.Scripts {
 			} );
 			*/
 
-			AllModelManager allModelManager = SMServiceLocator.Resolve<AllModelManager>();
+			AllModelManager allModelManager = AllModelManager.s_instance;
 			MoveArrowManagerModel moveArrowManagerModel = allModelManager.Get<MoveArrowManagerModel>();
 			MotionModel motionModel = allModelManager.Get<MotionModel>();
 

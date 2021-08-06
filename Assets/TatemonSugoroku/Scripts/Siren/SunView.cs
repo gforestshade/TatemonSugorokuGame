@@ -26,7 +26,7 @@ namespace TatemonSugoroku.Scripts {
 			_light = GetComponent<Light>();
 			_firstAngles = transform.eulerAngles;
 
-			var _dayModel = SMServiceLocator.Resolve<AllModelManager>().Get<DayModel>();
+			var _dayModel = AllModelManager.s_instance.Get<DayModel>();
 			_dayModel._hour.Subscribe( h => {
 				SetAngle( h );
 			} );

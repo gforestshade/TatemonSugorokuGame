@@ -24,7 +24,7 @@ namespace TatemonSugoroku.Scripts {
 		}
 
 		protected override void StartAfterInitialize() {
-			_model = SMServiceLocator.Resolve<AllModelManager>().Get<FireworkManagerModel>();
+			_model = AllModelManager.s_instance.Get<FireworkManagerModel>();
 			_model._launch.Subscribe( _ => {
 				_group.alpha = 1;
 				_group.blocksRaycasts = false;
