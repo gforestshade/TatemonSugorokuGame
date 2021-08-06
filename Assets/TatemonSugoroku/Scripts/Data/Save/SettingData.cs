@@ -6,6 +6,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using SubmarineMirage;
 using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Data.Save;
 using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
@@ -154,12 +155,11 @@ namespace TatemonSugoroku.Scripts {
 			Time.fixedDeltaTime = 1f / 30;//rate;	// 物理重いので固定
 
 			// 音量を設定
+			var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
 			AudioListener.volume = 1;
-/*
-			GameAudioManager.s_instance._bgmVolume = _bgmVolume;
-			GameAudioManager.s_instance._voiceVolume = _voiceVolume;
-			GameAudioManager.s_instance._seVolume = _seVolume;
-*/
+			audioManager._bgmVolume = _bgmVolume;
+			audioManager._voiceVolume = _voiceVolume;
+			audioManager._seVolume = _seVolume;
 
 			// デバッグ表示を適用
 			var displayLog = SMServiceLocator.Resolve<SMDisplayLog>();

@@ -106,6 +106,12 @@ namespace SubmarineMirage.Setting {
 			;
 
 
+
+		/// <summary>音のリソース読込の階層</summary>
+		public const string Audio_RESOURCE_PATH = "Audio";
+
+
+
 		/// <summary>商品版（保存）</summary>
 		public SMEdition _editionBySave		{ get; set; }
 		/// <summary>アプリ版（保存）</summary>

@@ -1,6 +1,10 @@
 using UnityEngine;
 using UniRx;
 using SubmarineMirage.Base;
+using SubmarineMirage.Service;
+using SubmarineMirage.Utility;
+using SubmarineMirage.Debug;
+using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Scripts {
 	///========================================================================================================
 	/// <summary>
@@ -37,6 +41,8 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>日の強さの割合</summary>
 		public readonly ReactiveProperty<float> _sunsetRate = new ReactiveProperty<float>();
 
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
+
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// ● コンストラクタ
@@ -47,6 +53,24 @@ namespace TatemonSugoroku.Scripts {
 			var delta = END_HOUR - FIRST_HOUR;
 			_hourVeloctiy = ( float )delta / MAX_PLAYER_TURN;
 			_sunsetRate.Value = 1;
+
+			UTask.Void( async () => {
+				var allModelManager = await SMServiceLocator.WaitResolve<AllModelManager>( _canceler );
+				await UTask.NextFrame( _canceler );
+				var gameManager = allModelManager.Get<MainGameManagementModel>();
+
+				gameManager.GamePhase.Subscribe( phase => {
+					switch ( phase ) {
+						case MainGamePhase.WhileShowingTurnCall:
+							UpdateHour();
+							break;
+					}
+				} );
+			} );
+
+			_disposables.AddFirst( () => {
+				_canceler.Dispose();
+			} );
 		}
 
 		///----------------------------------------------------------------------------------------------------

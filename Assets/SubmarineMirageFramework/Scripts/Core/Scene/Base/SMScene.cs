@@ -18,6 +18,7 @@ namespace SubmarineMirage.Scene {
 	using Task;
 	using Task.Marker;
 	using FSM;
+	using Audio;
 	using UI;
 	using Extension;
 	using Utility;
@@ -61,6 +62,7 @@ namespace SubmarineMirage.Scene {
 			_registerEventName = this.GetAboutName();
 
 			var uiFade = SMServiceLocator.Resolve<SMUIFade>();
+			var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
 			var isMainScene = this is MainSMScene;
 
 			_enterEvent.AddLast( _registerEventName, async canceler => {
@@ -97,7 +99,10 @@ namespace SubmarineMirage.Scene {
 				_isEntered = false;
 
 				if ( isMainScene ) {
-					await uiFade.Out();
+					await UniTask.WhenAll(
+						uiFade.Out(),
+						audioManager.StopAll()
+					);
 				}
 
 //				await _taskMarkers.FinalizeAll();

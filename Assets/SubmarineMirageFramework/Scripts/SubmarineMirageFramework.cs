@@ -15,6 +15,7 @@ namespace SubmarineMirage {
 	using Task;
 	using File;
 	using Data;
+	using Audio;
 	using UI;
 	using Scene;
 	using Extension;
@@ -117,6 +118,7 @@ namespace SubmarineMirage {
 			SMServiceLocator.Register( new SMUnityTagManager() );
 			SMServiceLocator.Register( new SMUnityLayerManager() );
 			SMServiceLocator.Register( new SMFileManager() );
+			SMServiceLocator.Register( new SMAudioManager() );
 			SMServiceLocator.Register( new SMTimeManager() );
 			SMServiceLocator.Register( new SMNetworkManager() );
 			SMServiceLocator.Register( new SMAllDataManager() );
