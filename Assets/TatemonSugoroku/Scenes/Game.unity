@@ -951,6 +951,7 @@ MonoBehaviour:
   _PieceManager: {fileID: 195924694}
   _MoveArrowManager: {fileID: 2049641268}
   _TatemonManager: {fileID: 151150313}
+  _DayManager: {fileID: 666867322}
 --- !u!4 &611758397
 Transform:
   m_ObjectHideFlags: 0
