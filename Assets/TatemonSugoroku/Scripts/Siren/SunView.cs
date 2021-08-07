@@ -2,7 +2,6 @@
 using UnityEngine;
 using UniRx;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -22,15 +21,13 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		protected override void StartAfterInitialize() {
+		void Start() {
 			_light = GetComponent<Light>();
 			_firstAngles = transform.eulerAngles;
 
-			var _dayModel = AllModelManager.s_instance.Get<DayModel>();
-			_dayModel._hour.Subscribe( h => {
-				SetAngle( h );
-			} );
-			SetAngle( _dayModel._hour.Value );
+			var day = FindObjectOfType<DayView>();
+			day._hour.Subscribe( h => SetAngle( h ) );
+			SetAngle( day._hour.Value );
 		}
 
 

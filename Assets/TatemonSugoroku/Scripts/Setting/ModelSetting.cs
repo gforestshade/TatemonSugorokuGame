@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Sample;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 using SubmarineMirage.Debug;
 using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Scripts.Setting {
@@ -31,10 +30,6 @@ namespace TatemonSugoroku.Scripts.Setting {
 				// こんな感じに
 				new SampleModel(),
 
-				new DayModel(),
-				
-				new FireworkManagerModel(),
-				
 				new MotionModel(),
 				new FieldModel(),
 				new ScoreModel(),

@@ -1,15 +1,7 @@
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 using UniRx;
 using KoganeUnityLib;
-using SubmarineMirage;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
-using SubmarineMirage.Extension;
-using SubmarineMirage.Utility;
-using SubmarineMirage.Setting;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -18,7 +10,7 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 背景の描画クラス
 	/// </summary>
 	public class BackgroundView : SMStandardMonoBehaviour {
-		DayModel _dayModel			{ get; set; }
+		DayView _day			{ get; set; }
 		int _showIndex				{ get; set; }
 		SpriteRenderer[] _renderers	{ get; set; }
 
@@ -26,14 +18,14 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		protected override void StartAfterInitialize() {
-			_dayModel = AllModelManager.s_instance.Get<DayModel>();
+		void Start() {
+			_day = FindObjectOfType<DayView>();
 
 			_renderers = GetComponentsInChildren<SpriteRenderer>( true );
 
-			_dayModel._sunsetRate.Subscribe( r => SetBrightness( r ) );
+			_day._sunsetRate.Subscribe( r => SetBrightness( r ) );
 
-			SetBrightness( _dayModel._sunsetRate.Value );
+			SetBrightness( _day._sunsetRate.Value );
 		}
 
 

@@ -28,7 +28,7 @@ namespace TatemonSugoroku.Siren {
 			var moveArrowManager = FindObjectOfType<MoveArrowManagerView>();
 			var dice = FindObjectOfType<DiceManagerView>();
 			var pieces = FindObjectOfType<PieceManagerView>();
-			var day = allModelManager.Get<DayModel>();
+			var day = FindObjectOfType<DayView>();
 			var tatemons = FindObjectOfType<TatemonManagerView>();
 			var background = FindObjectOfType<BackgroundView>();
 

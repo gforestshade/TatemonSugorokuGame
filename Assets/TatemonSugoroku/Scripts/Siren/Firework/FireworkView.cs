@@ -1,4 +1,3 @@
-//#define TestFirework
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
@@ -30,13 +29,6 @@ namespace TatemonSugoroku.Scripts {
 			_disposables.AddLast( () => {
 				_rateTween?.Kill();
 			} );
-
-#if TestFirework
-			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
-				SetActive( !_isActive );
-			} );
-#endif
 		}
 
 

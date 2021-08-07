@@ -1,9 +1,6 @@
-using System.Linq;
 using UnityEngine;
 using UniRx;
-using DG.Tweening;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -12,7 +9,6 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 花火画面の描画クラス
 	/// </summary>
 	public class UIFireworkView : SMStandardMonoBehaviour {
-		FireworkManagerModel _model { get; set; }
 		CanvasGroup _group { get; set; }
 
 
@@ -21,14 +17,16 @@ namespace TatemonSugoroku.Scripts {
 			_group = GetComponent<CanvasGroup>();
 			_group.alpha = 0;
 			_group.blocksRaycasts = false;
+
+			var fireworkManager = FindObjectOfType<FireworkManagerView>();
+			fireworkManager._launchEvent.Subscribe( _ => Launch() );
 		}
 
-		protected override void StartAfterInitialize() {
-			_model = AllModelManager.s_instance.Get<FireworkManagerModel>();
-			_model._launch.Subscribe( _ => {
-				_group.alpha = 1;
-				_group.blocksRaycasts = false;
-			} );
+
+
+		void Launch() {
+			_group.alpha = 1;
+			_group.blocksRaycasts = false;
 		}
 	}
 }

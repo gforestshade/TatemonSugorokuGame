@@ -1,15 +1,10 @@
-//#define TestFirework
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 using SubmarineMirage.Extension;
-using SubmarineMirage.Setting;
-using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -18,35 +13,31 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 花火の描画クラス
 	/// </summary>
 	public class FireworkManagerView : SMStandardMonoBehaviour {
-		FireworkManagerModel _model { get; set; }
-		readonly List<FireworkView> _fireworks = new List<FireworkView>();
+		/// <summary>花火の最大数</summary>
+		public const int MAX_COUNT = 5;
+		/// <summary>花火の打ち上げ時刻</summary>
+		public const int LAUNCH_HOUR = 19;
 
 		[SerializeField] GameObject _prefab;
-
+		readonly List<FireworkView> _fireworks = new List<FireworkView>();
 		bool _isActive { get; set; }
 
+		public readonly Subject<Unit> _launchEvent = new Subject<Unit>();
 
 
-		protected override void StartAfterInitialize() {
-			_model = AllModelManager.s_instance.Get<FireworkManagerModel>();
 
-			FireworkManagerModel.MAX_COUNT.Times( i => {
+		void Start() {
+			MAX_COUNT.Times( i => {
 				var go = _prefab.Instantiate( transform );
 				var f = go.GetComponent<FireworkView>();
 				f.Setup( this );
 				_fireworks.Add( f );
 			} );
 
-			_model._launch.Subscribe( _ => {
-				SetActive( true );
-			} );
-
-#if TestFirework
-			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
-				SetActive( !_isActive );
-			} );
-#endif
+			var day = FindObjectOfType<DayView>();
+			day._hour
+				.Where( h => h >= LAUNCH_HOUR )
+				.Subscribe( h => Launch() );
 		}
 
 
@@ -56,6 +47,11 @@ namespace TatemonSugoroku.Scripts {
 			_isActive = isActive;
 
 			_fireworks.ForEach( f => f.SetActive( _isActive ) );
+		}
+
+		void Launch() {
+			SetActive( true );
+			_launchEvent.OnNext( Unit.Default );
 		}
 	}
 }

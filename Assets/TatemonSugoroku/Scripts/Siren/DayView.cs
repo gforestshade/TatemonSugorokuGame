@@ -1,19 +1,15 @@
 using UnityEngine;
 using UniRx;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
-using SubmarineMirage.Utility;
-using SubmarineMirage.Debug;
-using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Scripts {
 	///========================================================================================================
 	/// <summary>
-	/// ■ 日時のモデルクラス
+	/// ■ 日時の描画クラス
 	///		ターン数ではなく、1日の時間で、環境を遷移させます。
 	///		太陽光、花火、たてもん回転など、様々な物に影響を与えます。
 	/// </summary>
 	///========================================================================================================
-	public class DayModel : SMStandardBase, IModel {
+	public class DayView : SMStandardMonoBehaviour {
 		///----------------------------------------------------------------------------------------------------
 		/// ● 要素
 		///----------------------------------------------------------------------------------------------------
@@ -41,34 +37,16 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>日の強さの割合</summary>
 		public readonly ReactiveProperty<float> _sunsetRate = new ReactiveProperty<float>();
 
-		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
-
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// ● コンストラクタ
+		/// ● 初期化
 		/// </summary>
 		///----------------------------------------------------------------------------------------------------
-		public DayModel() {
+		void Start() {
 			_hour.Value = FIRST_HOUR;
 			var delta = END_HOUR - FIRST_HOUR;
 			_hourVeloctiy = ( float )delta / MAX_PLAYER_TURN;
 			_sunsetRate.Value = 1;
-
-			_disposables.AddFirst( () => {
-				_canceler.Dispose();
-			} );
-		}
-
-		public void Initialize( AllModelManager manager ) {
-			var gameManager = manager.Get<MainGameManagementModel>();
-
-			gameManager.GamePhase.Subscribe( phase => {
-				switch ( phase ) {
-					case MainGamePhase.WhileShowingTurnCall:
-						UpdateHour();
-						break;
-				}
-			} );
 		}
 
 		///----------------------------------------------------------------------------------------------------
