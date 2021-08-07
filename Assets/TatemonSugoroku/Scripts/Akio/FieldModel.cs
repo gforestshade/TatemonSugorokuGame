@@ -15,12 +15,16 @@ namespace TatemonSugoroku.Scripts.Akio
         Left
     }
 
-    public enum MoveResult
-    {
-        None,
-        OppositeCellEntered
-    }
     
+    public struct MoveResult
+    {
+        public bool IsOppositeEnter;
+        public int oppositePlayerId;
+
+        public static MoveResult None => new MoveResult { IsOppositeEnter = false };
+        public static MoveResult OppositeCellEntered(int id) => new MoveResult { IsOppositeEnter = true, oppositePlayerId = id };
+    }
+
     public class FieldCell
     {
         public int TatemonSpinPower;
@@ -167,7 +171,7 @@ namespace TatemonSugoroku.Scripts.Akio
             
             if (previousDomainPlayerId >= 0 && previousDomainPlayerId != playerId)
             {
-                return MoveResult.OppositeCellEntered;
+                return MoveResult.OppositeCellEntered(previousDomainPlayerId);
             }
             
             return MoveResult.None;

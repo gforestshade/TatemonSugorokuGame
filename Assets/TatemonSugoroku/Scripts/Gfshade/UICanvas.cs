@@ -24,6 +24,12 @@ namespace TatemonSugoroku.Scripts
         public PlayerStatusPanel[] PlayerStatusPanels => _PlayerStatusPanels;
 
 
+        private readonly Color WhiteTransparent = new Color(1f, 1f, 1f, 0f);
+        private readonly Color White = new Color(1f, 1f, 1f, 1f);
+
+        private Sequence changeWalkSeq = null;
+
+
         public void Initalize(IList<string> playerNames)
         {
             if (playerNames.Count != PlayerStatusPanels.Length)
@@ -73,27 +79,61 @@ namespace TatemonSugoroku.Scripts
             SetInt(_WalkRemaining.Current, num);
         }
 
-
-        public async UniTask ChangeScore(TMPro.TextMeshProUGUI tm, int oldScore, int newScore, CancellationToken ct = default)
+        public void HideWalkRemaining()
         {
-            await DOVirtual.Float(oldScore, newScore, 0.5f, num => tm.SetText("{0}", (int)num)).Play().WithCancellation(ct);
-        }
-        public UniTask ChangeScore(int playerId, int oldScore, int newScore, CancellationToken ct = default)
-        {
-            return ChangeScore(PlayerStatusPanels[playerId].Score, oldScore, newScore, ct);
+            _WalkRemaining.Current.gameObject.SetActive(false);
+            _WalkRemaining.Reserved.gameObject.SetActive(false);
         }
 
-        public async UniTask ChangeTatemon(TMPro.TextMeshProUGUI tm, int oldTatemon, int newTatemon, CancellationToken ct = default)
+
+        public async UniTask ChangeScore(TMPro.TextMeshProUGUI tm, int oldScore, int newScore, float duration, CancellationToken ct = default)
+        {
+            await DOVirtual.Float(oldScore, newScore, duration, num => tm.SetText("{0}", (int)num)).Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
+        }
+        public UniTask ChangeScore(int playerId, int oldScore, int newScore, float duration = 0.5f, CancellationToken ct = default)
+        {
+            return ChangeScore(PlayerStatusPanels[playerId].Score, oldScore, newScore, duration, ct);
+        }
+
+        public async UniTask ChangeTatemon(TMPro.TextMeshProUGUI tm, int oldTatemon, int newTatemon, float duration, CancellationToken ct = default)
         {
             Sequence seq = DOTween.Sequence()
-                .Append(tm.transform.DOLocalMoveX(30f, 0.1f).SetEase(Ease.OutSine).SetRelative())
+                .Append(tm.transform.DOLocalMoveY(20f, duration).SetEase(Ease.OutSine).SetRelative())
                 .AppendCallback(() => tm.SetText("{0}", newTatemon))
-                .Append(tm.transform.DOLocalMoveX(-30f, 0.1f).SetEase(Ease.InSine).SetRelative());
-            await seq.Play().WithCancellation(ct);
+                .Append(tm.transform.DOLocalMoveY(-20f, duration).SetEase(Ease.InSine).SetRelative());
+            await seq.Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
         }
-        public UniTask ChangeTatemon(int playerId, int oldTatemon, int newTatemon, CancellationToken ct = default)
+        public UniTask ChangeTatemon(int playerId, int oldTatemon, int newTatemon, float duration = 0.1f, CancellationToken ct = default)
         {
-            return ChangeTatemon(PlayerStatusPanels[playerId].Tatemon, oldTatemon, newTatemon, ct);
+            return ChangeTatemon(PlayerStatusPanels[playerId].Tatemon, oldTatemon, newTatemon, duration, ct);
+        }
+
+        public async UniTask ChangeWalkRemaining(WalkRemainingPanel panel, int oldWalk, int newWalk, float duration, CancellationToken ct = default)
+        {
+            float fadeDuration = duration * 0.6f;
+            float latterStart = duration * 0.4f;
+
+            panel.Reserved.SetText("{0}", newWalk);
+            panel.Reserved.gameObject.SetActive(true);
+            panel.Reserved.color = WhiteTransparent;
+
+            try
+            {
+                Gfshade.Utilities.TweenKill(changeWalkSeq, true);
+                changeWalkSeq = DOTween.Sequence()
+                    .Insert(0f, panel.Current.DOColor(WhiteTransparent, fadeDuration).SetEase(Ease.Linear))
+                    .Insert(latterStart, panel.Reserved.DOColor(White, fadeDuration).SetEase(Ease.Linear));
+                await changeWalkSeq.Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
+            }
+            finally
+            {
+                panel.Current.gameObject.SetActive(false);
+                panel.Swap();
+            }
+        }
+        public UniTask ChangeWalkRemaining(int oldWalk, int newWalk, float duration = 0.5f, CancellationToken ct = default)
+        {
+            return ChangeWalkRemaining(WalkRemaining, oldWalk, newWalk, duration, ct);
         }
     }
 }
