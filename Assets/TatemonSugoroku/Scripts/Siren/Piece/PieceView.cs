@@ -17,10 +17,12 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>タイルマップの範囲内の大きさ</summary>
 		static readonly Vector2Int MAX_SIZE = TileManagerView.MAX_SIZE - Vector2Int.one;
 
+		Renderer[] _renderers { get; set; }
 
 		[SerializeField] Vector3 _offset = new Vector3( 0, 0.5f, 0 );
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
+		PieceType _type { get; set; }
 		/// <summary>プレイヤーのタイプ</summary>
 		public PlayerType _playerType { get; private set; }
 
@@ -33,11 +35,14 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		public void Setup( PlayerType type ) {
-			_playerType = type;
+		public void Setup( PieceType type, PlayerType playerType ) {
+			_renderers = GetComponentsInChildren<Renderer>( true );
+
+			_type = type;
+			_playerType = playerType;
 
 			var tileID = 0;
-			switch ( type ) {
+			switch ( playerType ) {
 				case PlayerType.Player1:	tileID = 0;								break;
 				case PlayerType.Player2:	tileID = TileManagerView.MAX_ID - 1;	break;
 			}
@@ -47,10 +52,17 @@ namespace TatemonSugoroku.Scripts {
 
 #if TestPiece
 			if ( _playerType == PlayerType.Player2 ) {
-				var renderers = GetComponentsInChildren<Renderer>( true );
-				renderers.ForEach( r => r.material.color = Color.red );
+				_renderers.ForEach( r => r.material.color = Color.red );
 			}
 #endif
+			if ( _type == PieceType.Dummy ) {
+				_renderers.ForEach( r => {
+					var c = r.material.color;
+					c.a = 0.5f;
+					r.material.color = c;
+				} );
+				Hide();
+			}
 
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();
@@ -117,6 +129,17 @@ namespace TatemonSugoroku.Scripts {
 			_tileID = TileManagerView.ToID( _tilePosition );
 
 			transform.position = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
+		}
+
+
+
+		public void PlaceArrowPosition( int tileID ) {
+			Place( tileID );
+			gameObject.SetActive( true );
+		}
+
+		public void Hide() {
+			gameObject.SetActive( false );
 		}
 	}
 }

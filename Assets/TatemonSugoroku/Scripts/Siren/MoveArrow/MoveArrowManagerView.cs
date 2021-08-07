@@ -34,6 +34,7 @@ namespace TatemonSugoroku.Scripts {
 
 		readonly Dictionary<MoveArrowType, MoveArrowView> _views
 			= new Dictionary<MoveArrowType, MoveArrowView>();
+		PieceManagerView _pieceManager { get; set; }
 
 		[SerializeField] GameObject _prefab;
 		[SerializeField] public Color _disableColor = Color.gray;
@@ -45,6 +46,8 @@ namespace TatemonSugoroku.Scripts {
 
 
 		void Start() {
+			_pieceManager = FindObjectOfType<PieceManagerView>();
+
 			EnumUtils.GetValues<MoveArrowType>().ForEach( type => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<MoveArrowView>();
@@ -73,7 +76,14 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		public void Place( int tileID, IEnumerable< KeyValuePair<MoveArrowType, MotionStatus> > arrowDatas ) {
+		public MoveArrowView GetView( MoveArrowType type )
+			=> _views[type];
+
+
+
+		public void Place( int playerID, int tileID,
+							IEnumerable< KeyValuePair<MoveArrowType, MotionStatus> > arrowDatas
+		) {
 			Hide();
 			arrowDatas.ForEach( pair => {
 				var type = pair.Key;
@@ -84,14 +94,12 @@ namespace TatemonSugoroku.Scripts {
 				var v = GetView( type );
 				v.Place( data );
 			} );
+			_pieceManager.PlaceArrowPosition( playerID, tileID );
 		}
 
-		public void Hide()
-			=> _views.ForEach(pair => pair.Value.Hide() );
-
-
-
-		public MoveArrowView GetView( MoveArrowType type )
-			=> _views[type];
+		public void Hide() {
+			_views.ForEach( pair => pair.Value.Hide() );
+			_pieceManager.HideDummies();
+		}
 	}
 }
