@@ -4,7 +4,6 @@ using UniRx;
 using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -14,63 +13,115 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ たてもんの描画クラス
 	/// </summary>
 	public class TatemonView : SMStandardMonoBehaviour {
-		TatemonModel _model { get; set; }
+		Renderer[] _renderers { get; set; }
+
 		TatemonState _state { get; set; }
+		/// <summary>プレイヤーのタイプ</summary>
+		public PlayerType _playerType { get; private set; }
+
+		/// <summary>手番の回数</summary>
+		public int _turnID { get; private set; }
+		/// <summary>タイル番号</summary>
+		public int _tileID { get; private set; }
+		/// <summary>タイル位置</summary>
+		public Vector2Int _tilePosition { get; private set; }
+
+		public float _speedRate		{ get; set; }
+		int _rotatePower	{ get; set; }
+
+		/// <summary>タイルが配置済みか？</summary>
+		public bool _isPlaced => _state != TatemonState.None;
+
+		Tween _rotateTween { get; set; }
 
 
 
-		public void Setup( TatemonModel model ) {
-			_model = model;
+		public void Setup( PlayerType playerType, int turnID, float speedRate ) {
+			_playerType = playerType;
+			_turnID = turnID;
+			_speedRate = speedRate;
 
-			gameObject.name = _model._name;
-
-			_model._state.Subscribe( s => {
-				ChangeState( s );
-			} );
+			gameObject.name = $"Tatemon {_playerType} {_turnID}";
 
 #if TestTatemon
-			var renderers = GetComponentsInChildren<SpriteRenderer>();
-			if ( _model._playerType == PlayerType.Player2 ) {
-				renderers.ForEach( r => r.material.color = Color.red );
+			_renderers = GetComponentsInChildren<Renderer>();
+			if ( _playerType == PlayerType.Player2 ) {
+				_renderers.ForEach( r => r.material.color = Color.red );
 			}
-//			renderers[2].gameObject.SetActive( false );
-//			renderers[3].gameObject.SetActive( false );
+//			_renderers[2].gameObject.SetActive( false );
+//			_renderers[3].gameObject.SetActive( false );
 #endif
+
+			_state = TatemonState.Place;
+			ChangeState( TatemonState.None );
+
+			_disposables.AddLast( () => {
+				_rotateTween?.Kill();
+			} );
 		}
 
 
 
-		protected override void UpdateAfterInitialize() {
-			switch ( _state ) {
-				case TatemonState.Place:
-					var targetPosition = Camera.main.transform.position;
-					targetPosition.y = 0;
-					transform.rotation = Quaternion.LookRotation( targetPosition );
-					break;
-			}
-		}
-
-
-
-		void ChangeState( TatemonState state ) {
+		public void ChangeState( TatemonState state ) {
+			if ( _state == state )	{ return; }
 			_state = state;
 
-			transform.position = TileManagerView.ToRealPosition( _model._tilePosition );
+			transform.position = TileManagerView.ToRealPosition( _tilePosition );
 			transform.localScale = TileManagerView.REAL_SCALE;
 
 			switch ( _state ) {
 				case TatemonState.None:
+					_rotateTween?.Kill();
 					gameObject.SetActive( false );
 					break;
 
 				case TatemonState.Place:
 					gameObject.SetActive( true );
-					break;
-
-				case TatemonState.FireworkRotate:
-					gameObject.SetActive( true );
+					Rotate();
 					break;
 			}
+		}
+
+
+
+		public void Rotate() {
+			_rotateTween?.Kill();
+			var duration = 1f / ( _rotatePower * _rotatePower ) * _speedRate;
+			SMLog.Debug( $"{nameof( duration )} : {duration}" );
+			var rate = 0f;
+			_rotateTween = DOTween.To(
+					() => rate,
+					r => {
+						rate = r;
+						transform.rotation = Quaternion.Euler( 0, 360 * r, 0 );
+					},
+					1,
+					duration
+				)
+				.SetEase( Ease.Linear )
+				.SetLoops( -1, LoopType.Restart )
+				.Play();
+		}
+
+
+
+		///----------------------------------------------------------------------------------------------------
+		/// ● 配置
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● タイル番号に、たてもんを配置
+		/// </summary>
+		public void Place( int tileID, int rotatePower )
+			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower );
+
+		/// <summary>
+		/// ● タイル位置に、たてもんを配置
+		/// </summary>
+		public void Place( Vector2Int tilePosition, int rotatePower ) {
+			_tilePosition = tilePosition;
+			_tileID = TileManagerView.ToID( _tilePosition );
+			_rotatePower = rotatePower;
+			ChangeState( TatemonState.Place );
 		}
 	}
 }

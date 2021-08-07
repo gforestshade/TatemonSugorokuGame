@@ -34,7 +34,6 @@ namespace TatemonSugoroku.Scripts.Setting {
 				new DayModel(),
 				
 				new FireworkManagerModel(),
-				new TatemonManagerModel(),
 				
 				new MotionModel(),
 				new FieldModel(),

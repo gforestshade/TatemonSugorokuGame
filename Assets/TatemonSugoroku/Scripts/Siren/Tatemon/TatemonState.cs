@@ -8,6 +8,5 @@ namespace TatemonSugoroku.Scripts {
 	public enum TatemonState {
 		None,
 		Place,
-		FireworkRotate,
 	}
 }

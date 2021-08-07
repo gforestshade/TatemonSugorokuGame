@@ -98,8 +98,8 @@ namespace TatemonSugoroku.Scripts {
 		/// </summary>
 		public static Vector2Int ToTilePosition( int tileID )
 			=> new Vector2Int(
-				tileID % 8,
-				tileID / 8
+				tileID % MAX_SIZE.x,
+				tileID / MAX_SIZE.y
 			);
 
 		/// <summary>
@@ -108,7 +108,7 @@ namespace TatemonSugoroku.Scripts {
 		public static int ToID( Vector2Int tilePosition )
 			=> (
 				tilePosition.x +
-				tilePosition.y * 8
+				tilePosition.y * MAX_SIZE.y
 			);
 
 		/// <summary>

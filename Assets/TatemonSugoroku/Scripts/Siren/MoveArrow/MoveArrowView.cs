@@ -84,7 +84,7 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public void Place( MoveArrowData arrowData ) {
-			var tilePosition = TileManagerView.ToTilePosition( arrowData._tileID );
+			var tilePosition = arrowData._tilePosition;
 			transform.position = TileManagerView.ToRealPosition( tilePosition ) + _offset;
 			transform.localScale = TileManagerView.REAL_SCALE;
 

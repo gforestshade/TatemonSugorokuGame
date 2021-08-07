@@ -29,7 +29,7 @@ namespace TatemonSugoroku.Siren {
 			var dice = FindObjectOfType<DiceManagerView>();
 			var pieces = FindObjectOfType<PieceManagerView>();
 			var day = allModelManager.Get<DayModel>();
-			var tatemons = allModelManager.Get<TatemonManagerModel>();
+			var tatemons = FindObjectOfType<TatemonManagerView>();
 			var background = FindObjectOfType<BackgroundView>();
 
 
@@ -147,7 +147,7 @@ namespace TatemonSugoroku.Siren {
 			day._hour.Subscribe( h => {
 				SMLog.Debug( $"ゲーム内時刻 : {h}" );
 			} );
-/*
+///*
 			// タッチしたタイルにたてもんを配置
 			var isPlace = true;
 			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
@@ -159,13 +159,13 @@ namespace TatemonSugoroku.Siren {
 				.Where( id => isPlace )
 				.Where( id => id != -1 )
 				.Subscribe( id => {
-					var m = tatemons.Place( tatemonPlayer, id );
-					SMLog.Debug( $"たてもん配置 : {tatemonPlayer} {m._turnID}" );
+					tatemons.Place( ( int )tatemonPlayer, id, Random.Range( 1, 6 ) );
+					SMLog.Debug( $"たてもん配置 : {tatemonPlayer}" );
 
 					var i = ( ( int )tatemonPlayer + 1 ) % EnumUtils.GetLength<PlayerType>();
 					tatemonPlayer = ( PlayerType )i;
 				} );
-*/
+//*/
 			// 背景絵を変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
 				background.ChangeImage();
