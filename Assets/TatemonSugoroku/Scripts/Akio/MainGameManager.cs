@@ -136,7 +136,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
             // 「オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
             fieldModel.PutTatemonAtCurrentPosition(playerId, _SpinPowersOfTatemon[dice]);
-            //_TatemonManager.Place(playerId, pTurn.TileId);
+            _TatemonManager.Place(playerId, pTurn.TileId, _SpinPowersOfTatemon[dice]);
             await UniTask.Delay(wait02);
             await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
             playerModels[playerId].Tatemon -= 1;
@@ -247,14 +247,14 @@ namespace TatemonSugoroku.Scripts.Akio
                 // 現在の矢印取得
                 arrow
                     .First()
-                    .Subscribe(arrowInfos => _MoveArrowManager.Place(pTurn.TileId, arrowInfos));
+                    .Subscribe(arrowInfos => _MoveArrowManager.Place(playerId, pTurn.TileId, arrowInfos));
 
                 // コマ移動が起こったら、
                 // コマ座標と最新矢印情報をまとめて矢印表示に流す
                 motionModel
                     .PeekPosition
                     .WithLatestFrom(arrow, (peek, arrow) => (peek, arrow))
-                    .Subscribe(p => _MoveArrowManager.Place(p.peek, p.arrow))
+                    .Subscribe(p => _MoveArrowManager.Place(playerId, p.peek, p.arrow))
                     .AddTo(movementDisposables);
 
                 // 残り歩数をUIに流す
