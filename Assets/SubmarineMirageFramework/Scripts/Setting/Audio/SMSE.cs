@@ -12,5 +12,10 @@ namespace SubmarineMirage.Setting {
 	public enum SMSE {
 		TestDecision,
 		TestGun,
+		
+		Decide,
+		Dice,
+		Walk,
+		Tatemon,
 	}
 }

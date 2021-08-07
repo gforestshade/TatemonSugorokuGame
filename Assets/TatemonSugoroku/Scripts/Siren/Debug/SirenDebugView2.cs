@@ -55,12 +55,18 @@ namespace TatemonSugoroku.Siren {
 
 			// SE（効果音）の再生、停止
 			if ( Input.GetKeyDown( KeyCode.Z ) ) {
-				audioManager.Play( SMSE.TestDecision ).Forget();
+				audioManager.Play( SMSE.Decide ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.X ) ) {
-				audioManager.Play( SMSE.TestGun ).Forget();
+				audioManager.Play( SMSE.Dice ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.C ) ) {
+				audioManager.Play( SMSE.Walk ).Forget();
+			}
+			if ( Input.GetKeyDown( KeyCode.V ) ) {
+				audioManager.Play( SMSE.Tatemon ).Forget();
+			}
+			if ( Input.GetKeyDown( KeyCode.B ) ) {
 				audioManager.Stop<SMSE>().Forget();
 			}
 
