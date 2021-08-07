@@ -36,7 +36,9 @@ namespace TatemonSugoroku.Scripts {
 
 		public void ChangeArea( TileAreaType areaType ) {
 			if ( _areaType == areaType )	{ return; }
-			_renderer.material.color = TileManagerView.AREA_TYPE_TO_COLOR[areaType];
+
+			_areaType = areaType;
+			_renderer.material.color = TileManagerView.AREA_TYPE_TO_COLOR[_areaType];
 		}
 	}
 }

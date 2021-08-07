@@ -33,7 +33,6 @@ namespace TatemonSugoroku.Scripts.Setting {
 
 				new DayModel(),
 				
-				new PieceManagerModel(),
 				new FireworkManagerModel(),
 				new TatemonManagerModel(),
 				

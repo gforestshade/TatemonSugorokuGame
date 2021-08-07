@@ -36,15 +36,9 @@ namespace TatemonSugoroku.Scripts {
 			_type = type;
 
 			switch ( motionState ) {
-				case MotionStatus.Unmovable:
-					_state = MoveArrowState.Hide;
-					break;
-				case MotionStatus.Movable:
-					_state = MoveArrowState.Enable;
-					break;
-				case MotionStatus.Return:
-					_state = MoveArrowState.Disable;
-					break;
+				case MotionStatus.Unmovable:	_state = MoveArrowState.Hide;		break;
+				case MotionStatus.Movable:		_state = MoveArrowState.Enable;		break;
+				case MotionStatus.Return:		_state = MoveArrowState.Disable;	break;
 			}
 		}
 	}

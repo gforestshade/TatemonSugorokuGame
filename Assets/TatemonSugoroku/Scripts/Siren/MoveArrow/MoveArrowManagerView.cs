@@ -1,9 +1,12 @@
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
 using SubmarineMirage.Extension;
+using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -12,10 +15,17 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 移動矢印管理の描画クラス
 	/// </summary>
 	public class MoveArrowManagerView : SMStandardMonoBehaviour {
+		public static readonly Dictionary<MoveArrowType, Vector2Int> ARROW_TYPE_TO_ADD_TILE_POSITION
+			= new Dictionary<MoveArrowType, Vector2Int> {
+				{ MoveArrowType.Up,     new Vector2Int( 0, -1 ) },
+				{ MoveArrowType.Right,  new Vector2Int( 1, 0 ) },
+				{ MoveArrowType.Down,   new Vector2Int( 0, 1 ) },
+				{ MoveArrowType.Left,   new Vector2Int( -1, 0 ) }
+			};
+
 		/// <summary>矢印タイプから、角度に変換</summary>
 		public static readonly Dictionary<MoveArrowType, Quaternion> ARROW_TYPE_TO_ROTATION
-			= new Dictionary<MoveArrowType, Quaternion>
-			{
+			= new Dictionary<MoveArrowType, Quaternion> {
 				{ MoveArrowType.Up,     Quaternion.Euler( 0, 90, 0 ) },
 				{ MoveArrowType.Right,  Quaternion.Euler( 0, 180, 0 ) },
 				{ MoveArrowType.Down,   Quaternion.Euler( 0, 270, 0 ) },
@@ -63,11 +73,16 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		public void Place( params MoveArrowData[] arrowDatas ) {
+		public void Place( int tileID, IEnumerable< KeyValuePair<MoveArrowType, MotionStatus> > arrowDatas ) {
 			Hide();
-			arrowDatas.ForEach( d => {
-				var v = GetView( d._type );
-				v.Place( d );
+			arrowDatas.ForEach( pair => {
+				var type = pair.Key;
+				var state = pair.Value;
+				var tilePosition = TileManagerView.ToTilePosition( tileID ) + ARROW_TYPE_TO_ADD_TILE_POSITION[type];
+				var data = new MoveArrowData( tilePosition, type, state );
+
+				var v = GetView( type );
+				v.Place( data );
 			} );
 		}
 
