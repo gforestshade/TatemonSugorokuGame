@@ -83,6 +83,13 @@ namespace TatemonSugoroku.Siren {
 						new MoveArrowData( rightID,	MoveArrowType.Right,	MoveArrowState.Hide ),
 						new MoveArrowData( upID,	MoveArrowType.Up,		MoveArrowState.Enable )
 					);
+					UTask.Void( async () => {
+						using ( var canceler = new SMAsyncCanceler() ) {
+							await UTask.Delay( canceler, 1000 );
+//							moveArrowManager.Hide();
+							moveArrowManager.Place();
+						}
+					} );
 				} );
 */
 

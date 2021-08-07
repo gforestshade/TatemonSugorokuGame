@@ -64,11 +64,15 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public void Place( params MoveArrowData[] arrowDatas ) {
+			Hide();
 			arrowDatas.ForEach( d => {
 				var v = GetView( d._type );
 				v.Place( d );
 			} );
 		}
+
+		public void Hide()
+			=> _views.ForEach(pair => pair.Value.Hide() );
 
 
 

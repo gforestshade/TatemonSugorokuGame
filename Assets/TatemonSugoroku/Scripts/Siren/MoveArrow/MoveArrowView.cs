@@ -90,5 +90,8 @@ namespace TatemonSugoroku.Scripts {
 
 			SetState( arrowData._state );
 		}
+
+		public void Hide()
+			=> SetState( MoveArrowState.Hide );
 	}
 }
