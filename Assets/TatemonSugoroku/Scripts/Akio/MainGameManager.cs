@@ -7,7 +7,7 @@ using SubmarineMirage.Setting;
 using UniRx;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-
+using System.Threading;
 
 namespace TatemonSugoroku.Scripts.Akio
 {
@@ -23,7 +23,7 @@ namespace TatemonSugoroku.Scripts.Akio
     }
 
     // Gfshade: 大改編
-    public class MainGameManager : SMStandardMonoBehaviour
+    public class MainGameManager : MonoBehaviour
     {
         [SerializeField]
         private UICanvas _UI;
@@ -52,7 +52,35 @@ namespace TatemonSugoroku.Scripts.Akio
         SMInputManager inputManager;
         PlayerInternalModel[] playerModels;
 
-        private async UniTask DoGame()
+
+        private void InitTestPlayerInternalModels()
+        {
+            playerModels = new PlayerInternalModel[]
+            {
+                new PlayerInternalModel
+                {
+                    Id = 0,
+                    Name = "たてた",
+                    Score = 0,
+                    OppositeEnterBonus = 0,
+                    Tatemon = 7,
+                    MaxTatemon = 7,
+                    TileId = 0,
+                },
+                new PlayerInternalModel
+                {
+                    Id = 1,
+                    Name = "たてて",
+                    Score = 0,
+                    OppositeEnterBonus = 0,
+                    Tatemon = 7,
+                    MaxTatemon = 7,
+                    TileId = 63,
+                },
+            };
+        }
+
+        public async UniTask DoGame(CancellationToken ct)
         {
             InitTestPlayerInternalModels();
             inputManager = SMServiceLocator.Resolve<SMInputManager>();
@@ -88,11 +116,14 @@ namespace TatemonSugoroku.Scripts.Akio
                 await UpdateScore();
 
                 // じかんがすすむよ
-                // Day.UpdateHour();
+                AllModelManager.s_instance.Get<DayModel>().UpdateHour();
 
                 // スコア更新時の時間調整だよ
                 await UniTask.Delay(wait10);
             }
+
+            await InputAndMove(0, 3);
+            HideArrows();
 
             GameEnd:
             // げーむがおわったよ
@@ -116,22 +147,11 @@ namespace TatemonSugoroku.Scripts.Akio
             _UI.SetWalkRemaining(dice);
             await UniTask.Delay(wait02);
 
-
             // 「フィールドを、好きな方向に12回まで塗りつぶすことができるッ！」
-
-            // MotionModelを初期化する
-            if (!ResetMotionModel(motionModel, fieldModel, playerId, dice))
-            {
-                // 初期化時、囲まれてて移動できないならfalseが返る。
-                // そうなったらゲーム終了
-                return false;
-            }
-
-            await InputAndMove(playerId);
+            await InputAndMove(playerId, dice);
 
             // 「さらに！　塗りつぶしが終了したとき、効果発動！」
-            _MoveArrowManager.Hide();
-            _UI.HideWalkRemaining();
+            HideArrows();
             await UniTask.Delay(wait02);
 
             // 「オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
@@ -145,33 +165,6 @@ namespace TatemonSugoroku.Scripts.Akio
             await UniTask.Delay(wait10);
 
             return true;
-        }
-
-        private void InitTestPlayerInternalModels()
-        {
-            playerModels = new PlayerInternalModel[]
-            {
-                new PlayerInternalModel
-                {
-                    Id = 0,
-                    Name = "たてた",
-                    Score = 0,
-                    OppositeEnterBonus = 0,
-                    Tatemon = 7,
-                    MaxTatemon = 7,
-                    TileId = 0,
-                },
-                new PlayerInternalModel
-                {
-                    Id = 1,
-                    Name = "たてて",
-                    Score = 0,
-                    OppositeEnterBonus = 0,
-                    Tatemon = 7,
-                    MaxTatemon = 7,
-                    TileId = 63,
-                },
-            };
         }
 
         private void InitUI()
@@ -212,9 +205,17 @@ namespace TatemonSugoroku.Scripts.Akio
             return dice;
         }
 
-        private async UniTask InputAndMove(int playerId)
+        private async UniTask<bool> InputAndMove(int playerId, int dice)
         {
             PlayerInternalModel pTurn = playerModels[playerId];
+
+            // MotionModelを初期化する
+            if (!ResetMotionModel(playerId, dice))
+            {
+                // 初期化時、囲まれてて移動できないならfalseが返る。
+                // そうなったらゲーム終了
+                return false;
+            }
 
             // 例外が飛んだ場合は購読していたという事実は無かったことになる
             using (CompositeDisposable movementDisposables = new CompositeDisposable())
@@ -231,11 +232,13 @@ namespace TatemonSugoroku.Scripts.Akio
                     .AddTo(movementDisposables);
 
                 // コマ移動
+                /*
                 fieldModel
                     .PlayerPositions
                     .Select(pp => pp[playerId])
                     .Subscribe(tileId => GoastPieceMove(playerId, tileId))
                     .AddTo(movementDisposables);
+                */
 
                 // まず(矢印方向, 矢印状態)のぺあにおいて変化が全部送られてくるストリームをつくる
                 var arrowUp = motionModel.MotionStatusUp.Select(status => new KeyValuePair<MoveArrowType, MotionStatus>(MoveArrowType.Up, status));
@@ -283,12 +286,17 @@ namespace TatemonSugoroku.Scripts.Akio
                     // 塗る
                     _TileManager.ChangeArea(tileId, playerId);
                 }
+
+                await _PieceManager.Move(playerId, pTurn.TileId);
             }
+
+            return true;
         }
 
-        private async void GoastPieceMove(int playerId, int tileId)
+        private void HideArrows()
         {
-            // await _PieceManager.Move(tileId, playerId);
+            _MoveArrowManager.Hide();
+            _UI.HideWalkRemaining();
         }
 
         private async UniTask UpdateScore()
@@ -324,114 +332,15 @@ namespace TatemonSugoroku.Scripts.Akio
         }
 
 
-        private bool ResetMotionModel(MotionModel model, FieldModel field, int currentPlayerId, int numberOfDice)
+        private bool ResetMotionModel(int currentPlayerId, int numberOfDice)
         {
-            model.SetCurrentPlayerId(currentPlayerId);
-            model.SetNumberOfDice(numberOfDice);
-            model.SetCurrentPosition(field.GetCurrentPositionByPlayerId(currentPlayerId));
-            model.SetFieldCellsAsMovableField(field.GetFieldCells());
-            model.ClearInformation();
+            motionModel.SetCurrentPlayerId(currentPlayerId);
+            motionModel.SetNumberOfDice(numberOfDice);
+            motionModel.SetCurrentPosition(fieldModel.GetCurrentPositionByPlayerId(currentPlayerId));
+            motionModel.SetFieldCellsAsMovableField(fieldModel.GetFieldCells());
+            motionModel.ClearInformation();
 
-            return model.InspectPlayerCanMove();
-        }
-
-        protected override void StartAfterInitialize()
-        {
-            DoGame().Forget();
-            /*
-            SMInputManager inputManager = SMServiceLocator.Resolve<SMInputManager>();
-            AllModelManager allModelManager = AllModelManager.s_instance;
-            MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
-            MotionModel motionModel = allModelManager.Get<MotionModel>();
-            
-            mainGameManagementModel.InitializeGame(2);
-
-            mainGameManagementModel.GamePhase.Subscribe(phase =>
-            {
-                switch (phase)
-                {
-                    case MainGamePhase.WhileShowingTurnCall:
-                        Debug.Log("ターン進行！ 1秒待機");
-                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
-                        {
-                            mainGameManagementModel.NotifyShowingTurnCallFinished();
-                        });
-                        break;
-                    case MainGamePhase.WaitingMovingPlayer:
-                        break;
-                    case MainGamePhase.PlayerCannotMove:
-                        Debug.Log("プレイヤーはどのルートにも動けません");
-                        break;
-                    case MainGamePhase.WhileMovingPlayer:
-                        Debug.Log("プレイヤー移動フェイズ");
-                        mainGameManagementModel.MovePlayer();
-                        StartCoroutine(CoroutineMovingPlayer());
-                        break;
-                    case MainGamePhase.WaitingPuttingTatemon:
-                        Debug.Log("たてもんの選択フェイズ");
-                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
-                        {
-                            mainGameManagementModel.NotifyInputPuttingTatemon();
-                        });
-                        break;
-                    case MainGamePhase.WhilePuttingTatemon:
-                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
-                        {
-                            mainGameManagementModel.NotifyPuttingTatemonFinished();
-                        });
-                        break;
-                    case MainGamePhase.WhileCalculatingScore:
-                        Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
-                        {
-                            mainGameManagementModel.NotifyCalculatingScoreFinished();
-                        });
-                        break;
-                }
-
-                if (phase == MainGamePhase.WaitingMovingPlayer)
-                {
-                    Debug.Log("移動可能");
-                    _isAllowedInputMotion = true;
-                }
-                else
-                {
-                    _isAllowedInputMotion = false;
-                }
-            });
-
-            _movingPlayerTimer.Subscribe(_ =>
-            {
-                if (mainGameManagementModel.HasDeterminedMotionPosition())
-                {
-                    mainGameManagementModel.MovePlayer();
-                    StartCoroutine(CoroutineMovingPlayer());
-                }
-                else
-                {
-                    Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(__ =>
-                    {
-                        mainGameManagementModel.NotifyMovingPlayerFinished();
-                    });
-                }
-            });
-
-            motionModel.NumberOfMovableCells.Subscribe(num =>
-            {
-                Debug.Log("移動できる回数：" + num);
-            });
-            
-            inputManager._touchTileID
-                .Where(_ => _isAllowedInputMotion)
-                .Subscribe(cellId =>
-                {
-                    mainGameManagementModel.InputPosition(cellId);
-                });
-            
-            Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
-            {
-                mainGameManagementModel.StartGame();
-            });
-            */
+            return motionModel.InspectPlayerCanMove();
         }
 
     }

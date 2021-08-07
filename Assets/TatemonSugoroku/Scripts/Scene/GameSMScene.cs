@@ -27,7 +27,8 @@ namespace TatemonSugoroku.Scripts {
 
 			// 更新（非同期的に実行）
 			_asyncUpdateEvent.AddLast( async canceler => {
-				await UTask.DontWait();
+				var game = UnityEngine.GameObject.FindObjectOfType<Akio.MainGameManager>();
+				await game.DoGame(canceler.ToToken());
 			} );
 
 			// 物理更新
