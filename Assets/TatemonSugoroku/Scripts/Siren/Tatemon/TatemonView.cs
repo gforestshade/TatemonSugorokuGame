@@ -55,8 +55,8 @@ namespace TatemonSugoroku.Scripts {
 		void ChangeState( TatemonState state ) {
 			_state = state;
 
-			transform.position = TileManagerModel.ToRealPosition( _model._tilePosition );
-			transform.localScale = TileManagerModel.REAL_SCALE;
+			transform.position = TileManagerView.ToRealPosition( _model._tilePosition );
+			transform.localScale = TileManagerView.REAL_SCALE;
 
 			switch ( _state ) {
 				case TatemonState.None:

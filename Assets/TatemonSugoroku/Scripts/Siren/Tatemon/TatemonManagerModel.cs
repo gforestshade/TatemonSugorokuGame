@@ -106,7 +106,7 @@ namespace TatemonSugoroku.Scripts {
 		///		何個目を配置するかは、自動計算。
 		/// </summary>
 		public TatemonModel Place( PlayerType playerType, int tileID )
-			=> Place( playerType, TileManagerModel.ToTilePosition( tileID ) );
+			=> Place( playerType, TileManagerView.ToTilePosition( tileID ) );
 
 		/// <summary>
 		/// ● プレイヤー番号と、タイル位置に、たてもんを配置

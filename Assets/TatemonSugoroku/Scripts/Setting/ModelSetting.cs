@@ -32,8 +32,6 @@ namespace TatemonSugoroku.Scripts.Setting {
 				new SampleModel(),
 
 				new DayModel(),
-				new TileManagerModel(),
-				new MoveArrowManagerModel(),
 				
 				new PieceManagerModel(),
 				new FireworkManagerModel(),

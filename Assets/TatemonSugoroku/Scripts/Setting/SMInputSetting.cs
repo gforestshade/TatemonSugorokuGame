@@ -38,11 +38,11 @@ namespace TatemonSugoroku.Scripts {
 				if ( isHit ) {
 					var go = hit.collider.gameObject;
 					var tile = go.GetComponent<TileView>();
-					_inputManager._touchTileID.Value = tile._model._tileID;
+					_inputManager._touchTileID.Value = tile._tileID;
 					return;
 				}
 
-				_inputManager._touchTileID.Value = TileManagerModel.NONE_ID;
+				_inputManager._touchTileID.Value = TileManagerView.NONE_ID;
 			} );
 		}
 	}

@@ -1,14 +1,9 @@
 using System.Collections.Generic;
-using UniRx;
 using UnityEngine;
 using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 using SubmarineMirage.Extension;
-using TatemonSugoroku.Scripts.Akio;
-using UnityEditor;
-
 namespace TatemonSugoroku.Scripts {
 
 
@@ -17,120 +12,67 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 移動矢印管理の描画クラス
 	/// </summary>
 	public class MoveArrowManagerView : SMStandardMonoBehaviour {
-		MoveArrowManagerModel _model { get; set; }
-		readonly List<MoveArrowView> _views = new List<MoveArrowView>();
+		/// <summary>矢印タイプから、角度に変換</summary>
+		public static readonly Dictionary<MoveArrowType, Quaternion> ARROW_TYPE_TO_ROTATION
+			= new Dictionary<MoveArrowType, Quaternion>
+			{
+				{ MoveArrowType.Up,     Quaternion.Euler( 0, 90, 0 ) },
+				{ MoveArrowType.Right,  Quaternion.Euler( 0, 180, 0 ) },
+				{ MoveArrowType.Down,   Quaternion.Euler( 0, 270, 0 ) },
+				{ MoveArrowType.Left,   Quaternion.Euler( 0, 0, 0 ) }
+			};
+
+		readonly Dictionary<MoveArrowType, MoveArrowView> _views
+			= new Dictionary<MoveArrowType, MoveArrowView>();
 
 		[SerializeField] GameObject _prefab;
+		[SerializeField] public Color _disableColor = Color.gray;
+		[SerializeField] Color _enableColor = Color.yellow;
 
-		[SerializeField] Color _normalColor = Color.gray;
-		[SerializeField] Color _flashColor = Color.yellow;
+		public Color _color { get; private set; }
 		Tween _colorTween { get; set; }
 
-		private readonly MotionStatus[] _motionStatuses =
-		{
-			MotionStatus.Unmovable,
-			MotionStatus.Unmovable,
-			MotionStatus.Unmovable,
-			MotionStatus.Unmovable
-		};
 
-		private int _peekPosition;
-		protected override void StartAfterInitialize() {
-			/* すみませんね。毎回変えさせてもらって。 (by Akio)
-			_model = AllModelManager.s_instance.Get<MoveArrowManagerModel>();
-			_model._models.ForEach( pair => {
+
+		void Start() {
+			EnumUtils.GetValues<MoveArrowType>().ForEach( type => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<MoveArrowView>();
-				v.Setup( pair.Value );
-				_views.Add( v );
+				v.Setup( type, _disableColor );
+				_views[type] = v;
 			} );
 
-			var color = _normalColor;
+			_color = _disableColor;
 			_colorTween = DOTween.To(
-				() => color,
+				() => _color,
 				c => {
-					color = c;
-					_views.ForEach( v => v.SetColor( c ) );
+					_color = c;
+					_views.ForEach( pair => pair.Value.UpdateColor( c ) );
 				},
-				_flashColor,
+				_enableColor,
 				1
 			)
 			.SetEase( Ease.InOutQuart )
 			.SetLoops( -1, LoopType.Yoyo )
 			.Play();
 
-
 			_disposables.AddLast( () => {
 				_colorTween?.Kill();
 			} );
-			*/
-
-			AllModelManager allModelManager = AllModelManager.s_instance;
-			MoveArrowManagerModel moveArrowManagerModel = allModelManager.Get<MoveArrowManagerModel>();
-			MotionModel motionModel = allModelManager.Get<MotionModel>();
-
-			moveArrowManagerModel.Models.ForEach(model =>
-			{
-				MoveArrowView moveArrowView = _prefab.Instantiate(transform).GetComponent<MoveArrowView>();
-				moveArrowView.Setup(model);
-				_views.Add(moveArrowView);
-			});
-
-			motionModel.MotionStatusUp.Subscribe(status =>
-			{
-				_motionStatuses[0] = status;
-				UpdateView();
-			});
-
-			motionModel.MotionStatusRight.Subscribe(status =>
-			{
-				_motionStatuses[1] = status;
-				UpdateView();
-			});
-
-			motionModel.MotionStatusDown.Subscribe(status =>
-			{
-				_motionStatuses[2] = status;
-				UpdateView();
-			});
-
-			motionModel.MotionStatusLeft.Subscribe(status =>
-			{
-				_motionStatuses[3] = status;
-				UpdateView();
-			});
-
-			motionModel.PeekPosition.Subscribe(position =>
-			{
-				_peekPosition = position;
-				UpdateView();
-			});
 		}
 
-		void UpdateView()
-		{
-			int[] offsets = {-8, 1, 8, -1};
-			for (int i = 0; i < _views.Count; i++)
-			{
-				MotionStatus status = _motionStatuses[i];
-				if (status == MotionStatus.Unmovable)
-				{
-					_views[i].HideArrow();
-				}
-				else
-				{
-					int position = _peekPosition + offsets[i];
-					Vector3 actualPosition = TileManagerModel.ToRealPosition(TileManagerModel.ToTilePosition(position));
-					if (status == MotionStatus.Movable)
-					{
-						_views[i].ShowArrow(actualPosition, _flashColor);
-					}
-					else
-					{
-						_views[i].ShowArrow(actualPosition, _normalColor);
-					}
-				}
-			}
+
+
+		public void Place( params MoveArrowData[] arrowDatas ) {
+			arrowDatas.ForEach( d => {
+				var v = GetView( d._type );
+				v.Place( d );
+			} );
 		}
+
+
+
+		public MoveArrowView GetView( MoveArrowType type )
+			=> _views[type];
 	}
 }

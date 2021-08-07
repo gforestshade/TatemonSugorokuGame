@@ -21,8 +21,8 @@ namespace TatemonSugoroku.Siren {
 			// 各種モデルを取得
 			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
 			var allModelManager = AllModelManager.s_instance;
-			var tileManager = allModelManager.Get<TileManagerModel>();
-			var moveArrowManager = allModelManager.Get<MoveArrowManagerModel>();
+			var tileManager = FindObjectOfType<TileManagerView>();
+			var moveArrowManager = FindObjectOfType<MoveArrowManagerView>();
 			var dice = FindObjectOfType<DiceManagerView>();
 			var pieces = allModelManager.Get<PieceManagerModel>();
 			var day = allModelManager.Get<DayModel>();
@@ -32,15 +32,15 @@ namespace TatemonSugoroku.Siren {
 
 			// 13番のタイル領域変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
-				var tile = tileManager.GetModel( 13 );
-				var i = ( ( int )tile._areaType.Value + 1 ) % EnumUtils.GetLength<TileAreaType>();
-				tile.SetAreaType( ( TileAreaType )i );
+				var tile = tileManager.GetView( 13 );
+				var i = ( ( int )tile._areaType + 1 ) % EnumUtils.GetLength<TileAreaType>();
+				tile.ChangeArea( ( TileAreaType )i );
 			} );
 			// 座標から、13番のタイル領域変更
 			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
-				var tile = tileManager.GetModel( new Vector2Int( 5, 1 ) );
-				var i = ( ( int )tile._areaType.Value + 1 ) % EnumUtils.GetLength<TileAreaType>();
-				tile.SetAreaType( ( TileAreaType )i );
+				var tile = tileManager.GetView( new Vector2Int( 5, 1 ) );
+				var i = ( ( int )tile._areaType + 1 ) % EnumUtils.GetLength<TileAreaType>();
+				tile.ChangeArea( ( TileAreaType )i );
 			} );
 
 			// タイル領域変更
@@ -49,9 +49,8 @@ namespace TatemonSugoroku.Siren {
 				var i = ( ( int )areaType + 1 ) % EnumUtils.GetLength<TileAreaType>();
 				areaType = ( TileAreaType )i;
 			} );
+/*
 			// 矢印変更
-			
-			/*
 			var arrowType = MoveArrowType.Down;
 			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
 				var i = ( ( int )arrowType + 1 ) % EnumUtils.GetLength<MoveArrowType>();
@@ -59,25 +58,33 @@ namespace TatemonSugoroku.Siren {
 				SMLog.Debug( $"矢印 : {arrowType}" );
 			} );
 
-			*/
-			
 			// タッチしたタイル番号を表示
 			inputManager._touchTileID.Subscribe( id => {
 				SMLog.Debug( id );
 			} );
 			// タッチしたタイルを変更
-			
-			/*
 			inputManager._touchTileID
 				.Where( id => id != -1 )
 				.Subscribe( id => {
-					var tile = tileManager.GetModel( id );
-					tile.SetAreaType( areaType );
+					var tile = tileManager.GetView( id );
+					tile.ChangeArea( areaType );
 
-					var arrow = moveArrowManager.GetModel( arrowType );
-					arrow.Place( tile );
+					var down = TileManagerView.ToTilePosition( id ) + new Vector2Int( 0, 1 );
+					var downID = TileManagerView.ToID( down );
+					var left = TileManagerView.ToTilePosition( id ) + new Vector2Int( -1, 0 );
+					var leftID = TileManagerView.ToID( left );
+					var right = TileManagerView.ToTilePosition( id ) + new Vector2Int( 1, 0 );
+					var rightID = TileManagerView.ToID( right );
+					var up = TileManagerView.ToTilePosition( id ) + new Vector2Int( 0, -1 );
+					var upID = TileManagerView.ToID( up );
+					moveArrowManager.Place(
+						new MoveArrowData( downID,	MoveArrowType.Down,		MoveArrowState.Disable ),
+						new MoveArrowData( leftID,	MoveArrowType.Left,		MoveArrowState.Enable ),
+						new MoveArrowData( rightID,	MoveArrowType.Right,	MoveArrowState.Hide ),
+						new MoveArrowData( upID,	MoveArrowType.Up,		MoveArrowState.Enable )
+					);
 				} );
-			*/
+*/
 
 			// サイコロを投げる
 			var diceState = DiceState.Hide;

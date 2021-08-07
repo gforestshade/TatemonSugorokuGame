@@ -13,7 +13,7 @@ namespace TatemonSugoroku.Scripts {
 		/// ● 要素
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>タイルマップの範囲内の大きさ</summary>
-		static readonly Vector2Int MAX_SIZE = TileManagerModel.MAX_SIZE - Vector2Int.one;
+		static readonly Vector2Int MAX_SIZE = TileManagerView.MAX_SIZE - Vector2Int.one;
 
 		/// <summary>プレイヤーのタイプ</summary>
 		public PlayerType _playerType	{ get; private set; }
@@ -36,10 +36,10 @@ namespace TatemonSugoroku.Scripts {
 			var tileID = 0;
 			switch ( type ) {
 				case PlayerType.Player1:	tileID = 0;								break;
-				case PlayerType.Player2:	tileID = TileManagerModel.MAX_ID - 1;	break;
+				case PlayerType.Player2:	tileID = TileManagerView.MAX_ID - 1;	break;
 			}
 			_tileID = tileID;
-			_tilePosition.Value = TileManagerModel.ToTilePosition( tileID );
+			_tilePosition.Value = TileManagerView.ToTilePosition( tileID );
 		}
 
 		///----------------------------------------------------------------------------------------------------
@@ -49,15 +49,15 @@ namespace TatemonSugoroku.Scripts {
 		/// ● タイル番号の場所に、コマを配置
 		/// </summary>
 		public void Place( int tileID )
-			=> Place( TileManagerModel.ToTilePosition( tileID ) );
+			=> Place( TileManagerView.ToTilePosition( tileID ) );
 
 		/// <summary>
 		/// ● タイル位置に、コマを配置
 		/// </summary>
 		public void Place( Vector2Int tilePosition ) {
 			var p = tilePosition;
-			p.Clamp( TileManagerModel.MIN_SIZE, MAX_SIZE );
-			_tileID = TileManagerModel.ToID( p );
+			p.Clamp( TileManagerView.MIN_SIZE, MAX_SIZE );
+			_tileID = TileManagerView.ToID( p );
 
 			if ( p == _tilePosition.Value ) {
 				MoveFinish();

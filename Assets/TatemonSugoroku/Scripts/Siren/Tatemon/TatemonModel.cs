@@ -58,14 +58,14 @@ namespace TatemonSugoroku.Scripts {
 		/// ● タイル番号に、たてもんを配置
 		/// </summary>
 		public void Place( int tileID )
-			=> Place( TileManagerModel.ToTilePosition( tileID ) );
+			=> Place( TileManagerView.ToTilePosition( tileID ) );
 
 		/// <summary>
 		/// ● タイル位置に、たてもんを配置
 		/// </summary>
 		public void Place( Vector2Int tilePosition ) {
 			_tilePosition = tilePosition;
-			_tileID = TileManagerModel.ToID( _tilePosition );
+			_tileID = TileManagerView.ToID( _tilePosition );
 			if ( _manager._isFireworkRotated ) {
 				ChangeState( TatemonState.FireworkRotate );
 			} else {

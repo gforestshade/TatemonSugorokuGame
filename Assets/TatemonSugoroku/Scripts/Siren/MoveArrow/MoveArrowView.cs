@@ -3,47 +3,47 @@ using UnityEngine;
 using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
-
-namespace TatemonSugoroku.Scripts
-{
+using SubmarineMirage.Utility;
+namespace TatemonSugoroku.Scripts {
 
 
 
 	/// <summary>
 	/// ■ 移動矢印の描画クラス
 	/// </summary>
-	public class MoveArrowView : SMStandardMonoBehaviour
-	{
-		MoveArrowModel _model { get; set; }
+	public class MoveArrowView : SMStandardMonoBehaviour {
 		MeshRenderer[] _renderers { get; set; }
+		Color _disableColor { get; set; }
+		[SerializeField] Vector3 _offset = new Vector3( 0, 0.6f, 0 );
 
-		[SerializeField] Vector3 _offset = new Vector3(0, 0.6f, 0);
+		/// <summary>タイル番号</summary>
+		public int _tileID { get; private set; }
+		/// <summary>タイル位置</summary>
+		public Vector2Int _tilePosition { get; private set; }
+		/// <summary>矢印の回転角度</summary>
+		public Quaternion _rotation { get; private set; }
+		/// <summary>矢印のタイプ</summary>
+		public MoveArrowType _type { get; private set; }
+		/// <summary>矢印の状態</summary>
+		public MoveArrowState _state { get; private set; }
+
+		/// <summary>非同期停止の識別子</summary>
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 
 
-		public void Setup(MoveArrowModel model)
-		{
-			_model = model;
-
+		public void Setup( MoveArrowType type, Color disableColor ) {
 			_renderers = GetComponentsInChildren<MeshRenderer>();
+			_disableColor = disableColor;
 
-			gameObject.name = _model._name;
-			transform.rotation = _model._rotation;
-			gameObject.SetActive(false);
+			_type = type;
+			gameObject.name = $"MoveArrow {_type}";
+			transform.rotation = MoveArrowManagerView.ARROW_TYPE_TO_ROTATION[_type];
+			gameObject.SetActive( false );
 
-			/*
-			_model._placeTile.Subscribe(tile =>
-			{
-				gameObject.SetActive(tile != null);
-				if (tile == null)
-				{
-					return;
-				}
-
-				transform.position = tile._realPosition + _offset;
-				transform.localScale = tile._realScale;
-			});
-			*/
+			_disposables.AddFirst( () => {
+				_canceler.Dispose();
+			} );
 
 #if TestMoveArrow
 			_offset.y += 0.3f;
@@ -53,23 +53,42 @@ namespace TatemonSugoroku.Scripts
 
 
 
-		public void SetColor(Color color)
-		{
-			_renderers.ForEach(r => r.material.color = color);
-		}
-		
-		// 勝手ながら追加させていただきます。(by Akio)
-		public void HideArrow()
-		{
-			gameObject.SetActive(false);
+		public void UpdateColor( Color enableColor ) {
+			var c = _state == MoveArrowState.Enable ? enableColor : _disableColor;
+			_renderers.ForEach( r => r.material.color = c );
 		}
 
-		public void ShowArrow(Vector3 actualPosition, Color color)
-		{
-			Debug.Log("反応確認用");
-			gameObject.SetActive(true);
-			transform.position = actualPosition + _offset;
-			_renderers.ForEach(r => { r.material.color = color; });
+
+
+		public void SetState( MoveArrowState state ) {
+			if ( _state == state ) { return; }
+			_state = state;
+
+			gameObject.SetActive( false );
+			UpdateColor( _disableColor );
+
+			switch ( _state ) {
+				case MoveArrowState.Hide:
+					break;
+
+				case MoveArrowState.Disable:
+					gameObject.SetActive( true );
+					break;
+
+				case MoveArrowState.Enable:
+					gameObject.SetActive( true );
+					break;
+			}
+		}
+
+
+
+		public void Place( MoveArrowData arrowData ) {
+			var tilePosition = TileManagerView.ToTilePosition( arrowData._tileID );
+			transform.position = TileManagerView.ToRealPosition( tilePosition ) + _offset;
+			transform.localScale = TileManagerView.REAL_SCALE;
+
+			SetState( arrowData._state );
 		}
 	}
 }

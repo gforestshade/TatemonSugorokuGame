@@ -27,7 +27,7 @@ namespace TatemonSugoroku.Scripts {
 			// _model._tilePosition.Subscribe( v => Move( v ).Forget() );
 
 			_tilePosition = _model._tilePosition.Value;
-			transform.position = TileManagerModel.ToRealPosition( _tilePosition ) + _offset;
+			transform.position = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
 
 #if TestPiece
 			if ( _model._playerType == PlayerType.Player2 ) {
@@ -55,7 +55,7 @@ namespace TatemonSugoroku.Scripts {
 			_canceler.Cancel();
 
 			_tilePosition = tilePosition;
-			var targetPosition = TileManagerModel.ToRealPosition( _tilePosition ) + _offset;
+			var targetPosition = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
 
 			await transform.DOMove( targetPosition, 1 ).Play()
 				.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
@@ -66,7 +66,7 @@ namespace TatemonSugoroku.Scripts {
 
 		public void Move(int position)
 		{
-			Vector2Int tilePosition = TileManagerModel.ToTilePosition(position);
+			Vector2Int tilePosition = TileManagerView.ToTilePosition(position);
 			Move(tilePosition).Forget();
 		}
 	}

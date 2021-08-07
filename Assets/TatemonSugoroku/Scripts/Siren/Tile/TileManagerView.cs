@@ -1,11 +1,9 @@
+using System.Linq;
 using System.Collections.Generic;
-using UniRx;
+using KoganeUnityLib;
 using UnityEngine;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
 using SubmarineMirage.Extension;
-using TatemonSugoroku.Scripts.Akio;
-
 namespace TatemonSugoroku.Scripts {
 
 
@@ -14,72 +12,120 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ タイル管理の描画クラス
 	/// </summary>
 	public class TileManagerView : SMStandardMonoBehaviour {
+		/// <summary>最小のタイル位置</summary>
+		public static readonly Vector2Int MIN_SIZE = new Vector2Int( 0, 0 );
+		/// <summary>最大のタイル位置</summary>
+		public static readonly Vector2Int MAX_SIZE = new Vector2Int( 8, 8 );
+		/// <summary>最大のタイル番号</summary>
+		public static readonly int MAX_ID = MAX_SIZE.x * MAX_SIZE.y;
+
+		/// <summary>タイルの大きさと、実際の大きさの比率</summary>
+		public static readonly float TILE_SCALE_TO_REAL_SCALE = 1;
+		/// <summary>1タイルの、実際の大きさ</summary>
+		public static readonly Vector3 REAL_SCALE = Vector3.one * TILE_SCALE_TO_REAL_SCALE;
+
+		/// <summary>タイルの実際の開始位置</summary>
+		public static readonly Vector3 FIRST_REAL_POSITION =
+			(
+				new Vector3( -MAX_SIZE.x, 0, MAX_SIZE.y )
+				+ new Vector3( 1, 1, -1 )
+			)
+			/ 2
+			* TILE_SCALE_TO_REAL_SCALE;
+
+		/// <summary>領域タイプから、色への変換</summary>
 		public static readonly Dictionary<TileAreaType, Color> AREA_TYPE_TO_COLOR =
 			new Dictionary<TileAreaType, Color> {
-				{ TileAreaType.None,       Color.white },
-				{ TileAreaType.Player1,    Color.blue },
-				{ TileAreaType.Player2,    Color.red },
+				{ TileAreaType.None,	Color.white },
+				{ TileAreaType.Player1,	Color.blue },
+				{ TileAreaType.Player2,	Color.red },
 			};
 
-		TileManagerModel _model { get; set; }
-		readonly List<TileView> _views = new List<TileView>();
+		/// <summary>無い場合の、タイル番号</summary>
+		public const int NONE_ID = -1;
+
+
 
 		[SerializeField] GameObject _prefab;
-
-		private readonly int[] _fieldColor = new int[64];
-
+		readonly List<TileView> _views = new List<TileView>();
 
 
-		protected override void StartAfterInitialize() {
-			/* こちらも誠に勝手ながら変更させていただきます。(by Akio)
-			_model = AllModelManager.s_instance.Get<TileManagerModel>();
-			_model._models.ForEach( m => {
+
+		void Start() {
+			Enumerable.Range( 0, MAX_ID ).ForEach( i => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<TileView>();
-				v.Setup( m );
+				v.Setup( i );
 				_views.Add( v );
 			} );
-			*/
-
-			for ( int i = 0; i < _fieldColor.Length; i++)
-			{
-				_fieldColor[i] = -1;
-			}
-			
-			AllModelManager allModelManager = AllModelManager.s_instance;
-			MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
-			TileManagerModel tileManagerModel = allModelManager.Get<TileManagerModel>();
-			FieldModel fieldModel = allModelManager.Get<FieldModel>();
-			
-			tileManagerModel._models.ForEach(model =>
-			{
-				TileView tileView = _prefab.Instantiate(transform).GetComponent<TileView>();
-				tileView.Setup(model);
-				_views.Add(tileView);
-			});
-
-			fieldModel.DomainInformation.Subscribe(playerIds =>
-			{
-				for (int i = 0; i < _fieldColor.Length; i++)
-				{
-					if (_fieldColor[i] != playerIds[i])
-					{
-						_fieldColor[i] = playerIds[i];
-						switch (playerIds[i])
-						{
-							case -1:
-								_views[i].ChangeColor(AREA_TYPE_TO_COLOR[TileAreaType.None]);
-								break;
-							case 0:
-								_views[i].ChangeColor(AREA_TYPE_TO_COLOR[TileAreaType.Player1]);
-								break;
-							case 1:
-								_views[i].ChangeColor(AREA_TYPE_TO_COLOR[TileAreaType.Player2]);
-								break;
-						}
-					}
-				}
-			});
 		}
+
+
+
+		/// <summary>
+		/// ● 領域を変更
+		/// </summary>
+		public void ChangeArea( int tileID, int playerID ) {
+			var type = ( TileAreaType )( playerID + 1 );
+			var tile = GetView( tileID );
+			tile.ChangeArea( type );
+		}
+
+
+
+		///----------------------------------------------------------------------------------------------------
+		/// ● 取得
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● タイル番号から、タイルを取得
+		/// </summary>
+		public TileView GetView( int tileID )
+			=> _views[tileID];
+
+		/// <summary>
+		/// ● タイル位置から、タイルを取得
+		/// </summary>
+		public TileView GetView( Vector2Int tilePosition ) {
+			var id = ToID( tilePosition );
+			return _views[id];
+		}
+
+		///----------------------------------------------------------------------------------------------------
+		/// ● 変換
+		///----------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// ● タイル番号から、タイル位置に変換
+		/// </summary>
+		public static Vector2Int ToTilePosition( int tileID )
+			=> new Vector2Int(
+				tileID % 8,
+				tileID / 8
+			);
+
+		/// <summary>
+		/// ● タイル位置から、タイル番号に変換
+		/// </summary>
+		public static int ToID( Vector2Int tilePosition )
+			=> (
+				tilePosition.x +
+				tilePosition.y * 8
+			);
+
+		/// <summary>
+		/// ● タイル位置から、実際のメートル位置に変換
+		/// </summary>
+		public static Vector3 ToRealPosition( Vector2Int tilePosition )
+			=> FIRST_REAL_POSITION
+				+ (
+					new Vector3( tilePosition.x, 0, -tilePosition.y )
+					* TILE_SCALE_TO_REAL_SCALE
+				);
+
+		/// <summary>
+		/// ● タイル方向から、実際のメートル方向に変換
+		/// </summary>
+		public static Vector3 ToRealDirection( Vector2Int tileDirection )
+			=> new Vector3( tileDirection.x, 0, -tileDirection.y )
+				* TILE_SCALE_TO_REAL_SCALE;
 	}
 }
