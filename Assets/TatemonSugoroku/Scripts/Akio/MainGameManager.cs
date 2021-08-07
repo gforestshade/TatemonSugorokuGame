@@ -43,6 +43,9 @@ namespace TatemonSugoroku.Scripts.Akio
         [SerializeField]
         private TatemonManagerView _TatemonManager;
 
+        [SerializeField]
+        private DayView _DayManager;
+
 
         private readonly int[] _SpinPowersOfTatemon = { 0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1 };
         private readonly int _OppositeEnterBonusOne = 20;
@@ -116,7 +119,7 @@ namespace TatemonSugoroku.Scripts.Akio
                 await UpdateScore();
 
                 // じかんがすすむよ
-                AllModelManager.s_instance.Get<DayModel>().UpdateHour();
+                _DayManager.UpdateHour();
 
                 // スコア更新時の時間調整だよ
                 await UniTask.Delay(wait10);
