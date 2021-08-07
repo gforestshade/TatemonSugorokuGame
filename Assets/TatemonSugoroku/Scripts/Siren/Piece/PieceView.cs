@@ -1,6 +1,5 @@
 #define TestPiece
 using UnityEngine;
-using UniRx;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using KoganeUnityLib;
@@ -15,22 +14,39 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ コマの描画クラス
 	/// </summary>
 	public class PieceView : SMStandardMonoBehaviour {
-		PieceModel _model { get; set; }
+		/// <summary>タイルマップの範囲内の大きさ</summary>
+		static readonly Vector2Int MAX_SIZE = TileManagerView.MAX_SIZE - Vector2Int.one;
+
+
 		[SerializeField] Vector3 _offset = new Vector3( 0, 0.5f, 0 );
-		Vector2Int _tilePosition { get; set; }
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
+		/// <summary>プレイヤーのタイプ</summary>
+		public PlayerType _playerType { get; private set; }
+
+		/// <summary>コマが配置されている、タイル番号</summary>
+		public int _tileID { get; private set; }
+		/// <summary>コマが配置されている、タイル位置</summary>
+		public Vector2Int _tilePosition { get; private set; }
+
+		public bool _isMoving { get; private set; }
 
 
-		public void Setup( PieceModel model ) {
-			_model = model;
-			// _model._tilePosition.Subscribe( v => Move( v ).Forget() );
 
-			_tilePosition = _model._tilePosition.Value;
+		public void Setup( PlayerType type ) {
+			_playerType = type;
+
+			var tileID = 0;
+			switch ( type ) {
+				case PlayerType.Player1:	tileID = 0;								break;
+				case PlayerType.Player2:	tileID = TileManagerView.MAX_ID - 1;	break;
+			}
+			_tileID = tileID;
+			_tilePosition = TileManagerView.ToTilePosition( tileID );
 			transform.position = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
 
 #if TestPiece
-			if ( _model._playerType == PlayerType.Player2 ) {
+			if ( _playerType == PlayerType.Player2 ) {
 				var renderers = GetComponentsInChildren<Renderer>( true );
 				renderers.ForEach( r => r.material.color = Color.red );
 			}
@@ -43,7 +59,9 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		protected override void UpdateAfterInitialize() {
+		protected override void Update() {
+			base.Update();
+
 			var p = Camera.main.transform.position;
 			p.y = 0;
 			transform.rotation = Quaternion.LookRotation( p );
@@ -51,23 +69,54 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		async UniTask Move( Vector2Int tilePosition ) {
+		public async UniTask Move( int tileID ) {
+			var tilePosition = TileManagerView.ToTilePosition( tileID );
+			await Move( tilePosition );
+		}
+
+		public async UniTask Move( Vector2Int tilePosition ) {
 			_canceler.Cancel();
 
 			_tilePosition = tilePosition;
-			var targetPosition = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
+/*
+// tileIDで、値をClampできないので、コメント
+			_tilePosition = new Vector2Int(
+				Mathf.Clamp( _tilePosition.x, TileManagerView.MIN_SIZE.x, MAX_SIZE.y ),
+				Mathf.Clamp( _tilePosition.y, TileManagerView.MIN_SIZE.y, MAX_SIZE.y )
+			);
+*/
+			_tileID = TileManagerView.ToID( _tilePosition );
 
-			await transform.DOMove( targetPosition, 1 ).Play()
-				.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
-			transform.position = targetPosition;
-
-			_model.MoveFinish();
+			var targetRealPosition = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
+			try {
+				_isMoving = true;
+				await transform.DOMove( targetRealPosition, 1 ).Play()
+					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+			} finally {
+				_isMoving = false;
+			}
+			transform.position = targetRealPosition;
 		}
 
-		public void Move(int position)
-		{
-			Vector2Int tilePosition = TileManagerView.ToTilePosition(position);
-			Move(tilePosition).Forget();
+
+
+		public void Place( int tileID )
+			=> Place( TileManagerView.ToTilePosition( tileID ) );
+
+		public void Place( Vector2Int tilePosition ) {
+			_canceler.Cancel();
+
+			_tilePosition = tilePosition;
+/*
+// tileIDで、値をClampできないので、コメント
+			_tilePosition = new Vector2Int(
+				Mathf.Clamp( _tilePosition.x, TileManagerView.MIN_SIZE.x, MAX_SIZE.y ),
+				Mathf.Clamp( _tilePosition.y, TileManagerView.MIN_SIZE.y, MAX_SIZE.y )
+			);
+*/
+			_tileID = TileManagerView.ToID( _tilePosition );
+
+			transform.position = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
 		}
 	}
 }

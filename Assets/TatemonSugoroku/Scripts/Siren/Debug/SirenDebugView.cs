@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
@@ -24,7 +25,7 @@ namespace TatemonSugoroku.Siren {
 			var tileManager = FindObjectOfType<TileManagerView>();
 			var moveArrowManager = FindObjectOfType<MoveArrowManagerView>();
 			var dice = FindObjectOfType<DiceManagerView>();
-			var pieces = allModelManager.Get<PieceManagerModel>();
+			var pieces = FindObjectOfType<PieceManagerView>();
 			var day = allModelManager.Get<DayModel>();
 			var tatemons = allModelManager.Get<TatemonManagerModel>();
 			var background = FindObjectOfType<BackgroundView>();
@@ -106,11 +107,9 @@ namespace TatemonSugoroku.Siren {
 			} );
 
 			// コマ1の移動
-			var isMoveFinish1 = true;
-			var piece1 = pieces.GetModel( PlayerType.Player1 );
-			piece1._moveFinish.Subscribe( _ => isMoveFinish1 = true );
+			var piece1 = pieces.GetView( PlayerType.Player1 );
 			inputManager._updateEvent.AddLast()
-				.Where( _ => isMoveFinish1 )
+				.Where( _ => !piece1._isMoving )
 				.Select( _ => inputManager.GetAxis( SMInputAxis.Move ) )
 				.Where( move => move != Vector2Int.zero )
 				.Subscribe( move => {
@@ -121,16 +120,15 @@ namespace TatemonSugoroku.Siren {
 					if ( tileMove.x != 0 ) {
 						tileMove.y = 0;
 					}
-					isMoveFinish1 = false;
-					piece1.Move( tileMove );
+					var tilePosition = piece1._tilePosition + tileMove;
+					var id = TileManagerView.ToID( tilePosition );
+					piece1.Move( id ).Forget();
 				} );
 
 			// コマ2の移動
-			var isMoveFinish2 = true;
-			var piece2 = pieces.GetModel( PlayerType.Player2 );
-			piece2._moveFinish.Subscribe( _ => isMoveFinish2 = true );
+			var piece2 = pieces.GetView( PlayerType.Player2 );
 			inputManager._updateEvent.AddLast()
-				.Where( _ => isMoveFinish2 )
+				.Where( _ => !piece2._isMoving )
 				.Select( _ => inputManager.GetAxis( SMInputAxis.Debug ) )
 				.Where( move => move != Vector2Int.zero )
 				.Subscribe( move => {
@@ -141,8 +139,9 @@ namespace TatemonSugoroku.Siren {
 					if ( tileMove.x != 0 ) {
 						tileMove.y = 0;
 					}
-					isMoveFinish2 = false;
-					piece2.Move( tileMove );
+					var tilePosition = piece2._tilePosition + tileMove;
+					var id = TileManagerView.ToID( tilePosition );
+					piece2.Move( id ).Forget();
 				} );
 
 			// 日時を更新
