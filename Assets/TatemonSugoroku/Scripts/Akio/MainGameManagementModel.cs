@@ -145,7 +145,7 @@ namespace TatemonSugoroku.Scripts.Akio
             if (_determinedMotionPosition.Count > 0)
             {
                 int position = _determinedMotionPosition.Dequeue();
-
+                /*
                 switch (_fieldModel.MovePlayer(_currentPlayerId.Value, position))
                 {
                     case MoveResult.OppositeCellEntered:
@@ -154,6 +154,7 @@ namespace TatemonSugoroku.Scripts.Akio
                         
                         break;
                 }
+                */
             }
         }
 
