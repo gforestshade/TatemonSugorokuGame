@@ -28,6 +28,7 @@ namespace TatemonSugoroku.Scripts {
 
 		[SerializeField] GameObject _prefab;
 		readonly List<PieceView> _views = new List<PieceView>();
+		readonly List<PieceView> _dummyViews = new List<PieceView>();
 
 
 
@@ -35,8 +36,13 @@ namespace TatemonSugoroku.Scripts {
 			Enumerable.Range( 0, PLAYER_COUNT ).ForEach( i => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<PieceView>();
-				v.Setup( ( PlayerType )i );
+				v.Setup( PieceType.Body, ( PlayerType )i );
 				_views.Add( v );
+
+				go = _prefab.Instantiate( transform );
+				v = go.GetComponent<PieceView>();
+				v.Setup( PieceType.Dummy, ( PlayerType )i );
+				_dummyViews.Add( v );
 			} );
 		}
 
@@ -44,6 +50,9 @@ namespace TatemonSugoroku.Scripts {
 
 		public PieceView GetView( PlayerType type )
 			=> _views[( int )type];
+
+		public PieceView GetDummyView( PlayerType type )
+			=> _dummyViews[( int )type];
 
 
 
@@ -67,6 +76,17 @@ namespace TatemonSugoroku.Scripts {
 		public void Place( int playerID, Vector2Int tilePosition ) {
 			var v = GetView( ( PlayerType )playerID );
 			v.Place( tilePosition );
+		}
+
+
+
+		public void PlaceArrowPosition( int playerID, int tileID ) {
+			var v = GetDummyView( ( PlayerType )playerID );
+			v.PlaceArrowPosition( tileID );
+		}
+
+		public void HideDummies() {
+			_dummyViews.ForEach( v => v.Hide() );
 		}
 	}
 }

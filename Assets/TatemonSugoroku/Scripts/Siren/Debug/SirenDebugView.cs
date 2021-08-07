@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using KoganeUnityLib;
@@ -8,6 +9,7 @@ using SubmarineMirage.Utility;
 using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 using TatemonSugoroku.Scripts;
+using TatemonSugoroku.Scripts.Akio;
 namespace TatemonSugoroku.Siren {
 
 
@@ -50,7 +52,7 @@ namespace TatemonSugoroku.Siren {
 				var i = ( ( int )areaType + 1 ) % EnumUtils.GetLength<TileAreaType>();
 				areaType = ( TileAreaType )i;
 			} );
-/*
+///*
 			// 矢印変更
 			var arrowType = MoveArrowType.Down;
 			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
@@ -70,29 +72,23 @@ namespace TatemonSugoroku.Siren {
 					var tile = tileManager.GetView( id );
 					tile.ChangeArea( areaType );
 
-					var down = TileManagerView.ToTilePosition( id ) + new Vector2Int( 0, 1 );
-					var downID = TileManagerView.ToID( down );
-					var left = TileManagerView.ToTilePosition( id ) + new Vector2Int( -1, 0 );
-					var leftID = TileManagerView.ToID( left );
-					var right = TileManagerView.ToTilePosition( id ) + new Vector2Int( 1, 0 );
-					var rightID = TileManagerView.ToID( right );
-					var up = TileManagerView.ToTilePosition( id ) + new Vector2Int( 0, -1 );
-					var upID = TileManagerView.ToID( up );
 					moveArrowManager.Place(
-						new MoveArrowData( downID,	MoveArrowType.Down,		MoveArrowState.Disable ),
-						new MoveArrowData( leftID,	MoveArrowType.Left,		MoveArrowState.Enable ),
-						new MoveArrowData( rightID,	MoveArrowType.Right,	MoveArrowState.Hide ),
-						new MoveArrowData( upID,	MoveArrowType.Up,		MoveArrowState.Enable )
+						0, id,
+						new List< KeyValuePair<MoveArrowType, MotionStatus> > {
+							new KeyValuePair<MoveArrowType, MotionStatus>( MoveArrowType.Down,	MotionStatus.Unmovable ),
+							new KeyValuePair<MoveArrowType, MotionStatus>( MoveArrowType.Left,	MotionStatus.Movable ),
+							new KeyValuePair<MoveArrowType, MotionStatus>( MoveArrowType.Right,	MotionStatus.Return ),
+							new KeyValuePair<MoveArrowType, MotionStatus>( MoveArrowType.Up,	MotionStatus.Unmovable ),
+						}
 					);
 					UTask.Void( async () => {
 						using ( var canceler = new SMAsyncCanceler() ) {
 							await UTask.Delay( canceler, 1000 );
-//							moveArrowManager.Hide();
-							moveArrowManager.Place();
+							moveArrowManager.Hide();
 						}
 					} );
 				} );
-*/
+//*/
 
 			// サイコロを投げる
 			var diceState = DiceState.Hide;
@@ -151,7 +147,7 @@ namespace TatemonSugoroku.Siren {
 			day._hour.Subscribe( h => {
 				SMLog.Debug( $"ゲーム内時刻 : {h}" );
 			} );
-
+/*
 			// タッチしたタイルにたてもんを配置
 			var isPlace = true;
 			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
@@ -169,7 +165,7 @@ namespace TatemonSugoroku.Siren {
 					var i = ( ( int )tatemonPlayer + 1 ) % EnumUtils.GetLength<PlayerType>();
 					tatemonPlayer = ( PlayerType )i;
 				} );
-
+*/
 			// 背景絵を変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
 				background.ChangeImage();
