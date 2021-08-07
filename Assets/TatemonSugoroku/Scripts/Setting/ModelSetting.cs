@@ -38,12 +38,10 @@ namespace TatemonSugoroku.Scripts.Setting {
 				new PieceManagerModel(),
 				new FireworkManagerModel(),
 				new TatemonManagerModel(),
-				new BackgroundModel(),
 				
 				new MotionModel(),
 				new FieldModel(),
 				new ScoreModel(),
-				new DiceModel(),
 				new MainGameManagementModel(),
 			};
 		}

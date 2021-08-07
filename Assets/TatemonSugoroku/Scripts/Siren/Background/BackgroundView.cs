@@ -18,7 +18,6 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 背景の描画クラス
 	/// </summary>
 	public class BackgroundView : SMStandardMonoBehaviour {
-		BackgroundModel _model		{ get; set; }
 		DayModel _dayModel			{ get; set; }
 		int _showIndex				{ get; set; }
 		SpriteRenderer[] _renderers	{ get; set; }
@@ -28,16 +27,10 @@ namespace TatemonSugoroku.Scripts {
 
 
 		protected override void StartAfterInitialize() {
-			_model = AllModelManager.s_instance.Get<BackgroundModel>();
 			_dayModel = AllModelManager.s_instance.Get<DayModel>();
 
 			_renderers = GetComponentsInChildren<SpriteRenderer>( true );
 
-			_model._changeImage.Subscribe( _ => {
-				_showIndex = ( _showIndex + 1 ) % _renderers.Length;
-				_renderers.ForEach( r => r.gameObject.SetActive( false ) );
-				_renderers[_showIndex].gameObject.SetActive( true );
-			} );
 			_dayModel._sunsetRate.Subscribe( r => SetBrightness( r ) );
 
 			SetBrightness( _dayModel._sunsetRate.Value );
@@ -48,6 +41,17 @@ namespace TatemonSugoroku.Scripts {
 		void SetBrightness( float brightness ) {
 			var c = Color.Lerp( _nightColor, Color.white, brightness );
 			_renderers.ForEach( r => r.material.color = c );
+		}
+
+
+
+		/// <summary>
+		/// ● 画像を変更
+		/// </summary>
+		public void ChangeImage() {
+			_showIndex = ( _showIndex + 1 ) % _renderers.Length;
+			_renderers.ForEach( r => r.gameObject.SetActive( false ) );
+			_renderers[_showIndex].gameObject.SetActive( true );
 		}
 	}
 }

@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using UniRx;
-using DG.Tweening;
 using SubmarineMirage.Base;
-using SubmarineMirage.Service;
-using TatemonSugoroku.Scripts.Akio;
-
+using SubmarineMirage.Utility;
+using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -16,9 +13,11 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 花火画面の描画クラス
 	/// </summary>
 	public class UIDiceView : SMStandardMonoBehaviour {
-		// DiceModel _diceModel { get; set; }
 		CanvasGroup _group { get; set; }
 		Text _text { get; set; }
+		public Button _button { get; private set; }
+		DiceManagerView _diceManager { get; set; }
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 
 
@@ -29,85 +28,50 @@ namespace TatemonSugoroku.Scripts {
 			_group.interactable = false;
 
 			_text = GetComponentInChildren<Text>();
+			_button = GetComponentInChildren<Button>();
+			_diceManager = FindObjectOfType<DiceManagerView>();
+
+
+			_disposables.AddFirst( () => {
+				_canceler.Dispose();
+			} );
 		}
 
-		protected override void StartAfterInitialize() {
-			/* 誠に勝手ながら、こちらの方で変えさせてもらいます。（Akioより）
-			_diceModel = AllModelManager.s_instance.Get<DiceModel>();
 
-			_diceModel._state.Subscribe( s => {
-				switch ( s ) {
-					case DiceState.Hide:
-					case DiceState.Roll:
-						_group.alpha = 0;
-						_group.blocksRaycasts = false;
-						_group.interactable = false;
-						break;
 
-					case DiceState.Rotate:
-						_group.alpha = 1;
-						_group.blocksRaycasts = true;
-						_group.interactable = true;
-						break;
-				}
-			} );
+		public async UniTask ChangeState( DiceState state ) {
+			_text.text = $"サイコロ";
 
-			var button = GetComponentInChildren<Button>();
-			button.onClick.AddListener( () => {
-				_diceModel.SetPower(
-					new Vector3(
-						Random.Range( -1, 1 ),
-						Random.Range( -1, 1 ),
-						Random.Range( -1, 1 )
-					).normalized * 10
-				);
-				_diceModel.ChangeState( DiceState.Roll );
-			} );
-			*/
+			switch ( state ) {
+				case DiceState.Hide:
+					_group.alpha = 0;
+					_group.blocksRaycasts = false;
+					_group.interactable = false;
+					break;
 
-			AllModelManager allModelManager = AllModelManager.s_instance;
-			MainGameManagementModel mainGameManagementModel = allModelManager.Get<MainGameManagementModel>();
-			DiceModel diceModel = allModelManager.Get<DiceModel>();
+				case DiceState.Rotate:
+					_group.alpha = 1;
+					_group.blocksRaycasts = true;
+					_group.interactable = true;
+					break;
 
-			mainGameManagementModel.GamePhase.Subscribe(phase =>
-			{
-				switch (phase)
-				{
-					case MainGamePhase.WaitingRollingDice:
-						_group.alpha = 1.0f;
-						_group.blocksRaycasts = true;
-						_group.interactable = true;
-						break;
-					case MainGamePhase.WhileRollingDice:
-						_group.alpha = 1.0f;
-						_group.blocksRaycasts = true;
-						_group.interactable = false;
-						break;
-					default:
-						_group.alpha = 0.0f;
-						_group.blocksRaycasts = false;
-						_group.interactable = false;
-						break;
-				}
+				case DiceState.Roll:
+					var handler = _button.onClick.GetAsyncEventHandler( _canceler.ToToken() );
+					await handler.OnInvokeAsync();
 
-				_text.text = $"サイコロ";
-			} );
+					_group.alpha = 1;
+					_group.blocksRaycasts = true;
+					_group.interactable = false;
 
-			Button button = GetComponentInChildren<Button>();
-			
-			button.onClick.AddListener(() =>
-			{
-				mainGameManagementModel.InputDicesRoll();
-			});
-
-			diceModel._total.Subscribe(numberOfDice =>
-			{
-				_text.text = $"{numberOfDice}";
-				Observable.Timer(TimeSpan.FromSeconds(1.0)).Subscribe(_ =>
-				{
-					mainGameManagementModel.NotifyDiceRollingFinished(numberOfDice);
-				});
-			});
+					_diceManager.SetPower(
+						new Vector3(
+							Random.Range( -1, 1 ),
+							Random.Range( -1, 1 ),
+							Random.Range( -1, 1 )
+						).normalized * 10
+					);
+					break;
+			}
 		}
 	}
 }

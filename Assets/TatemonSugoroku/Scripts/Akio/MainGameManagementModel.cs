@@ -25,7 +25,7 @@ namespace TatemonSugoroku.Scripts.Akio
         private MotionModel _motionModel;
         private FieldModel _fieldModel;
         private ScoreModel _scoreModel;
-        private DiceModel _diceModel;
+//        private DiceModel _diceModel;
 
         private readonly ReactiveProperty<MainGamePhase>
             _gamePhase = new ReactiveProperty<MainGamePhase>(MainGamePhase.Idle);
@@ -48,7 +48,7 @@ namespace TatemonSugoroku.Scripts.Akio
             _motionModel = manager.Get<MotionModel>();
             _fieldModel = manager.Get<FieldModel>();
             _scoreModel = manager.Get<ScoreModel>();
-            _diceModel = manager.Get<DiceModel>();
+//            _diceModel = manager.Get<DiceModel>();
         }
 
         public void InitializeGame(int numberOfPlayers)
@@ -84,13 +84,14 @@ namespace TatemonSugoroku.Scripts.Akio
         public void NotifyShowingTurnCallFinished()
         {
             _gamePhase.Value = MainGamePhase.WaitingRollingDice;
-            _diceModel.ChangeState(DiceState.Rotate);
+//            _diceModel.ChangeState(DiceState.Rotate);
         }
 
         // サイコロを振り始めて欲しい時に呼び出して欲しいメソッド
         public void InputDicesRoll()
         {
             _gamePhase.Value = MainGamePhase.WhileRollingDice;
+/*
             _diceModel.SetPower(
                 new Vector3(
                     UnityEngine.Random.Range(-1.0f, 1.0f),
@@ -99,6 +100,7 @@ namespace TatemonSugoroku.Scripts.Akio
                 ).normalized * 10.0f
             );
             _diceModel.ChangeState(DiceState.Roll);
+*/
         }
 
         // サイコロが振り終われば呼び出して欲しいメソッド
@@ -111,7 +113,7 @@ namespace TatemonSugoroku.Scripts.Akio
             _motionModel.SetFieldCellsAsMovableField(_fieldModel.GetFieldCells());
             _motionModel.ClearInformation();
 
-            _diceModel.ChangeState(DiceState.Hide);
+//            _diceModel.ChangeState(DiceState.Hide);
             if (_motionModel.InspectPlayerCanMove())
             {
                 _gamePhase.Value = MainGamePhase.WaitingMovingPlayer;

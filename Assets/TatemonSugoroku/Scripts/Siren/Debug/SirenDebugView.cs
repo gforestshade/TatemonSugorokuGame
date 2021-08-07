@@ -3,6 +3,7 @@ using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
+using SubmarineMirage.Utility;
 using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 using TatemonSugoroku.Scripts;
@@ -22,11 +23,11 @@ namespace TatemonSugoroku.Siren {
 			var allModelManager = AllModelManager.s_instance;
 			var tileManager = allModelManager.Get<TileManagerModel>();
 			var moveArrowManager = allModelManager.Get<MoveArrowManagerModel>();
-			var dice = allModelManager.Get<DiceModel>();
+			var dice = FindObjectOfType<DiceManagerView>();
 			var pieces = allModelManager.Get<PieceManagerModel>();
 			var day = allModelManager.Get<DayModel>();
 			var tatemons = allModelManager.Get<TatemonManagerModel>();
-			var background = allModelManager.Get<BackgroundModel>();
+			var background = FindObjectOfType<BackgroundView>();
 
 
 			// 13番のタイル領域変更
@@ -83,17 +84,12 @@ namespace TatemonSugoroku.Siren {
 			inputManager.GetKey( SMInputKey.Quit )._enabledEvent.AddLast().Subscribe( _ => {
 				var i = ( ( int )diceState + 1 ) % EnumUtils.GetLength<DiceState>();
 				diceState = ( DiceState )i;
-				dice.SetPower(
-					new Vector3(
-						Random.Range( -1, 1 ),
-						Random.Range( -1, 1 ),
-						Random.Range( -1, 1 )
-					).normalized * 10
-				);
-				dice.ChangeState( diceState );
+
+				UTask.Void( async () => {
+					var ii = await dice.Roll();
+					SMLog.Debug( $"出目 : {ii}" );
+				} );
 			} );
-			// サイコロの目を表示
-			dice._total.Subscribe( i => SMLog.Debug( $"出目 : {i}" ) );
 
 			// コマ1の移動
 			var isMoveFinish1 = true;
