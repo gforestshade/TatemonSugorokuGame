@@ -22,6 +22,27 @@ namespace TatemonSugoroku.Scripts.Akio
         public int TileId;
     }
 
+    static partial class Utility
+    {
+        public static int MaxIndex<T>(IList<T> list)
+            where T : System.IComparable<T>
+        {
+            if (list.Count == 0) return -1;
+
+            int max_index = 0;
+            T max_element = list[0];
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].CompareTo(max_element) > 0)
+                {
+                    max_index = i;
+                    max_element = list[i];
+                }
+            }
+            return max_index;
+        }
+    }
+
     // Gfshade: 大改編
     public class MainGameManager : MonoBehaviour
     {
@@ -55,11 +76,13 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private readonly int[] _SpinPowersOfTatemon = { 0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1 };
         private readonly int _OppositeEnterBonusOne = 20;
+        private readonly int _MaxTurn = 2;
 
         private FieldModel fieldModel;
         private MotionModel motionModel;
         SMInputManager inputManager;
         PlayerInternalModel[] playerModels;
+
 
 
         private void InitTestPlayerInternalModels()
@@ -72,8 +95,8 @@ namespace TatemonSugoroku.Scripts.Akio
                     Name = "たてた",
                     Score = 0,
                     OppositeEnterBonus = 0,
-                    Tatemon = 7,
-                    MaxTatemon = 7,
+                    Tatemon = _MaxTurn,
+                    MaxTatemon = _MaxTurn,
                     TileId = 0,
                 },
                 new PlayerInternalModel
@@ -82,8 +105,8 @@ namespace TatemonSugoroku.Scripts.Akio
                     Name = "たてて",
                     Score = 0,
                     OppositeEnterBonus = 0,
-                    Tatemon = 7,
-                    MaxTatemon = 7,
+                    Tatemon = _MaxTurn,
+                    MaxTatemon = _MaxTurn,
                     TileId = 63,
                 },
             };
@@ -112,17 +135,16 @@ namespace TatemonSugoroku.Scripts.Akio
             // げーむがはじまるよ
             await GameStart(ct);
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < _MaxTurn; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
                     bool turnResult = await DoPlayerTurn(i, j, ct);
                     if (!turnResult) goto GameEnd;
-                }
 
-                // 「2人のたてもんが置かれたとき、さらに効果発動！
-                // 　スコアが再計算されるッ！」
-                await UpdateScore(ct);
+                    // たてもんが置かれるたび、それのスコアは再計算される。
+                    await UpdateScore(ct);
+                }
 
                 // じかんがすすむよ
                 _DayManager.UpdateHour();
@@ -134,9 +156,16 @@ namespace TatemonSugoroku.Scripts.Akio
             await InputAndMove(0, 3, ct);
             HideArrows();
 
+            /// 3歩あるいたあとはスコア更新しなくてもいい気がするかなあ
+
             GameEnd:
             // げーむがおわったよ
             await GameEnd(ct);
+
+            // 「そして、オレが勝者となる」
+            List<int> scores = playerModels.Select(p => p.Score).ToList();
+            int winner = Utility.MaxIndex(scores);
+            await _ResultUI.WaitForClick(scores, winner, ct);
         }
 
         private async UniTask<bool> DoPlayerTurn(int turnIndex, int playerId, CancellationToken ct)
@@ -159,13 +188,19 @@ namespace TatemonSugoroku.Scripts.Akio
             // 「フィールドを、好きな方向に12回まで塗りつぶすことができるッ！」
             await InputAndMove(playerId, dice, ct);
 
-            // 「さらに！　塗りつぶしが終了したとき、効果発動！」
-            HideArrows();
             await UniTask.Delay(wait02, cancellationToken: ct);
 
-            // 「オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
-            fieldModel.PutTatemonAtCurrentPosition(playerId, _SpinPowersOfTatemon[dice]);
-            _TatemonManager.Place(playerId, pTurn.TileId, _SpinPowersOfTatemon[dice]);
+            // 「さらに！　塗りつぶしが終了したとき、効果発動！オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
+            int spinPower = _SpinPowersOfTatemon[dice];
+            if (turnIndex == _MaxTurn - 1)
+            {
+                // 「最終ターンである場合、さらに効果発動！「たてもん」のパワーが、2倍になるぜッ！」
+                spinPower *= 2;
+            }
+
+            // 「モンスター「たてもん」が召喚される！」
+            fieldModel.PutTatemonAtCurrentPosition(playerId, spinPower);
+            _TatemonManager.Place(playerId, pTurn.TileId, spinPower);
             await UniTask.Delay(wait02, cancellationToken: ct);
             await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
             playerModels[playerId].Tatemon -= 1;
@@ -192,9 +227,21 @@ namespace TatemonSugoroku.Scripts.Akio
             //await UniTask.Delay(System.TimeSpan.FromSeconds(5));
         }
 
+        /// <summary>
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ゲーム終了時に演出をするぞ！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        /// </summary>
         private async UniTask GameEnd(CancellationToken ct)
         {
             SMLog.Debug($"ゲーム終了", SMLogTag.Scene);
+            _UI.gameObject.SetActive(false);
             await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: ct);
         }
 
@@ -227,12 +274,13 @@ namespace TatemonSugoroku.Scripts.Akio
                 return false;
             }
 
+            Queue<int> motions;
+
             // 例外が飛んだ場合は購読していたという事実は無かったことになる
             using (CompositeDisposable movementDisposables = new CompositeDisposable())
             {
-                // 移動ルート受け取り用のQueueとSubjectを用意
+                // 移動ルート受け取り用のSubjectを用意
                 Subject<Queue<int>> motionQueueSubject = new Subject<Queue<int>>();
-                Queue<int> motions;
 
                 // 触った場所を購読して、MotionModelに流す
                 // 最終結果は移動ルート受け取り用Subjectに向かってぷっしゅしてもらう
@@ -280,22 +328,23 @@ namespace TatemonSugoroku.Scripts.Akio
                 // 移動終了まで待つ
                 motions = await motionQueueSubject.ToUniTask(cancellationToken: ct);
                 pTurn.TileId = motions.Last();
+                HideArrows();
+            }
 
-                // ルートを塗る
-                while (motions.Count > 0)
+            // ルートを塗る
+            while (motions.Count > 0)
+            {
+                int tileId = motions.Dequeue();
+                var moveResult = fieldModel.MovePlayer(playerId, tileId);
+
+                // 「罠カードオープン！　おまえがオレの領域(テリトリー)を踏んだ時、オレは20点のスコアを得る！」
+                if (moveResult.IsOppositeEnter)
                 {
-                    int tileId = motions.Dequeue();
-                    var moveResult = fieldModel.MovePlayer(playerId, tileId);
-
-                    // 「罠カードオープン！　おまえがオレの領域(テリトリー)を踏んだ時、オレは20点のスコアを得る！」
-                    if (moveResult.IsOppositeEnter)
-                    {
-                        playerModels[moveResult.oppositePlayerId].OppositeEnterBonus += _OppositeEnterBonusOne;
-                    }
-
-                    // 塗る
-                    _TileManager.ChangeArea(tileId, playerId);
+                    playerModels[moveResult.oppositePlayerId].OppositeEnterBonus += _OppositeEnterBonusOne;
                 }
+
+                // 塗る
+                _TileManager.ChangeArea(tileId, playerId);
 
                 await _PieceManager.Move(playerId, pTurn.TileId);
             }
