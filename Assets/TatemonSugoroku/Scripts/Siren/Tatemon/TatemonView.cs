@@ -34,6 +34,7 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>タイルが配置済みか？</summary>
 		public bool _isPlaced => _state != TatemonState.None;
 		bool _isNearPiece { get; set; }
+		float _placeEndSecond { get; set; }
 
 		Tween _rotateTween { get; set; }
 
@@ -68,6 +69,8 @@ namespace TatemonSugoroku.Scripts {
 
 		protected override void Update() {
 			base.Update();
+
+			if ( _placeEndSecond > Time.time ) { return; }
 
 			var isNear = _pieceManager._views.Any( v => {
 				var delta = v.transform.position - transform.position;
@@ -108,6 +111,7 @@ namespace TatemonSugoroku.Scripts {
 						.SetEase( Ease.OutBounce )
 						.Play();
 					Rotate();
+					_placeEndSecond = Time.time + 3;
 					break;
 			}
 		}

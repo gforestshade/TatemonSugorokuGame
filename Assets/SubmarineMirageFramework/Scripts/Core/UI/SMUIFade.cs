@@ -55,16 +55,23 @@ namespace SubmarineMirage.UI {
 		/// ● 作成
 		/// </summary>
 		///------------------------------------------------------------------------------------------------
-		public override void Create () {
+		public SMUIFade() {
 			var go = Object.Instantiate( Resources.Load<GameObject>( "Prefabs/UIFade" ) );
 			Object.DontDestroyOnLoad( go );
 			_image = go.GetComponentInChildren<Image>();
+
+			Out( 10000 ).Forget();
 
 			_disposables.AddLast( () => {
 				_fadeCanceler.Dispose();
 				_image.gameObject.Destroy();
 			} );
 		}
+		
+		public override void Create () {
+		}
+
+
 
 		public async UniTask In( float velocity = DEFAULT_VELOCITY ) {
 			_fadeCanceler.Cancel();
