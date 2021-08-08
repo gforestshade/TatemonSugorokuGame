@@ -26,10 +26,15 @@ namespace TatemonSugoroku.Scripts {
 					// ここに、Unityシーンと対応する、クラスを登録（シーン名 + SMScene）
 					new Type[] {
 						typeof( UnknownSMScene ),
+
 						// たてもんすごろくのシーン
 						typeof( TitleSMScene ),
 						typeof( GameSMScene ),
 						typeof( ResultSMScene ),
+
+						// テストシーン
+						typeof( Siren.SirenSMScene ),
+
 						// サンプルのシーン
 						typeof( SampleTitleSMScene ),
 						typeof( SampleGameSMScene ),

@@ -43,6 +43,8 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public async UniTask ChangeState( DiceState state ) {
+			await UTask.DelayFrame( _canceler, 1 );
+
 			_text.text = $"サイコロ";
 
 			switch ( state ) {

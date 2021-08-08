@@ -129,8 +129,8 @@ namespace SubmarineMirage.Event {
 				if ( !_isDispose ) {
 					_asyncCancelerForRun = null;
 					if ( !_modifyler._isDispose )	{ _modifyler._isLock = false; }
-					_isRunning = false;
 				}
+				_isRunning = false;
 			}
 #if TestEvent
 			SMLog.Debug( $"{nameof( Run )} : end\n{this}" );

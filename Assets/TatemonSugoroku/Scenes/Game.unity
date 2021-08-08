@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: efdd37ae4f6537a4d8042f80547dd1c5, type: 2}
   m_HaloStrength: 0.5
@@ -1659,6 +1659,7 @@ GameObject:
   - component: {fileID: 1196873386}
   - component: {fileID: 1196873385}
   - component: {fileID: 1196873387}
+  - component: {fileID: 1196873388}
   m_Layer: 0
   m_Name: Debug
   m_TagString: Untagged
@@ -1702,6 +1703,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83857817b1a0f314a93e808829145fd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1196873388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196873384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7766013e2d6ef7469c562e3cccb18f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1255418514
