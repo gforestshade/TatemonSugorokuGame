@@ -30,10 +30,11 @@ namespace TatemonSugoroku.Scripts {
 			_text = GetComponentInChildren<Text>();
 			_button = GetComponentInChildren<Button>();
 			_diceManager = FindObjectOfType<DiceManagerView>();
+			/*
 			_diceManager._totalEvent.Subscribe( i => {
 				_text.text = $"{i}";
 			} );
-
+			*/
 
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();

@@ -29,6 +29,12 @@ namespace TatemonSugoroku.Scripts.Akio
         private UICanvas _UI;
 
         [SerializeField]
+        private DiceCanvas _DiceUI;
+
+        [SerializeField]
+        private ResultCanvas _ResultUI;
+
+        [SerializeField]
         private DiceManagerView _DiceManager;
 
         [SerializeField]
@@ -144,7 +150,7 @@ namespace TatemonSugoroku.Scripts.Akio
             await TurnStart(pTurn);
 
             // 「ドロー！」
-            int dice = await DoDice();
+            int dice = await DoDice(playerId);
 
             // 「オレは、12を召喚！」
             _UI.SetWalkRemaining(dice);
@@ -199,9 +205,10 @@ namespace TatemonSugoroku.Scripts.Akio
             await UniTask.Delay(System.TimeSpan.FromSeconds(1));
         }
 
-        private async UniTask<int> DoDice()
+        private async UniTask<int> DoDice(int playerId)
         {
             SMLog.Debug($"サイコロボタンを押してください", SMLogTag.Scene);
+            await _DiceUI.WaitForClick(playerId);
             int dice = await _DiceManager.Roll();
             
             SMLog.Debug($"{dice}が出ました", SMLogTag.Scene);

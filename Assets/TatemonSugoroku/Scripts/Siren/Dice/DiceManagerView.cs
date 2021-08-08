@@ -72,7 +72,7 @@ namespace TatemonSugoroku.Scripts {
 
 			_state.Value = state;
 
-			await _uiView.ChangeState( state );
+			//await _uiView.ChangeState( state );
 			await _views.Select( v => v.ChangeState( state ) );
 
 			if ( state == DiceState.Roll ) {
