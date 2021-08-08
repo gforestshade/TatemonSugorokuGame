@@ -100,7 +100,7 @@ namespace TatemonSugoroku.Scripts {
 				case SMPlatformType.MacOSX:
 				case SMPlatformType.Linux:
 					_screenSize = SMScreenSize._1920X1080;
-					_quality = SMQuality.Middle;
+					_quality = SMQuality.VeryHigh;
 					_frameRate = SMFrameRate._60;
 					break;
 
@@ -108,7 +108,7 @@ namespace TatemonSugoroku.Scripts {
 				case SMPlatformType.Android:
 				case SMPlatformType.IOS:
 					_screenSize = SMScreenSize._960X540;
-					_quality = SMQuality.VeryLow;
+					_quality = SMQuality.Middle;
 					_frameRate = SMFrameRate._30;
 					break;
 			}
