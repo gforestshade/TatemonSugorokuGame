@@ -50,13 +50,13 @@ namespace TatemonSugoroku.Scripts {
 						15
 					);
 					transform.localScale = Vector3.zero;
-					_renderer.material.color = Color.clear;
+					_renderer.material.color = Color.white;
 				} )
 				.AppendInterval( Random.Range( 0, 2 ) )
-				.Append( transform.DOScale( _maxScale, 1 ) )
-				.Join( _renderer.material.DOColor( Color.white, 1 ) )
-				.AppendInterval( 1 )
-				.Append( _renderer.material.DOColor( Color.clear, 2 ) )
+				.Append( transform.DOScale( _maxScale, 0.02f ).SetEase( Ease.OutCirc ) )
+				.Join( _renderer.material.DOColor( Color.white, 0.02f ) )
+				.Append( transform.DOScale( _maxScale + new Vector3( 0.1f, 0.1f, 0.1f ), 4 ).SetEase( Ease.OutCirc ) )
+				.Join( _renderer.material.DOColor( Color.clear, 4 ) )
 				.AppendInterval( Random.Range( 2, 5 ) )
 				.SetEase( Ease.InOutQuad )
 				.SetLoops( -1, LoopType.Restart )

@@ -31,11 +31,13 @@ namespace TatemonSugoroku.Scripts {
 
 		/// <summary>時間が進む速度</summary>
 		float _hourVeloctiy { get; set; }
+		int turnCount { get; set; }
 
 		/// <summary>現在時刻</summary>
 		public readonly ReactiveProperty<float> _hour = new ReactiveProperty<float>();
 		/// <summary>日の強さの割合</summary>
 		public readonly ReactiveProperty<float> _sunsetRate = new ReactiveProperty<float>();
+		public readonly ReactiveProperty<DayState> _state = new ReactiveProperty<DayState>();
 
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>
@@ -47,6 +49,12 @@ namespace TatemonSugoroku.Scripts {
 			var delta = END_HOUR - FIRST_HOUR;
 			_hourVeloctiy = ( float )delta / MAX_PLAYER_TURN;
 			_sunsetRate.Value = 1;
+
+			_disposables.AddFirst( () => {
+				_hour.Dispose();
+				_sunsetRate.Dispose();
+				_state.Dispose();
+			} );
 		}
 
 		///----------------------------------------------------------------------------------------------------
@@ -57,6 +65,25 @@ namespace TatemonSugoroku.Scripts {
 		/// </summary>
 		///----------------------------------------------------------------------------------------------------
 		public void UpdateHour() {
+			turnCount += 1;
+			switch ( turnCount ) {
+				case 0:
+				case 1:
+				case 2:
+					_state.Value = DayState.Sun;
+					break;
+
+				case 3:
+				case 4:
+					_state.Value = DayState.Evening;
+					break;
+
+				case 5:
+				case 6:
+					_state.Value = DayState.Night;
+					break;
+			}
+
 			_hour.Value = Mathf.Clamp( _hour.Value + _hourVeloctiy, FIRST_HOUR, END_HOUR );
 
 			var delta = END_SUNSET_HOUR - _hour.Value;

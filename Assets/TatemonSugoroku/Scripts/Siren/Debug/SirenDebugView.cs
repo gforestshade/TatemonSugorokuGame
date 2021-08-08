@@ -31,6 +31,7 @@ namespace TatemonSugoroku.Siren {
 			var day = FindObjectOfType<DayView>();
 			var tatemons = FindObjectOfType<TatemonManagerView>();
 			var background = FindObjectOfType<BackgroundView>();
+			var camera = FindObjectOfType<GameCameraView>();
 
 
 			// 13番のタイル領域変更
@@ -166,9 +167,15 @@ namespace TatemonSugoroku.Siren {
 					tatemonPlayer = ( PlayerType )i;
 				} );
 //*/
+/*
 			// 背景絵を変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
 				background.ChangeImage();
+			} );
+*/
+
+			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
+				camera.SetResultCamera();
 			} );
 		}
 	}

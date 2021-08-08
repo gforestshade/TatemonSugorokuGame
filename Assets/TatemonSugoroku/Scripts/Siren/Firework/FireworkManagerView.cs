@@ -35,9 +35,13 @@ namespace TatemonSugoroku.Scripts {
 			} );
 
 			var day = FindObjectOfType<DayView>();
-			day._hour
-				.Where( h => h >= LAUNCH_HOUR )
-				.Subscribe( h => Launch() );
+			day._state.Subscribe( state => {
+				switch ( state ) {
+					case DayState.Night:
+						Launch();
+						break;
+				}
+			} );
 		}
 
 

@@ -1,5 +1,6 @@
 //#define TestSun
 using UnityEngine;
+using UnityEngine.Rendering;
 using UniRx;
 using SubmarineMirage.Base;
 namespace TatemonSugoroku.Scripts {
@@ -14,6 +15,7 @@ namespace TatemonSugoroku.Scripts {
 		const float ANGLE_OFFSET = -90 - ANGLE_TO_HOUR * 2;
 
 		[SerializeField] Color _sunColor;
+		[SerializeField] Color _eveningColor;
 		[SerializeField] Color _nightColor;
 
 		Light _light;
@@ -26,8 +28,27 @@ namespace TatemonSugoroku.Scripts {
 			_firstAngles = transform.eulerAngles;
 
 			var day = FindObjectOfType<DayView>();
-			day._hour.Subscribe( h => SetAngle( h ) );
-			SetAngle( day._hour.Value );
+//			day._hour.Subscribe( h => SetAngle( h ) );
+//			SetAngle( day._hour.Value );
+
+			day._state.Subscribe( state => {
+				switch ( state ) {
+					case DayState.Sun:
+						RenderSettings.ambientMode = AmbientMode.Flat;
+						RenderSettings.ambientLight = _sunColor;
+						break;
+
+					case DayState.Evening:
+						RenderSettings.ambientMode = AmbientMode.Flat;
+						RenderSettings.ambientLight = _eveningColor;
+						break;
+
+					case DayState.Night:
+						RenderSettings.ambientMode = AmbientMode.Flat;
+						RenderSettings.ambientLight = _nightColor;
+						break;
+				}
+			} );
 		}
 
 
