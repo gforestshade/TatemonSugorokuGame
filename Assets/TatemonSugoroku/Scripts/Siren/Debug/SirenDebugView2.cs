@@ -16,85 +16,95 @@ namespace TatemonSugoroku.Siren {
 	/// ■ Siren用、デバッグの描画クラス2
 	///		音のテスト用。
 	/// </summary>
-	public class SirenDebugView2 : SMStandardMonoBehaviour {
-		protected override void UpdateAfterInitialize() {
-			var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
+	public class SirenDebugView2 : MonoBehaviour {
+		SMAudioManager _audioManager { get; set; }
+
+
+
+		async void Start() {
+			_audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+		}
+
+
+
+		void Update() {
+			if ( _audioManager == null )	{ return; }
 
 			// BGM（音楽）の再生、停止
 			if ( Input.GetKeyDown( KeyCode.Keypad7 ) ) {
-				audioManager.Play( SMBGM.TestBattle ).Forget();
+				_audioManager.Play( SMBGM.TestBattle ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.Keypad8 ) ) {
-				audioManager.Play( SMBGM.TestTitle ).Forget();
+				_audioManager.Play( SMBGM.TestTitle ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.Keypad9 ) ) {
-				audioManager.Stop<SMBGM>().Forget();
+				_audioManager.Stop<SMBGM>().Forget();
 			}
 
 			// BGS（環境音）の再生、停止
 			if ( Input.GetKeyDown( KeyCode.Keypad4 ) ) {
-				audioManager.Play( SMBGS.TestWater ).Forget();
+				_audioManager.Play( SMBGS.TestWater ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.Keypad5 ) ) {
-				audioManager.Play( SMBGS.TestWind ).Forget();
+				_audioManager.Play( SMBGS.TestWind ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.Keypad6 ) ) {
-				audioManager.Stop<SMBGS>().Forget();
+				_audioManager.Stop<SMBGS>().Forget();
 			}
 
 			// ジングル（ファンファーレ音）の再生、停止
 			if ( Input.GetKeyDown( KeyCode.Keypad1 ) ) {
-				audioManager.Play( SMJingle.TestGameClear ).Forget();
+				_audioManager.Play( SMJingle.TestGameClear ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.Keypad2 ) ) {
-				audioManager.Play( SMJingle.TestGameOver ).Forget();
+				_audioManager.Play( SMJingle.TestGameOver ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.Keypad3 ) ) {
-				audioManager.Stop<SMJingle>().Forget();
+				_audioManager.Stop<SMJingle>().Forget();
 			}
 
 			// SE（効果音）の再生、停止
 			if ( Input.GetKeyDown( KeyCode.Z ) ) {
-				audioManager.Play( SMSE.Decide ).Forget();
+				_audioManager.Play( SMSE.Decide ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.X ) ) {
-				audioManager.Play( SMSE.Dice ).Forget();
+				_audioManager.Play( SMSE.Dice ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.C ) ) {
-				audioManager.Play( SMSE.Walk ).Forget();
+				_audioManager.Play( SMSE.Walk ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.V ) ) {
-				audioManager.Play( SMSE.Tatemon ).Forget();
+				_audioManager.Play( SMSE.Tatemon ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.B ) ) {
-				audioManager.Stop<SMSE>().Forget();
+				_audioManager.Stop<SMSE>().Forget();
 			}
 
 			// ループSE（効果音）の再生、停止
 			if ( Input.GetKeyDown( KeyCode.A ) ) {
-				audioManager.Play( SMLoopSE.TestTalk1 ).Forget();
+				_audioManager.Play( SMLoopSE.TestTalk1 ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.S ) ) {
-				audioManager.Play( SMLoopSE.TestTalk2 ).Forget();
+				_audioManager.Play( SMLoopSE.TestTalk2 ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.D ) ) {
-				audioManager.Stop<SMLoopSE>().Forget();
+				_audioManager.Stop<SMLoopSE>().Forget();
 			}
 
 			// 声音の再生、停止
 			if ( Input.GetKeyDown( KeyCode.Q ) ) {
-				audioManager.Play( SMVoice.TestRidicule ).Forget();
+				_audioManager.Play( SMVoice.TestRidicule ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.W ) ) {
-				audioManager.Play( SMVoice.TestScream ).Forget();
+				_audioManager.Play( SMVoice.TestScream ).Forget();
 			}
 			if ( Input.GetKeyDown( KeyCode.E ) ) {
-				audioManager.Stop<SMVoice>().Forget();
+				_audioManager.Stop<SMVoice>().Forget();
 			}
 
 			// 全音を停止
 			if ( Input.GetKeyDown( KeyCode.Space ) ) {
-				audioManager.StopAll().Forget();
+				_audioManager.StopAll().Forget();
 			}
 		}
 	}

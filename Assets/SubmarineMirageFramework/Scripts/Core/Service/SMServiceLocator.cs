@@ -27,6 +27,7 @@ namespace SubmarineMirage.Service {
 		[SMShowLine] public static bool s_isDisposed => s_disposables._isDispose;
 		static readonly SMDisposable s_disposables = new SMDisposable();
 		public static readonly Dictionary<Type, ISMService> s_container = new Dictionary<Type, ISMService>();
+		public static readonly SMAsyncCanceler s_defaultCanceler = new SMAsyncCanceler();
 
 		///------------------------------------------------------------------------------------------------
 		/// ● 作成、削除
@@ -43,6 +44,7 @@ namespace SubmarineMirage.Service {
 #if TestService
 				SMLog.Debug( $"{nameof( SMServiceLocator )}.{nameof( Dispose )}", SMLogTag.Service );
 #endif
+				s_defaultCanceler.Dispose();
 				s_container.ForEach( pair => pair.Value?.Dispose() );
 				s_container.Clear();
 			} );
@@ -94,8 +96,10 @@ namespace SubmarineMirage.Service {
 			return s_container.GetOrDefault( typeof( T ) ) as T;
 		}
 
-		public static async UniTask<T> WaitResolve<T>( SMAsyncCanceler canceler ) where T : class, ISMService {
+		public static async UniTask<T> WaitResolve<T>( SMAsyncCanceler canceler = null ) where T : class, ISMService {
 			if ( s_isDisposed )	{ return null; }
+
+			canceler = canceler ?? s_defaultCanceler;
 
 			var type = typeof( T );
 			ISMService instance = null;
