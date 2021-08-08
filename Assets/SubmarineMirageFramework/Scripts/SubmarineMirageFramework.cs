@@ -67,7 +67,9 @@ namespace SubmarineMirage {
 				SMLog.Debug( $"{nameof( SubmarineMirageFramework )}.{nameof( Shutdown )} : ゲーム終了" );
 
 				if ( SMDebugManager.IS_UNITY_EDITOR ) {
+#if UNITY_EDITOR
 					UnityEditor.EditorApplication.isPlaying = false;
+#endif
 				} else {
 					Application.Quit();
 				}
