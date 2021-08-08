@@ -4,17 +4,12 @@ using DG.Tweening;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-//using TatemonSugoroku.Gfshade.Extension;
 
 
 namespace TatemonSugoroku.Scripts
 {
     public class UICanvas : MonoBehaviour
     {
-        [SerializeField]
-        TMPro.TextMeshProUGUI _PlayerName;
-        public TMPro.TextMeshProUGUI PlayerName => _PlayerName;
-
         [SerializeField]
         WalkRemainingPanel _WalkRemaining;
         public WalkRemainingPanel WalkRemaining => _WalkRemaining;
@@ -29,20 +24,6 @@ namespace TatemonSugoroku.Scripts
 
         private Sequence changeWalkSeq = null;
 
-
-        public void Initalize(IList<string> playerNames)
-        {
-            if (playerNames.Count != PlayerStatusPanels.Length)
-            {
-                throw new System.ArgumentException();
-            }
-
-            for (int i = 0; i < PlayerStatusPanels.Length; i++)
-            {
-                SetString(PlayerStatusPanels[i].Name, playerNames[i]);
-            }
-        }
-
         private void SetString(TMPro.TextMeshProUGUI tm, string str)
         {
             tm.SetText(str);
@@ -50,16 +31,6 @@ namespace TatemonSugoroku.Scripts
         private void SetInt(TMPro.TextMeshProUGUI tm, int num)
         {
             tm.SetText("{0}", num);
-        }
-
-        public void SetCurrentPlayerName(string name)
-        {
-            PlayerName.SetText(name);
-        }
-
-        public void SetName(int playerId, string str)
-        {
-            SetString(PlayerStatusPanels[playerId].Name, str);
         }
 
         public void SetScore(int playerId, int num)
@@ -70,6 +41,11 @@ namespace TatemonSugoroku.Scripts
         public void SetTatemon(int playerId, int num)
         {
             SetInt(PlayerStatusPanels[playerId].Tatemon, num);
+        }
+
+        public void SetMaxTatemon(int playerId, int num)
+        {
+            SetInt(PlayerStatusPanels[playerId].MaxTatemon, num);
         }
 
         public void SetWalkRemaining(int num)

@@ -172,11 +172,11 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private void InitUI()
         {
-            _UI.Initalize(playerModels.Select(info => info.Name).ToList());
             for (int i = 0; i < playerModels.Length; i++)
             {
                 _UI.SetScore(i, playerModels[i].Score);
                 _UI.SetTatemon(i, playerModels[i].Tatemon);
+                _UI.SetMaxTatemon(i, playerModels[i].MaxTatemon);
             }
         }
 
@@ -195,7 +195,7 @@ namespace TatemonSugoroku.Scripts.Akio
         private async UniTask TurnStart(PlayerInternalModel model)
         {
             SMLog.Debug($"{model.Name}のターン", SMLogTag.Scene);
-            _UI.SetCurrentPlayerName(model.Name);
+            //_UI.SetCurrentPlayerName(model.Name);
             await UniTask.Delay(System.TimeSpan.FromSeconds(1));
         }
 

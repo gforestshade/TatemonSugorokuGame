@@ -14,7 +14,10 @@ namespace TatemonSugoroku.Gfshade
         UICanvas _UI;
 
         [SerializeField]
-        TatemonRotator _Tatemon;
+        DiceCanvas _DiceUI;
+
+        [SerializeField]
+        ResultCanvas _ResultUI;
 
 
         private readonly string[] playerNames = new string[] {"たてお", "たてこ"};
@@ -31,13 +34,13 @@ namespace TatemonSugoroku.Gfshade
             int[] scores = new int[] {0, 0};
             int[] tatemons = new int[] {7, 7};
 
+            await _ResultUI.WaitForClick(new int[] {500, 700}, 1);
+
             for (int i = 0; i < 7; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    _UI.SetCurrentPlayerName(playerNames[j]);
-                    await UniTask.Delay(wait1);
-
+                    await _DiceUI.WaitForClick(j);
                     int dice = Random.Range(1, 6) + Random.Range(1, 6);
 
                     _UI.SetWalkRemaining(dice);
@@ -67,10 +70,6 @@ namespace TatemonSugoroku.Gfshade
                     scores[j] += 10;
                 }
 
-                _Tatemon.Speed += 30f;
-                _Tatemon.IsLookAtCamera = false;
-                _Tatemon.IsRotate = true;
-
                 await UniTask.Delay(wait2);
             }
             await EndEffect();
@@ -78,7 +77,6 @@ namespace TatemonSugoroku.Gfshade
 
         private void InitUI()
         {
-            _UI.Initalize(playerNames);
             _UI.SetScore(0, 0);
             _UI.SetScore(1, 0);
             _UI.SetTatemon(0, 7);
@@ -87,7 +85,7 @@ namespace TatemonSugoroku.Gfshade
 
         private async UniTask StartEffect()
         {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(5));
+            await UniTask.Delay(System.TimeSpan.FromSeconds(3));
         }
 
         private async UniTask EndEffect()
