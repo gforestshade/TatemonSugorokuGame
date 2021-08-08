@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using SubmarineMirage.Service;
+using SubmarineMirage.Scene;
 
 namespace TatemonSugoroku.Scripts
 {
@@ -31,6 +33,9 @@ namespace TatemonSugoroku.Scripts
                     _ResultScores[i].Score.SetText("{0}", scores[i]);
                 }
                 await _Button.OnClickAsync(ct);
+                var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
+                sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
+                
             }
             finally
             {
