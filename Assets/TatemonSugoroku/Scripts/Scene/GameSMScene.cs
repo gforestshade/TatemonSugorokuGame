@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UniRx;
 using SubmarineMirage.Scene;
 using SubmarineMirage.Utility;
@@ -28,7 +29,8 @@ namespace TatemonSugoroku.Scripts {
 			// 更新（非同期的に実行）
 			_asyncUpdateEvent.AddLast( async canceler => {
 				var game = UnityEngine.GameObject.FindObjectOfType<Akio.MainGameManager>();
-				await game.DoGame(canceler.ToToken());
+				game.DoGame( canceler.ToToken() ).Forget();
+				await UTask.DontWait();
 			} );
 
 			// 物理更新

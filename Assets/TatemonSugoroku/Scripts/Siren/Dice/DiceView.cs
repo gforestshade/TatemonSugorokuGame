@@ -17,6 +17,7 @@ namespace TatemonSugoroku.Scripts {
 		Rigidbody _rigidbody { get; set; }
 		Transform[] _transforms { get; set; }
 		Vector3 _firstPosition { get; set; }
+		ParticleSystem _particle { get; set; }
 
 		int _diceID { get; set; }
 		DiceState _state { get; set; }
@@ -35,8 +36,16 @@ namespace TatemonSugoroku.Scripts {
 				.Select( go => go.transform )
 				.ToArray();
 
-			var first = -DiceManagerView.MAX_COUNT / 2 + 0.5f;
-			transform.position += Vector3.left * ( first + diceID );
+			_particle = GetComponentInChildren<ParticleSystem>( true );
+
+			switch ( diceID ) {
+				case 0:
+					transform.position += Vector3.left;
+					break;
+				case 1:
+					transform.position += Vector3.right;
+					break;
+			}
 			_firstPosition = transform.position;
 
 			_state = DiceState.Roll;
@@ -56,6 +65,11 @@ namespace TatemonSugoroku.Scripts {
 					transform.position = _firstPosition;
 					break;
 			}
+		}
+
+		void OnCollisionEnter( Collision collision ) {
+			_particle.transform.position = collision.contacts.First().point;
+			_particle.Play();
 		}
 
 

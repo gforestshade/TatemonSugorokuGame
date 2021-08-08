@@ -19,7 +19,12 @@ namespace TatemonSugoroku.Scripts {
 		const int MAX_PLAYER_TURN = 7;
 
 		[SerializeField] GameObject _prefab;
+		[SerializeField] List<Sprite> _auraSpritesSetter;
+		[SerializeField] List<Sprite> _tatemonSpritesSetter;
 		[SerializeField] float _speedRate = 1;
+
+		readonly Dictionary<PlayerType, Sprite> _auraSprites = new Dictionary<PlayerType, Sprite>();
+		readonly Dictionary<int, Sprite> _tatemonSprites = new Dictionary<int, Sprite>();
 
 		readonly Dictionary<PlayerType, List<TatemonView>> _views
 			= new Dictionary<PlayerType, List<TatemonView>>();
@@ -29,6 +34,14 @@ namespace TatemonSugoroku.Scripts {
 
 
 		void Start() {
+			_auraSpritesSetter.ForEach( ( s, i ) => {
+				_auraSprites[( PlayerType )i] = s;
+			} );
+			_tatemonSpritesSetter.ForEach( s => {
+				var i = s.name.Replace( "tatemon", "" ).ToInt();
+				_tatemonSprites[i] = s;
+			} );
+
 			EnumUtils.GetValues<PlayerType>().ForEach( type => {
 				_views[type] = Enumerable.Range( 0, MAX_PLAYER_TURN )
 					.Select( i => {
@@ -106,7 +119,10 @@ namespace TatemonSugoroku.Scripts {
 			var m = GetView( type, turnID );
 			_turnCounts[type] += 1;
 
-			m.Place( tilePosition, rotatePower );
+			var tatemonSprite = _tatemonSprites[rotatePower];
+			var auraSprite = _auraSprites[type];
+
+			m.Place( tilePosition, rotatePower, tatemonSprite, auraSprite );
 		}
 	}
 }
