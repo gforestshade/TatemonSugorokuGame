@@ -259,6 +259,7 @@ namespace TatemonSugoroku.Scripts.Akio
         private async UniTask<int> DoDice(int playerId, CancellationToken ct)
         {
             SMLog.Debug($"サイコロボタンを押してください", SMLogTag.Scene);
+            await _DiceManager.ChangeState( DiceState.Rotate );
             await _DiceUI.WaitForClick(playerId);
             int dice = await _DiceManager.Roll();
             

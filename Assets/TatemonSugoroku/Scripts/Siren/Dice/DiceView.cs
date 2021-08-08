@@ -40,10 +40,10 @@ namespace TatemonSugoroku.Scripts {
 
 			switch ( diceID ) {
 				case 0:
-					transform.position += Vector3.left;
+					transform.position = new Vector3( -1, 5, 0 );
 					break;
 				case 1:
-					transform.position += Vector3.right;
+					transform.position = new Vector3( 1, 5, 0 );
 					break;
 			}
 			_firstPosition = transform.position;
