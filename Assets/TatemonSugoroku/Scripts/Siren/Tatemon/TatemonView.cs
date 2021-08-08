@@ -1,6 +1,6 @@
-#define TestTatemon
+using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
@@ -13,7 +13,9 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ たてもんの描画クラス
 	/// </summary>
 	public class TatemonView : SMStandardMonoBehaviour {
-		Renderer[] _renderers { get; set; }
+		readonly Dictionary<string, SpriteRenderer> _renderers = new Dictionary<string, SpriteRenderer>();
+		readonly List<ParticleSystem> _particles = new List<ParticleSystem>();
+		PieceManagerView _pieceManager { get; set; }
 
 		TatemonState _state { get; set; }
 		/// <summary>プレイヤーのタイプ</summary>
@@ -31,6 +33,7 @@ namespace TatemonSugoroku.Scripts {
 
 		/// <summary>タイルが配置済みか？</summary>
 		public bool _isPlaced => _state != TatemonState.None;
+		bool _isNearPiece { get; set; }
 
 		Tween _rotateTween { get; set; }
 
@@ -43,14 +46,15 @@ namespace TatemonSugoroku.Scripts {
 
 			gameObject.name = $"Tatemon {_playerType} {_turnID}";
 
-#if TestTatemon
-			_renderers = GetComponentsInChildren<Renderer>();
-			if ( _playerType == PlayerType.Player2 ) {
-				_renderers.ForEach( r => r.material.color = Color.red );
-			}
-//			_renderers[2].gameObject.SetActive( false );
-//			_renderers[3].gameObject.SetActive( false );
-#endif
+			_pieceManager = FindObjectOfType<PieceManagerView>();
+
+			var rs = GetComponentsInChildren<SpriteRenderer>();
+			rs.ForEach( r => {
+				_renderers[r.gameObject.name] = r;
+			} );
+			GetComponentsInChildren<ParticleSystem>().ForEach( p => {
+				_particles.Add( p );
+			} );
 
 			_state = TatemonState.Place;
 			ChangeState( TatemonState.None );
@@ -62,11 +66,31 @@ namespace TatemonSugoroku.Scripts {
 
 
 
+		protected override void Update() {
+			base.Update();
+
+			var isNear = _pieceManager._views.Any( v => {
+				var delta = v.transform.position - transform.position;
+				var distance = delta.magnitude;
+				return distance < 1.2;
+			} );
+
+			if ( _isNearPiece == isNear ) { return; }
+			_isNearPiece = isNear;
+			_renderers.ForEach( pair => {
+				var c = pair.Value.color;
+				c.a = _isNearPiece ? 0.4f : 1;
+				pair.Value.color = c;
+			} );
+		}
+
+
+
 		public void ChangeState( TatemonState state ) {
 			if ( _state == state )	{ return; }
 			_state = state;
 
-			transform.position = TileManagerView.ToRealPosition( _tilePosition );
+			transform.position = TileManagerView.ToRealPosition( _tilePosition ) + new Vector3( 0, 0.5f, 0 );
 			transform.localScale = TileManagerView.REAL_SCALE;
 
 			switch ( _state ) {
@@ -77,6 +101,12 @@ namespace TatemonSugoroku.Scripts {
 
 				case TatemonState.Place:
 					gameObject.SetActive( true );
+					var scale = transform.localScale;
+					transform.localScale = Vector3.zero;
+					transform
+						.DOScale( scale, 1 )
+						.SetEase( Ease.OutBounce )
+						.Play();
 					Rotate();
 					break;
 			}
@@ -110,13 +140,19 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>
 		/// ● タイル番号に、たてもんを配置
 		/// </summary>
-		public void Place( int tileID, int rotatePower )
-			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower );
+		public void Place( int tileID, int rotatePower, Sprite tatemon, Sprite aura )
+			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower, tatemon, aura );
 
 		/// <summary>
 		/// ● タイル位置に、たてもんを配置
 		/// </summary>
-		public void Place( Vector2Int tilePosition, int rotatePower ) {
+		public void Place( Vector2Int tilePosition, int rotatePower, Sprite tatemon, Sprite aura ) {
+			_renderers["Front"].sprite = tatemon;
+			_renderers["Aura"].sprite = aura;
+			_renderers["Back"].sprite = tatemon;
+
+//			_particles.ForEach( p => p.Play() );
+
 			_tilePosition = tilePosition;
 			_tileID = TileManagerView.ToID( _tilePosition );
 			_rotatePower = rotatePower;

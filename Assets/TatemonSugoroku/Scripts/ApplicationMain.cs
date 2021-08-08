@@ -38,6 +38,8 @@ namespace TatemonSugoroku.Scripts {
 			);
 			DOTween.defaultAutoPlay = AutoPlay.None;
 
+			Resources.Load<GameObject>( "Prefabs/EffectTap1" ).Instantiate();
+
 			await UTask.DontWait();
 		}
 

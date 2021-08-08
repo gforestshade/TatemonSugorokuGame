@@ -34,12 +34,8 @@ namespace TatemonSugoroku.Scripts {
 			* TILE_SCALE_TO_REAL_SCALE;
 
 		/// <summary>領域タイプから、色への変換</summary>
-		public static readonly Dictionary<TileAreaType, Color> AREA_TYPE_TO_COLOR =
-			new Dictionary<TileAreaType, Color> {
-				{ TileAreaType.None,	Color.white },
-				{ TileAreaType.Player1,	Color.blue },
-				{ TileAreaType.Player2,	Color.red },
-			};
+		public static readonly Dictionary<TileAreaType, Color> AREA_TYPE_TO_COLOR
+			= new Dictionary<TileAreaType, Color>();
 
 		/// <summary>無い場合の、タイル番号</summary>
 		public const int NONE_ID = -1;
@@ -49,9 +45,17 @@ namespace TatemonSugoroku.Scripts {
 		[SerializeField] GameObject _prefab;
 		readonly List<TileView> _views = new List<TileView>();
 
+		[SerializeField] Color _noneAreaColor;
+		[SerializeField] Color _player1AreaColor;
+		[SerializeField] Color _player2AreaColor;
+
 
 
 		void Start() {
+			AREA_TYPE_TO_COLOR[TileAreaType.None] = _noneAreaColor;
+			AREA_TYPE_TO_COLOR[TileAreaType.Player1] = _player1AreaColor;
+			AREA_TYPE_TO_COLOR[TileAreaType.Player2] = _player2AreaColor;
+
 			Enumerable.Range( 0, MAX_ID ).ForEach( i => {
 				var go = _prefab.Instantiate( transform );
 				var v = go.GetComponent<TileView>();

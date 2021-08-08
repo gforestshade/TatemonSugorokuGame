@@ -32,6 +32,18 @@ namespace TatemonSugoroku.Siren {
 				sceneManager.GetFSM<MainSMScene>().ChangeState<SirenSMScene>().Forget();
 			} );
 
+			return;
+			var effects = GameObject.Find( "EffectTap1" ).GetComponentsInChildren<ParticleSystem>();
+			var effectTop = effects.First().transform;
+			effectTop.SetParent( null );
+
+			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
+				var mouse = inputManager.GetAxis( SMInputAxis.Mouse );
+				var mousePosition = new Vector3( mouse.x, mouse.y, 1 );
+				var position = Camera.main.ScreenToWorldPoint( mousePosition );
+				effectTop.position = position;
+				effects.ForEach( e => e.Play() );
+			} );
 		}
 	}
 }

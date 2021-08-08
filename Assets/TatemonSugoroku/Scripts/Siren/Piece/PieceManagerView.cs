@@ -26,22 +26,28 @@ namespace TatemonSugoroku.Scripts {
 		public static readonly int PLAYER_COUNT = EnumUtils.GetLength<PlayerType>();
 
 
-		[SerializeField] GameObject _prefab;
-		readonly List<PieceView> _views = new List<PieceView>();
+		[SerializeField] GameObject _piece1;
+		[SerializeField] GameObject _piece2;
+		public readonly List<PieceView> _views = new List<PieceView>();
 		readonly List<PieceView> _dummyViews = new List<PieceView>();
 
 
 
 		void Start() {
-			Enumerable.Range( 0, PLAYER_COUNT ).ForEach( i => {
-				var go = _prefab.Instantiate( transform );
+			EnumUtils.GetValues<PlayerType>().ForEach( type => {
+				GameObject prefab = null;
+				switch ( type ) {
+					case PlayerType.Player1:	prefab = _piece1;	break;
+					case PlayerType.Player2:	prefab = _piece2;	break;
+				}
+				var go = prefab.Instantiate( transform );
 				var v = go.GetComponent<PieceView>();
-				v.Setup( PieceType.Body, ( PlayerType )i );
+				v.Setup( PieceType.Body, type );
 				_views.Add( v );
 
-				go = _prefab.Instantiate( transform );
+				go = prefab.Instantiate( transform );
 				v = go.GetComponent<PieceView>();
-				v.Setup( PieceType.Dummy, ( PlayerType )i );
+				v.Setup( PieceType.Dummy, type );
 				_dummyViews.Add( v );
 			} );
 		}

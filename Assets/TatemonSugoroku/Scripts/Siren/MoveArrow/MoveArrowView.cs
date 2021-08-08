@@ -12,7 +12,7 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 移動矢印の描画クラス
 	/// </summary>
 	public class MoveArrowView : SMStandardMonoBehaviour {
-		MeshRenderer[] _renderers { get; set; }
+		Renderer[] _renderers { get; set; }
 		Color _disableColor { get; set; }
 		[SerializeField] Vector3 _offset = new Vector3( 0, 0.6f, 0 );
 
@@ -33,7 +33,7 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public void Setup( MoveArrowType type, Color disableColor ) {
-			_renderers = GetComponentsInChildren<MeshRenderer>();
+			_renderers = GetComponentsInChildren<Renderer>();
 			_disableColor = disableColor;
 
 			_type = type;

@@ -1,4 +1,4 @@
-#define TestPiece
+//#define TestPiece
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -18,8 +18,10 @@ namespace TatemonSugoroku.Scripts {
 		static readonly Vector2Int MAX_SIZE = TileManagerView.MAX_SIZE - Vector2Int.one;
 
 		Renderer[] _renderers { get; set; }
+		ParticleSystem[] _particles { get; set; }
 
 		[SerializeField] Vector3 _offset = new Vector3( 0, 0.5f, 0 );
+		[SerializeField] float _duration = 5;
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 		PieceType _type { get; set; }
@@ -36,7 +38,9 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public void Setup( PieceType type, PlayerType playerType ) {
-			_renderers = GetComponentsInChildren<Renderer>( true );
+			_renderers = GetComponentsInChildren<SpriteRenderer>( true );
+			_particles = GetComponentsInChildren<ParticleSystem>( true );
+			_particles.ForEach( p => p.gameObject.SetActive( false ) );
 
 			_type = type;
 			_playerType = playerType;
@@ -100,13 +104,20 @@ namespace TatemonSugoroku.Scripts {
 			_tileID = TileManagerView.ToID( _tilePosition );
 
 			var targetRealPosition = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
+			var distance = Vector3.Distance( targetRealPosition, transform.position );
+			var jumpCount = Mathf.RoundToInt( distance ) * 3;
+			var duration = distance / 2;
+			_particles.ForEach( p => p.gameObject.SetActive( true ) );
 			try {
 				_isMoving = true;
-				await transform.DOMove( targetRealPosition, 1 ).Play()
+				await transform
+					.DOJump( targetRealPosition, 0.2f, jumpCount, duration )
+					.SetEase( Ease.Linear ).Play()
 					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
 			} finally {
 				_isMoving = false;
 			}
+			_particles.ForEach( p => p.gameObject.SetActive( false ) );
 			transform.position = targetRealPosition;
 		}
 

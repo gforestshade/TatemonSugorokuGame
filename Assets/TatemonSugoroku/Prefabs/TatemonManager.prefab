@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7282834494464900781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7282834494464900783}
+  - component: {fileID: 7282834494464900780}
+  m_Layer: 0
+  m_Name: TatemonManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7282834494464900783
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7282834494464900781}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7282834494464900780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7282834494464900781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e936009ca2747e7468c7df40009998ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 9025695656006362395, guid: f89f08a0057987248a70e2f0e9f64098, type: 3}
+  _auraSpritesSetter:
+  - {fileID: 21300000, guid: 75643bffe5b09e44d8442b593e747a37, type: 3}
+  - {fileID: 21300000, guid: d9f34d6d0ddfb83418be983ce1951819, type: 3}
+  _tatemonSpritesSetter:
+  - {fileID: 21300000, guid: 165e6407a02239249adecaab0f53c1f8, type: 3}
+  - {fileID: 21300000, guid: a2a79276390627c4db7f26f307661d9f, type: 3}
+  - {fileID: 21300000, guid: f0bb8c2bc8930bb4b8b65d12f0cf0f75, type: 3}
+  - {fileID: 21300000, guid: 3aba82ac8250a744c9a5fcd09fad089b, type: 3}
+  - {fileID: 21300000, guid: 65193903d44b06c41995d02a7c31870b, type: 3}
+  - {fileID: 21300000, guid: d1e559e7c2e917c48892a4a6e25f2336, type: 3}
+  - {fileID: 21300000, guid: 3ed82c0c804e5bc4a87114537116aa08, type: 3}
+  - {fileID: 21300000, guid: 89491b03727b503469334289b9a1aef3, type: 3}
+  - {fileID: 21300000, guid: 5bb325f7fda1d1c4a932e8c41be52f6c, type: 3}
+  _speedRate: 20
