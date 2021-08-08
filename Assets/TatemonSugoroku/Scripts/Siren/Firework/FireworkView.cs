@@ -70,6 +70,7 @@ namespace TatemonSugoroku.Scripts {
 			_canceler.Cancel();
 
 			while ( true ) {
+				if ( _isDispose || _canceler._isDispose ) { return; }
 				var c = Camera.main.transform;
 				var pos = c.position + c.forward * 20;
 				pos += c.rotation * new Vector3(
@@ -83,6 +84,7 @@ namespace TatemonSugoroku.Scripts {
 				_renderer.material.color = Color.white;
 
 				await UTask.Delay( _canceler, Random.Range( 1000, 5000 ) );
+				if ( _isDispose || _canceler._isDispose ) { return; }
 
 				_audioManager.Play( SMSE.Firework2 ).Forget();
 
@@ -90,11 +92,13 @@ namespace TatemonSugoroku.Scripts {
 //					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();
 				await transform.DOScale( _maxScale, 0.2f ).SetEase( Ease.OutCirc ).Play()
 					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+				if ( _isDispose || _canceler._isDispose ) { return; }
 
 				_renderer.material.DOColor( Color.clear, 4 ).SetEase( Ease.OutCirc ).Play()
 					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();
 				await transform.DOScale( _maxScale + Vector3.one * 0.3f, 4 ).SetEase( Ease.OutCirc ).Play()
 					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+				if ( _isDispose || _canceler._isDispose ) { return; }
 			}
 		}
 	}

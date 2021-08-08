@@ -5,7 +5,9 @@ using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Scene;
+using SubmarineMirage.Setting;
 
 namespace TatemonSugoroku.Scripts
 {
@@ -25,6 +27,12 @@ namespace TatemonSugoroku.Scripts
         {
             try
             {
+                var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
+                await UniTask.WhenAll(
+                    audioManager.Stop<SMBGM>(),
+                    audioManager.Stop<SMBGS>()
+                );
+
                 gameObject.SetActive(true);
                 _Winner.Switch(winner);
                 for (int i = 0; i < scores.Count; i++)
@@ -32,7 +40,13 @@ namespace TatemonSugoroku.Scripts
                     _ResultScores[i].Image.Switch(i);
                     _ResultScores[i].Score.SetText("{0}", scores[i]);
                 }
+
+                audioManager.Play( SMBGM.Result ).Forget();
+                await audioManager.Play( SMJingle.Result1 );
+                await audioManager.Play( SMJingle.Result2 );
                 await _Button.OnClickAsync(ct);
+                audioManager.Play( SMSE.Decide ).Forget();
+                await UniTask.Delay( 500 );
                 var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
                 sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
                 

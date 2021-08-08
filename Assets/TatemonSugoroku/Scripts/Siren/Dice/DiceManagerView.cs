@@ -7,8 +7,10 @@ using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Extension;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -83,6 +85,9 @@ namespace TatemonSugoroku.Scripts {
 
 		public async UniTask<int> Roll() {
 			await UTask.DelayFrame( _canceler, 1 );
+
+			var audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+			audioManager.Play( SMSE.Dice ).Forget();
 
 //			await ChangeState( DiceState.Rotate );
 			await ChangeState( DiceState.Roll );

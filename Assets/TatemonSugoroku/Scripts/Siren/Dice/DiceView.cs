@@ -4,7 +4,10 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -24,6 +27,7 @@ namespace TatemonSugoroku.Scripts {
 		public Vector3 _power { get; set; }
 		public int _value { get; private set; }
 
+		SMAudioManager _audioManager { get; set; }
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 
@@ -33,8 +37,10 @@ namespace TatemonSugoroku.Scripts {
 
 			_rigidbody = GetComponent<Rigidbody>();
 			_transforms = transform.GetChildren( true )
+				.Where( ( go, i ) => i < 6 )
 				.Select( go => go.transform )
 				.ToArray();
+//			SMLog.Debug( string.Join( "\n", _transforms.Select( t => t.name ) ) );
 
 			_particle = GetComponentInChildren<ParticleSystem>( true );
 
@@ -55,6 +61,10 @@ namespace TatemonSugoroku.Scripts {
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();
 			} );
+
+			UTask.Void( async () => {
+				_audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+			} );
 		}
 
 
@@ -70,6 +80,7 @@ namespace TatemonSugoroku.Scripts {
 		void OnCollisionEnter( Collision collision ) {
 			_particle.transform.position = collision.contacts.First().point;
 			_particle.Play();
+			_audioManager?.Play( SMSE.DiceHit ).Forget();
 		}
 
 

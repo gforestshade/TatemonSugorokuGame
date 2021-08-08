@@ -33,7 +33,7 @@ namespace TatemonSugoroku.Siren {
 			var background = FindObjectOfType<BackgroundView>();
 			var camera = FindObjectOfType<GameCameraView>();
 
-
+#if false
 			// 13番のタイル領域変更
 			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
 				var tile = tileManager.GetView( 13 );
@@ -140,7 +140,7 @@ namespace TatemonSugoroku.Siren {
 					var id = TileManagerView.ToID( tilePosition );
 					piece2.Move( id ).Forget();
 				} );
-
+#endif
 			// 日時を更新
 			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
 				day.UpdateHour();
@@ -148,7 +148,8 @@ namespace TatemonSugoroku.Siren {
 			day._hour.Subscribe( h => {
 				SMLog.Debug( $"ゲーム内時刻 : {h}" );
 			} );
-///*
+#if false
+			///*
 			// タッチしたタイルにたてもんを配置
 			var isPlace = true;
 			inputManager.GetKey( SMInputKey.Finger2 )._enabledEvent.AddLast().Subscribe( _ => {
@@ -177,6 +178,7 @@ namespace TatemonSugoroku.Siren {
 			inputManager.GetKey( SMInputKey.Reset )._enabledEvent.AddLast().Subscribe( _ => {
 				camera.SetResultCamera();
 			} );
+#endif
 		}
 	}
 }

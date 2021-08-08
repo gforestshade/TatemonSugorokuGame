@@ -12,6 +12,7 @@ namespace SubmarineMirage.Setting {
 	public enum SMSE {
 		Decide,
 		Dice,
+		DiceHit,
 		Firework1,
 		Firework2,
 		Tatemon,
