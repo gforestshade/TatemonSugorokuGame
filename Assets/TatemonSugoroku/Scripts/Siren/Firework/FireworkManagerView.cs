@@ -14,7 +14,7 @@ namespace TatemonSugoroku.Scripts {
 	/// </summary>
 	public class FireworkManagerView : SMStandardMonoBehaviour {
 		/// <summary>花火の最大数</summary>
-		public const int MAX_COUNT = 5;
+		public const int MAX_COUNT = 10;
 		/// <summary>花火の打ち上げ時刻</summary>
 		public const int LAUNCH_HOUR = 19;
 

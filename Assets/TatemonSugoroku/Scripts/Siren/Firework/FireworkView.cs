@@ -1,7 +1,9 @@
 using System.Linq;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using SubmarineMirage.Base;
+using SubmarineMirage.Utility;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -12,8 +14,9 @@ namespace TatemonSugoroku.Scripts {
 	public class FireworkView : SMStandardMonoBehaviour {
 		SpriteRenderer _renderer { get; set; }
 		Vector3 _maxScale { get; set; }
-		Tween _rateTween { get; set; }
 		bool _isActive { get; set; }
+
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 
 
@@ -27,8 +30,18 @@ namespace TatemonSugoroku.Scripts {
 			SetActive( false );
 
 			_disposables.AddLast( () => {
-				_rateTween?.Kill();
+				_canceler.Dispose();
 			} );
+		}
+
+
+
+		protected override void Update() {
+			base.Update();
+
+			var target = Camera.main.transform.position;
+			target.y = transform.position.y;
+//			transform.LookAt( target );
 		}
 
 
@@ -37,30 +50,42 @@ namespace TatemonSugoroku.Scripts {
 			if ( _isActive == isActive ) { return; }
 			_isActive = isActive;
 
-			_rateTween?.Kill();
+			_canceler.Cancel();
 			gameObject.SetActive( _isActive );
 
 			if ( !_isActive ) { return; }
 
-			_rateTween = DOTween.Sequence()
-				.AppendCallback( () => {
-					transform.localPosition = new Vector3(
-						Random.Range( -6, 6 ),
-						Random.Range( 3.3f, 1.3f ),
-						15
-					);
-					transform.localScale = Vector3.zero;
-					_renderer.material.color = Color.white;
-				} )
-				.AppendInterval( Random.Range( 0, 2 ) )
-				.Append( transform.DOScale( _maxScale, 0.02f ).SetEase( Ease.OutCirc ) )
-				.Join( _renderer.material.DOColor( Color.white, 0.02f ) )
-				.Append( transform.DOScale( _maxScale + new Vector3( 0.1f, 0.1f, 0.1f ), 4 ).SetEase( Ease.OutCirc ) )
-				.Join( _renderer.material.DOColor( Color.clear, 4 ) )
-				.AppendInterval( Random.Range( 2, 5 ) )
-				.SetEase( Ease.InOutQuad )
-				.SetLoops( -1, LoopType.Restart )
-				.Play();
+			Launch().Forget();
+		}
+
+		async UniTask Launch() {
+			_canceler.Cancel();
+
+			while ( true ) {
+				var c = Camera.main.transform;
+				var pos = c.position + c.forward * 20;
+				pos += c.rotation * new Vector3(
+					Random.Range( -10, 10 ),
+					Random.Range( 2, 6 ),
+					Random.Range( -1, 1 )
+				);
+				transform.position = pos;
+				transform.rotation = c.rotation;
+				transform.localScale = Vector3.zero;
+				_renderer.material.color = Color.white;
+
+				await UTask.Delay( _canceler, Random.Range( 1000, 5000 ) );
+
+//				_renderer.material.DOColor( Color.white, 0.02f ).SetEase( Ease.OutCirc ).Play()
+//					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();
+				await transform.DOScale( _maxScale, 0.2f ).SetEase( Ease.OutCirc ).Play()
+					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+
+				_renderer.material.DOColor( Color.clear, 4 ).SetEase( Ease.OutCirc ).Play()
+					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();
+				await transform.DOScale( _maxScale + Vector3.one * 0.3f, 4 ).SetEase( Ease.OutCirc ).Play()
+					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+			}
 		}
 	}
 }

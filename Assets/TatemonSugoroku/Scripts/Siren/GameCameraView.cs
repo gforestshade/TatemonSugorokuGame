@@ -45,7 +45,7 @@ namespace TatemonSugoroku.Scripts {
 
 			switch ( _state ) {
 				case GameCameraState.Result:
-					RotateCamera( new Vector3( 0, -30 * Time.deltaTime, 0 ) );
+					RotateCamera( new Vector3( 0, -10 * Time.deltaTime, 0 ) );
 					break;
 			}
 
@@ -82,7 +82,7 @@ namespace TatemonSugoroku.Scripts {
 
 		// ゲームマネージャーさん、これ呼んで下さい・・・。
 		public void SetResultCamera() {
-			_angles.x = 25;
+			_angles.x = 15;
 			_state = GameCameraState.Result;
 		}
 	}

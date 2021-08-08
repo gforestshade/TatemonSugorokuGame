@@ -19,7 +19,7 @@ namespace TatemonSugoroku.Scripts {
 			_group.blocksRaycasts = false;
 
 			var fireworkManager = FindObjectOfType<FireworkManagerView>();
-			fireworkManager._launchEvent.Subscribe( _ => Launch() );
+//			fireworkManager._launchEvent.Subscribe( _ => Launch() );
 		}
 
 
