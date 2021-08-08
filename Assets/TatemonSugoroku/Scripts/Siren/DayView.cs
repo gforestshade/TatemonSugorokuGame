@@ -1,6 +1,11 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 using UniRx;
 using SubmarineMirage.Base;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
+using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 namespace TatemonSugoroku.Scripts {
 	///========================================================================================================
 	/// <summary>
@@ -33,6 +38,8 @@ namespace TatemonSugoroku.Scripts {
 		float _hourVeloctiy { get; set; }
 		int turnCount { get; set; }
 
+		SMAudioManager _audioManager { get; set; }
+
 		/// <summary>現在時刻</summary>
 		public readonly ReactiveProperty<float> _hour = new ReactiveProperty<float>();
 		/// <summary>日の強さの割合</summary>
@@ -55,7 +62,36 @@ namespace TatemonSugoroku.Scripts {
 				_sunsetRate.Dispose();
 				_state.Dispose();
 			} );
+
+			UTask.Void( async () => {
+				_audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+				ChangeAudio( _state.Value );
+			} );
+
+			_state
+				.Where( s => _audioManager != null )
+				.Subscribe( s => ChangeAudio( s ) );
 		}
+
+
+
+		void ChangeAudio( DayState state ) {
+			switch ( state ) {
+				case DayState.Sun:
+					_audioManager.Play( SMBGM.Game ).Forget();
+					_audioManager.Play( SMBGS.Daytime ).Forget();
+					break;
+				case DayState.Evening:
+					_audioManager.Play( SMBGS.Evening1 ).Forget();
+					break;
+				case DayState.Night:
+					_audioManager.Play( SMBGM.NightGame ).Forget();
+					_audioManager.Play( SMBGS.Tyouroku2 ).Forget();
+					break;
+			}
+		}
+
+
 
 		///----------------------------------------------------------------------------------------------------
 		/// <summary>

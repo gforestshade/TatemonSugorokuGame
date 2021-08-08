@@ -10,7 +10,10 @@ namespace SubmarineMirage.Setting {
 
 	/// <summary>脚色音の定数（文字列変換で書類名とする）</summary>
 	public enum SMJingle {
-		TestGameClear,
-		TestGameOver,
+		Result1,
+		Result2,
+		Result3,
+		Start1,
+		Start2,
 	}
 }

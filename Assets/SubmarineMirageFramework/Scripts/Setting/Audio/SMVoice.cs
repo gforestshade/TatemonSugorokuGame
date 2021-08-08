@@ -10,7 +10,14 @@ namespace SubmarineMirage.Setting {
 
 	/// <summary>声音の定数（文字列変換で書類名とする）</summary>
 	public enum SMVoice {
-		TestRidicule,
-		TestScream,
+		Wasshoi1,
+		Wasshoi2,
+		Wasshoi3,
+		Wasshoi4,
+		Wasshoi5,
+		Wasshoi6,
+		Wasshoi7,
+		Wasshoi8,
+		Wasshoi9,
 	}
 }

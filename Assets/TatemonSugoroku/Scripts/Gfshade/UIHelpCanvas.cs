@@ -6,6 +6,8 @@ using SubmarineMirage.Utility;
 using SubmarineMirage.Service;
 using SubmarineMirage.Data;
 using SubmarineMirage.Scene;
+using SubmarineMirage.Audio;
+using SubmarineMirage.Setting;
 using SubmarineMirage;
 using UnityEngine.UI;
 using UniRx;
@@ -66,15 +68,28 @@ namespace TatemonSugoroku.Scripts
                 init.OnCompleted();
             });
 
+            SMAudioManager audioManager = null;
+            UTask.Void( async () => {
+                audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+            } );
+
             page.Subscribe(UpdateText);
             page.Select(p => p > 0).Subscribe(prev => _Prev.interactable = prev);
             page.Select(p => p < exMax).Subscribe(next => _Next.interactable = next);
-            _Prev.OnClickAsObservable().Subscribe(_ => pageRP.Value--);
-            _Next.OnClickAsObservable().Subscribe(_ => pageRP.Value++);
+            _Prev.OnClickAsObservable().Subscribe(_ => {
+                pageRP.Value--;
+                audioManager?.Play( SMSE.Decide ).Forget();
+            } );
+            _Next.OnClickAsObservable().Subscribe(_ => {
+                pageRP.Value++;
+                audioManager?.Play( SMSE.Decide ).Forget();
+            } );
 
             var sceneManager = SMServiceLocator.Resolve<SMSceneManager>();
-            _Close.OnClickAsObservable().Subscribe( _ =>
-                sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget() );
+            _Close.OnClickAsObservable().Subscribe( _ => {
+                audioManager?.Play( SMSE.Decide ).Forget();
+                sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget();
+            } );
 
             initf.Connect();
         }

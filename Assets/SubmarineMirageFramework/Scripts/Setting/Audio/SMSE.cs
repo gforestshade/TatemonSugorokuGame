@@ -10,12 +10,14 @@ namespace SubmarineMirage.Setting {
 
 	/// <summary>効果音の定数（文字列変換で書類名とする）</summary>
 	public enum SMSE {
-		TestDecision,
-		TestGun,
-		
 		Decide,
 		Dice,
-		Walk,
+		Firework1,
+		Firework2,
 		Tatemon,
+		TatemonWind,
+		Title1,
+		Title2,
+		Walk,
 	}
 }

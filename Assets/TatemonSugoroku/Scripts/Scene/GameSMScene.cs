@@ -1,7 +1,10 @@
 using Cysharp.Threading.Tasks;
 using UniRx;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Scene;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -15,14 +18,17 @@ namespace TatemonSugoroku.Scripts {
 		/// ● コンストラクタ
 		/// </summary>
 		public GameSMScene() {
+			var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
 
 			// シーン初期化
 			_enterEvent.AddLast( async canceler => {
+//				await audioManager.StopAll();
 				await UTask.DontWait();
 			} );
 
 			// シーン終了
 			_exitEvent.AddFirst( async canceler => {
+//				audioManager.StopAll().Forget();
 				await UTask.DontWait();
 			} );
 

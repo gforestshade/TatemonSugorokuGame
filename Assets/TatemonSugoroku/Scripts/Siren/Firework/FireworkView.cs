@@ -3,7 +3,10 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using SubmarineMirage.Base;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -17,6 +20,7 @@ namespace TatemonSugoroku.Scripts {
 		bool _isActive { get; set; }
 
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
+		SMAudioManager _audioManager { get; set; }
 
 
 
@@ -28,6 +32,10 @@ namespace TatemonSugoroku.Scripts {
 			_renderer.material.color = Color.clear;
 			_isActive = true;
 			SetActive( false );
+
+			UTask.Void( async () => {
+				_audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+			} );
 
 			_disposables.AddLast( () => {
 				_canceler.Dispose();
@@ -75,6 +83,8 @@ namespace TatemonSugoroku.Scripts {
 				_renderer.material.color = Color.white;
 
 				await UTask.Delay( _canceler, Random.Range( 1000, 5000 ) );
+
+				_audioManager.Play( SMSE.Firework2 ).Forget();
 
 //				_renderer.material.DOColor( Color.white, 0.02f ).SetEase( Ease.OutCirc ).Play()
 //					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();

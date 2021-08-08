@@ -26,7 +26,7 @@ namespace TatemonSugoroku.Siren {
 		}
 
 
-
+/*
 		void Update() {
 			if ( _audioManager == null )	{ return; }
 
@@ -107,5 +107,6 @@ namespace TatemonSugoroku.Siren {
 				_audioManager.StopAll().Forget();
 			}
 		}
+*/
 	}
 }

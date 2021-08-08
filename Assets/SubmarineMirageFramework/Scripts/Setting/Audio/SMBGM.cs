@@ -10,7 +10,9 @@ namespace SubmarineMirage.Setting {
 
 	/// <summary>音楽の定数（文字列変換で書類名とする）</summary>
 	public enum SMBGM {
-		TestTitle,
-		TestBattle,
+		Game,
+		NightGame,
+		Result,
+		Title,
 	}
 }
