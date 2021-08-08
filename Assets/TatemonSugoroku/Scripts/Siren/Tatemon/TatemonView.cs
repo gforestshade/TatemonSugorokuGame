@@ -87,7 +87,6 @@ namespace TatemonSugoroku.Scripts {
 		public void Rotate() {
 			_rotateTween?.Kill();
 			var duration = 1f / ( _rotatePower * _rotatePower ) * _speedRate;
-			SMLog.Debug( $"{nameof( duration )} : {duration}" );
 			var rate = 0f;
 			_rotateTween = DOTween.To(
 					() => rate,
