@@ -3,6 +3,7 @@ using System.Linq;
 using SubmarineMirage.Base;
 using SubmarineMirage.Debug;
 using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Setting;
 using UniRx;
 using UnityEngine;
@@ -79,7 +80,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private readonly int[] _SpinPowersOfTatemon = { 0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1 };
         private readonly int _OppositeEnterBonusOne = 20;
-        private readonly int _MaxTurn = 2;
+        private readonly int _MaxTurn = 7;
 
         private FieldModel fieldModel;
         private MotionModel motionModel;
@@ -137,6 +138,10 @@ namespace TatemonSugoroku.Scripts.Akio
 
             // げーむがはじまるよ
             await GameStart(ct);
+
+            var audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+            await audioManager.Play( SMJingle.Start1 );
+            await audioManager.Play( SMJingle.Start2 );
 
             for (int i = 0; i < _MaxTurn; i++)
             {

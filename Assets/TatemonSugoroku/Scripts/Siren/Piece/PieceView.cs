@@ -4,7 +4,10 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -35,6 +38,8 @@ namespace TatemonSugoroku.Scripts {
 
 		public bool _isMoving { get; private set; }
 
+		SMAudioManager _audioManager { get; set; }
+		float _moveSESecond { get; set; }
 
 
 		public void Setup( PieceType type, PlayerType playerType ) {
@@ -70,6 +75,10 @@ namespace TatemonSugoroku.Scripts {
 
 			_disposables.AddFirst( () => {
 				_canceler.Dispose();
+			} );
+
+			UTask.Void( async () => {
+				_audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
 			} );
 		}
 
@@ -108,6 +117,10 @@ namespace TatemonSugoroku.Scripts {
 			var jumpCount = Mathf.RoundToInt( distance ) * 3;
 			var duration = distance / 2;
 			_particles.ForEach( p => p.gameObject.SetActive( true ) );
+			if ( _moveSESecond < Time.time ) {
+				_audioManager.Play( SMSE.Walk ).Forget();
+				_moveSESecond = Time.time + 2;
+			}
 			try {
 				_isMoving = true;
 				await transform

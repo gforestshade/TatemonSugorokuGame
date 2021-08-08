@@ -143,7 +143,9 @@ namespace SubmarineMirage.Audio {
 		public async UniTask Play<T>( T enumName ) where T : struct, Enum {
 			var type = enumName.GetType();
 			var source = _audioSources.GetOrDefault( type ) as BaseSMAudioSource<T>;
-			await source.Play( enumName );
+			if ( source != null ) {
+				await source.Play( enumName );
+			}
 		}
 
 		/// <summary>
@@ -152,7 +154,9 @@ namespace SubmarineMirage.Audio {
 		public async UniTask Stop<T>() where T : struct, Enum {
 			var type = typeof( T );
 			var source = _audioSources.GetOrDefault( type );
-			await source.Stop();
+			if ( source != null ) {
+				await source.Stop();
+			}
 		}
 
 		/// <summary>

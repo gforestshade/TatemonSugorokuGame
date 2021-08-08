@@ -16,8 +16,5 @@ namespace SubmarineMirage.Setting {
 		Wasshoi4,
 		Wasshoi5,
 		Wasshoi6,
-		Wasshoi7,
-		Wasshoi8,
-		Wasshoi9,
 	}
 }

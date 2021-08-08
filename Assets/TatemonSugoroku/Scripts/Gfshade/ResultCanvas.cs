@@ -45,7 +45,7 @@ namespace TatemonSugoroku.Scripts
                 await audioManager.Play( SMJingle.Result1 );
                 await audioManager.Play( SMJingle.Result2 );
                 await _Button.OnClickAsync(ct);
-                audioManager.Play( SMSE.Decide ).Forget();
+                audioManager.Play( SMSE.Title2 ).Forget();
                 await UniTask.Delay( 500 );
                 var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
                 sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();

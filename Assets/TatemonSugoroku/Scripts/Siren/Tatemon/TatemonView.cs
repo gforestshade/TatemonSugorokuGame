@@ -4,6 +4,10 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
+using SubmarineMirage.Setting;
+using SubmarineMirage.Utility;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -36,7 +40,9 @@ namespace TatemonSugoroku.Scripts {
 		bool _isNearPiece { get; set; }
 		float _placeEndSecond { get; set; }
 
-		Tween _rotateTween { get; set; }
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
+		SMAudioManager _audioManager { get; set; }
+		float _windSESeconds { get; set; }
 
 
 
@@ -61,7 +67,11 @@ namespace TatemonSugoroku.Scripts {
 			ChangeState( TatemonState.None );
 
 			_disposables.AddLast( () => {
-				_rotateTween?.Kill();
+				_canceler.Dispose();
+			} );
+
+			UTask.Void( async () => {
+				_audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
 			} );
 		}
 
@@ -98,7 +108,7 @@ namespace TatemonSugoroku.Scripts {
 
 			switch ( _state ) {
 				case TatemonState.None:
-					_rotateTween?.Kill();
+					_canceler.Cancel();
 					gameObject.SetActive( false );
 					break;
 
@@ -110,7 +120,17 @@ namespace TatemonSugoroku.Scripts {
 						.DOScale( scale, 1 )
 						.SetEase( Ease.OutBounce )
 						.Play();
-					Rotate();
+					_audioManager?.Play( SMSE.Tatemon ).Forget();
+					var i = Random.Range( 0, 6 );
+					switch ( i ) {
+						case 0:	_audioManager?.Play( SMVoice.Wasshoi1 ).Forget();	break;
+						case 1:	_audioManager?.Play( SMVoice.Wasshoi2 ).Forget();	break;
+						case 2:	_audioManager?.Play( SMVoice.Wasshoi3 ).Forget();	break;
+						case 3:	_audioManager?.Play( SMVoice.Wasshoi4 ).Forget();	break;
+						case 4:	_audioManager?.Play( SMVoice.Wasshoi5 ).Forget();	break;
+						case 5:	_audioManager?.Play( SMVoice.Wasshoi6 ).Forget();	break;
+					}
+					Rotate().Forget();
 					_placeEndSecond = Time.time + 3;
 					break;
 			}
@@ -118,22 +138,36 @@ namespace TatemonSugoroku.Scripts {
 
 
 
-		public void Rotate() {
-			_rotateTween?.Kill();
-			var duration = 1f / ( _rotatePower * _rotatePower ) * _speedRate;
-			var rate = 0f;
-			_rotateTween = DOTween.To(
-					() => rate,
-					r => {
-						rate = r;
-						transform.rotation = Quaternion.Euler( 0, 360 * r, 0 );
-					},
-					1,
-					duration
-				)
-				.SetEase( Ease.Linear )
-				.SetLoops( -1, LoopType.Restart )
-				.Play();
+		async UniTask Rotate() {
+			_canceler.Cancel();
+
+			while ( true ) {
+				if ( _isDispose || _canceler._isCancel ) { return; }
+
+				var duration = 1f / ( _rotatePower * _rotatePower ) * _speedRate;
+				var rate = 0f;
+				await DOTween.To(
+						() => rate,
+						r => {
+							rate = r;
+							transform.rotation = Quaternion.Euler( 0, 360 * r, 0 );
+						},
+						1,
+						duration
+					)
+					.SetEase( Ease.Linear )
+					.Play()
+					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+				if ( _isDispose || _canceler._isCancel ) { return; }
+/*
+				if ( _rotatePower > 6 ) {
+					if ( _windSESeconds < Time.time ) {
+						_windSESeconds = Time.time + 0.5f;
+						_audioManager?.Play( SMSE.TatemonWind ).Forget();
+					}
+				}
+*/
+			}
 		}
 
 

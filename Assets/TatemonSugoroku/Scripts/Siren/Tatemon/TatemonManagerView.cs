@@ -122,6 +122,7 @@ namespace TatemonSugoroku.Scripts {
 			var tatemonSprite = _tatemonSprites[rotatePower];
 			var auraSprite = _auraSprites[type];
 
+			SMLog.Debug( rotatePower );
 			m.Place( tilePosition, rotatePower, tatemonSprite, auraSprite );
 		}
 	}
