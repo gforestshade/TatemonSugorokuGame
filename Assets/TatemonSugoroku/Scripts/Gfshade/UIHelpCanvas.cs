@@ -5,9 +5,11 @@ using UnityEngine;
 using SubmarineMirage.Utility;
 using SubmarineMirage.Service;
 using SubmarineMirage.Data;
+using SubmarineMirage.Scene;
 using SubmarineMirage;
 using UnityEngine.UI;
 using UniRx;
+using Cysharp.Threading.Tasks;
 
 namespace TatemonSugoroku.Scripts
 {
@@ -69,6 +71,10 @@ namespace TatemonSugoroku.Scripts
             page.Select(p => p < exMax).Subscribe(next => _Next.interactable = next);
             _Prev.OnClickAsObservable().Subscribe(_ => pageRP.Value--);
             _Next.OnClickAsObservable().Subscribe(_ => pageRP.Value++);
+
+            var sceneManager = SMServiceLocator.Resolve<SMSceneManager>();
+            _Close.OnClickAsObservable().Subscribe( _ =>
+                sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget() );
 
             initf.Connect();
         }
