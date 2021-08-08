@@ -73,6 +73,9 @@ namespace TatemonSugoroku.Scripts.Akio
         [SerializeField]
         private DayView _DayManager;
 
+        [SerializeField]
+        private GameCameraView _CameraManager;
+
 
         private readonly int[] _SpinPowersOfTatemon = { 0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1 };
         private readonly int _OppositeEnterBonusOne = 20;
@@ -242,6 +245,7 @@ namespace TatemonSugoroku.Scripts.Akio
         {
             SMLog.Debug($"ゲーム終了", SMLogTag.Scene);
             _UI.gameObject.SetActive(false);
+            _CameraManager.SetResultCamera();
             await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: ct);
         }
 

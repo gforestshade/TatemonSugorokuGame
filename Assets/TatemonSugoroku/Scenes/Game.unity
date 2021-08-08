@@ -823,6 +823,7 @@ MonoBehaviour:
   _MoveArrowManager: {fileID: 1260265937}
   _TatemonManager: {fileID: 1128476398}
   _DayManager: {fileID: 666867322}
+  _CameraManager: {fileID: 1658574444}
 --- !u!4 &611758397
 Transform:
   m_ObjectHideFlags: 0
