@@ -110,36 +110,36 @@ namespace TatemonSugoroku.Scripts.Akio
             System.TimeSpan wait10 = System.TimeSpan.FromSeconds(1.0);
 
             // げーむがはじまるよ
-            await GameStart();
+            await GameStart(ct);
 
             for (int i = 0; i < 7; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    bool turnResult = await DoPlayerTurn(i, j);
+                    bool turnResult = await DoPlayerTurn(i, j, ct);
                     if (!turnResult) goto GameEnd;
                 }
 
                 // 「2人のたてもんが置かれたとき、さらに効果発動！
                 // 　スコアが再計算されるッ！」
-                await UpdateScore();
+                await UpdateScore(ct);
 
                 // じかんがすすむよ
                 _DayManager.UpdateHour();
 
                 // スコア更新時の時間調整だよ
-                await UniTask.Delay(wait10);
+                await UniTask.Delay(wait10, cancellationToken: ct);
             }
 
-            await InputAndMove(0, 3);
+            await InputAndMove(0, 3, ct);
             HideArrows();
 
             GameEnd:
             // げーむがおわったよ
-            await GameEnd();
+            await GameEnd(ct);
         }
 
-        private async UniTask<bool> DoPlayerTurn(int turnIndex, int playerId)
+        private async UniTask<bool> DoPlayerTurn(int turnIndex, int playerId, CancellationToken ct)
         {
             System.TimeSpan wait02 = System.TimeSpan.FromSeconds(0.2);
             System.TimeSpan wait10 = System.TimeSpan.FromSeconds(1.0);
@@ -147,31 +147,31 @@ namespace TatemonSugoroku.Scripts.Akio
             PlayerInternalModel pTurn = playerModels[playerId];
 
             // 「たておのターン！」
-            await TurnStart(pTurn);
+            await TurnStart(pTurn, ct);
 
             // 「ドロー！」
-            int dice = await DoDice(playerId);
+            int dice = await DoDice(playerId, ct);
 
             // 「オレは、12を召喚！」
             _UI.SetWalkRemaining(dice);
-            await UniTask.Delay(wait02);
+            await UniTask.Delay(wait02, cancellationToken: ct);
 
             // 「フィールドを、好きな方向に12回まで塗りつぶすことができるッ！」
-            await InputAndMove(playerId, dice);
+            await InputAndMove(playerId, dice, ct);
 
             // 「さらに！　塗りつぶしが終了したとき、効果発動！」
             HideArrows();
-            await UniTask.Delay(wait02);
+            await UniTask.Delay(wait02, cancellationToken: ct);
 
             // 「オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
             fieldModel.PutTatemonAtCurrentPosition(playerId, _SpinPowersOfTatemon[dice]);
             _TatemonManager.Place(playerId, pTurn.TileId, _SpinPowersOfTatemon[dice]);
-            await UniTask.Delay(wait02);
+            await UniTask.Delay(wait02, cancellationToken: ct);
             await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
             playerModels[playerId].Tatemon -= 1;
 
             // ターン終了時の時間調整だよ
-            await UniTask.Delay(wait10);
+            await UniTask.Delay(wait10, cancellationToken: ct);
 
             return true;
         }
@@ -186,26 +186,26 @@ namespace TatemonSugoroku.Scripts.Akio
             }
         }
 
-        private async UniTask GameStart()
+        private async UniTask GameStart(CancellationToken ct)
         {
             SMLog.Debug($"ゲーム開始", SMLogTag.Scene);
             //await UniTask.Delay(System.TimeSpan.FromSeconds(5));
         }
 
-        private async UniTask GameEnd()
+        private async UniTask GameEnd(CancellationToken ct)
         {
             SMLog.Debug($"ゲーム終了", SMLogTag.Scene);
-            await UniTask.Delay(System.TimeSpan.FromSeconds(1));
+            await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: ct);
         }
 
-        private async UniTask TurnStart(PlayerInternalModel model)
+        private async UniTask TurnStart(PlayerInternalModel model, CancellationToken ct)
         {
             SMLog.Debug($"{model.Name}のターン", SMLogTag.Scene);
             //_UI.SetCurrentPlayerName(model.Name);
-            await UniTask.Delay(System.TimeSpan.FromSeconds(1));
+            await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: ct);
         }
 
-        private async UniTask<int> DoDice(int playerId)
+        private async UniTask<int> DoDice(int playerId, CancellationToken ct)
         {
             SMLog.Debug($"サイコロボタンを押してください", SMLogTag.Scene);
             await _DiceUI.WaitForClick(playerId);
@@ -215,7 +215,7 @@ namespace TatemonSugoroku.Scripts.Akio
             return dice;
         }
 
-        private async UniTask<bool> InputAndMove(int playerId, int dice)
+        private async UniTask<bool> InputAndMove(int playerId, int dice, CancellationToken ct)
         {
             PlayerInternalModel pTurn = playerModels[playerId];
 
@@ -278,7 +278,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
 
                 // 移動終了まで待つ
-                motions = await motionQueueSubject;
+                motions = await motionQueueSubject.ToUniTask(cancellationToken: ct);
                 pTurn.TileId = motions.Last();
 
                 // ルートを塗る
@@ -309,7 +309,7 @@ namespace TatemonSugoroku.Scripts.Akio
             _UI.HideWalkRemaining();
         }
 
-        private async UniTask UpdateScore()
+        private async UniTask UpdateScore(CancellationToken ct)
         {
             List<UniTask> changeScore = new List<UniTask>();
             int[] newScore = new int[playerModels.Length];
