@@ -7,6 +7,7 @@ using System.Threading;
 using SubmarineMirage.Service;
 using SubmarineMirage.Audio;
 using SubmarineMirage.Scene;
+using SubmarineMirage.Task;
 using SubmarineMirage.Setting;
 
 namespace TatemonSugoroku.Scripts
@@ -48,8 +49,10 @@ namespace TatemonSugoroku.Scripts
                 await _Button.OnClickAsync(ct);
                 audioManager.Play( SMSE.Title2 ).Forget();
                 await UniTask.Delay( 500 );
-                var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
-                sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
+                var taskManager = await SMServiceLocator.WaitResolve<SMTaskManager>();
+                taskManager.Finalize().Forget();
+//                var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
+//                sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
                 
             }
             finally
