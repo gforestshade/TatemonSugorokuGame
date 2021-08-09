@@ -161,9 +161,6 @@ namespace TatemonSugoroku.Scripts.Akio
                 await UniTask.Delay(wait10, cancellationToken: ct);
             }
 
-            await InputAndMove(0, 3, ct);
-            HideArrows();
-
             /// 3歩あるいたあとはスコア更新しなくてもいい気がするかなあ
 
             GameEnd:
