@@ -82,7 +82,8 @@ namespace TatemonSugoroku.Scripts {
 
 		// ゲームマネージャーさん、これ呼んで下さい・・・。
 		public void SetResultCamera() {
-			_angles.x = 20;
+			_angles.x = 30;
+			_offset = Vector3.up * 3;
 			_state = GameCameraState.Result;
 		}
 	}
