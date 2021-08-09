@@ -42,6 +42,7 @@ namespace TatemonSugoroku.Scripts
                 }
 
                 audioManager.Play( SMBGM.Result ).Forget();
+                audioManager.Play( SMBGS.Evening2 ).Forget();
                 await audioManager.Play( SMJingle.Result1 );
                 await audioManager.Play( SMJingle.Result2 );
                 await _Button.OnClickAsync(ct);
