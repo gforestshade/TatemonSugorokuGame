@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",
+        "DOTween.Modules",
         "UniRx",
         "UniTask",
         "UniTask.Linq",
@@ -12,8 +13,7 @@
         "KoganeUnityLib",
         "GameDevWare.Serialization",
         "BuildBaseSMLog",
-        "SubmarineMirageFramework",
-        "DOTween.Modules"
+        "SubmarineMirageFramework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
