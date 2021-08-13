@@ -86,7 +86,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private readonly int[] _SpinPowersOfTatemon = { 0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1 };
         private readonly int _OppositeEnterBonusOne = 20;
-        private readonly int _MaxTurn = 2;
+        private readonly int _MaxTurn = 7;
 
         private FieldModel fieldModel;
         private MotionModel motionModel;
