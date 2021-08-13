@@ -10,7 +10,5 @@ namespace SubmarineMirage.Setting {
 
 	/// <summary>繰り返し効果音の定数（文字列変換で書類名とする）</summary>
 	public enum SMLoopSE {
-		TestTalk1,
-		TestTalk2,
 	}
 }

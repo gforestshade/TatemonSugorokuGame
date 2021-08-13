@@ -6,6 +6,7 @@ using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
 using SubmarineMirage.Extension;
+using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -17,6 +18,16 @@ namespace TatemonSugoroku.Scripts {
 	public class TatemonManagerView : SMStandardMonoBehaviour {
 		/// <summary>最大の1プレイヤーの手番</summary>
 		const int MAX_PLAYER_TURN = 7;
+
+		static readonly List<SMVoice> VOICES = new List<SMVoice> {
+			SMVoice.Wasshoi1,
+			SMVoice.Wasshoi2,
+			SMVoice.Wasshoi3,
+			SMVoice.Wasshoi4,
+			SMVoice.Wasshoi5,
+			SMVoice.Wasshoi6,
+		};
+
 
 		[SerializeField] GameObject _prefab;
 		[SerializeField] List<Sprite> _auraSpritesSetter;
@@ -80,6 +91,11 @@ namespace TatemonSugoroku.Scripts {
 		public IEnumerable<TatemonView> GetViews()
 			=> _views.SelectMany( pair => pair.Value );
 
+		public SMVoice GetRandomVoice() {
+			var i = UnityEngine.Random.Range( 0, 6 );
+			return VOICES[i];
+		}
+
 		///----------------------------------------------------------------------------------------------------
 		/// ● 配置
 		///----------------------------------------------------------------------------------------------------
@@ -117,9 +133,10 @@ namespace TatemonSugoroku.Scripts {
 			var tatemonSprite = _tatemonSprites[rotatePower];
 			var auraSprite = _auraSprites[type];
 			var numberSprite = _numberSprites[rotatePower];
+			var voice = GetRandomVoice();
 
-			SMLog.Debug( $"{nameof( rotatePower )} : {rotatePower}" );
-			m.Place( tilePosition, rotatePower, tatemonSprite, auraSprite, numberSprite );
+//			SMLog.Debug( $"{nameof( rotatePower )} : {rotatePower}" );
+			m.Place( tilePosition, rotatePower, tatemonSprite, auraSprite, numberSprite, voice );
 		}
 	}
 }

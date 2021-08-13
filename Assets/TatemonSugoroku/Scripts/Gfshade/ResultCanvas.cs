@@ -45,11 +45,11 @@ namespace TatemonSugoroku.Scripts
                 }
 
                 audioManager.Play( SMBGM.Result ).Forget();
-                audioManager.Play( SMBGS.Evening2 ).Forget();
+                audioManager.Play( SMBGS.Night ).Forget();
                 await audioManager.Play( SMJingle.Result1 );
                 await audioManager.Play( SMJingle.Result2 );
                 await _Button.OnClickAsync(ct);
-                audioManager.Play( SMSE.Title2 ).Forget();
+                audioManager.Play( SMSE.Result ).Forget();
                 await UniTask.Delay( 500 );
                 var taskManager = await SMServiceLocator.WaitResolve<SMTaskManager>();
                 taskManager.Finalize().Forget();

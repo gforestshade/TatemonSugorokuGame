@@ -82,7 +82,7 @@ namespace TatemonSugoroku.Scripts {
 					_audioManager.Play( SMBGS.Daytime ).Forget();
 					break;
 				case DayState.Evening:
-					_audioManager.Play( SMBGS.Evening1 ).Forget();
+					_audioManager.Play( SMBGS.Evening ).Forget();
 					break;
 				case DayState.Night:
 					_audioManager.Play( SMBGM.NightGame ).Forget();

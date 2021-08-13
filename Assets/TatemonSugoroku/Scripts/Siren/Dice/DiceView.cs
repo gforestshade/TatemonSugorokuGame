@@ -80,7 +80,7 @@ namespace TatemonSugoroku.Scripts {
 		void OnCollisionEnter( Collision collision ) {
 			_particle.transform.position = collision.contacts.First().point;
 			_particle.Play();
-			_audioManager?.Play( SMSE.DiceHit2 ).Forget();
+			_audioManager?.Play( SMSE.DiceHit ).Forget();
 		}
 
 

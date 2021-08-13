@@ -11,10 +11,8 @@ namespace SubmarineMirage.Setting {
 	/// <summary>環境音の定数（文字列変換で書類名とする）</summary>
 	public enum SMBGS {
 		Daytime,
-		Evening1,
-		Evening2,
-		Tyouroku1,
-		Tyouroku2,
+		Evening,
+		Night,
 		Wind,
 	}
 }
