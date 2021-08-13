@@ -568,6 +568,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 617672333265238183}
     m_Modifications:
+    - target: {fileID: 6949939710953378121, guid: c46f2422099519544a294074e2094ff3,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949939710953378121, guid: c46f2422099519544a294074e2094ff3,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278255615
+      objectReference: {fileID: 0}
     - target: {fileID: 6949939711692886174, guid: c46f2422099519544a294074e2094ff3,
         type: 3}
       propertyPath: m_Pivot.x
@@ -673,6 +683,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player0Status
       objectReference: {fileID: 0}
+    - target: {fileID: 6949939711793158465, guid: c46f2422099519544a294074e2094ff3,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949939711793158465, guid: c46f2422099519544a294074e2094ff3,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278255615
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c46f2422099519544a294074e2094ff3, type: 3}
 --- !u!224 &7723956156917797203 stripped
@@ -700,6 +720,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 617672333265238183}
     m_Modifications:
+    - target: {fileID: 1925952092545503351, guid: 92bb2a3e26ce7ea498a55f332d0f8405,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1925952092545503351, guid: 92bb2a3e26ce7ea498a55f332d0f8405,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278255615
+      objectReference: {fileID: 0}
+    - target: {fileID: 1925952092780255359, guid: 92bb2a3e26ce7ea498a55f332d0f8405,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1925952092780255359, guid: 92bb2a3e26ce7ea498a55f332d0f8405,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278255615
+      objectReference: {fileID: 0}
     - target: {fileID: 1925952093014479264, guid: 92bb2a3e26ce7ea498a55f332d0f8405,
         type: 3}
       propertyPath: m_Pivot.x

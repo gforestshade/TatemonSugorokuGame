@@ -80,21 +80,25 @@ namespace TatemonSugoroku.Scripts {
 		protected override void Update() {
 			base.Update();
 
-			if ( _placeEndSecond > Time.time ) { return; }
+			if ( _placeEndSecond < Time.time ) {
+				var isNear = _pieceManager._views.Any( v => {
+					var delta = v.transform.position - transform.position;
+					var distance = delta.magnitude;
+					return distance < 1;
+				} );
 
-			var isNear = _pieceManager._views.Any( v => {
-				var delta = v.transform.position - transform.position;
-				var distance = delta.magnitude;
-				return distance < 1.2;
-			} );
+				if ( _isNearPiece != isNear ) {
+					_isNearPiece = isNear;
+					_renderers.ForEach( pair => {
+						var c = pair.Value.color;
+						c.a = _isNearPiece ? 0.5f : 1;
+						pair.Value.color = c;
+					} );
+				}
+			}
 
-			if ( _isNearPiece == isNear ) { return; }
-			_isNearPiece = isNear;
-			_renderers.ForEach( pair => {
-				var c = pair.Value.color;
-				c.a = _isNearPiece ? 0.4f : 1;
-				pair.Value.color = c;
-			} );
+			_renderers["Number"].transform.rotation = Quaternion.Euler( 90, 0, 0 );
+			_renderers["Number"].color = Color.white;
 		}
 
 
@@ -178,16 +182,16 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>
 		/// ● タイル番号に、たてもんを配置
 		/// </summary>
-		public void Place( int tileID, int rotatePower, Sprite tatemon, Sprite aura )
-			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower, tatemon, aura );
+		public void Place( int tileID, int rotatePower, Sprite tatemon, Sprite aura, Sprite number )
+			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower, tatemon, aura, number );
 
 		/// <summary>
 		/// ● タイル位置に、たてもんを配置
 		/// </summary>
-		public void Place( Vector2Int tilePosition, int rotatePower, Sprite tatemon, Sprite aura ) {
-			_renderers["Front"].sprite = tatemon;
+		public void Place( Vector2Int tilePosition, int rotatePower, Sprite tatemon, Sprite aura, Sprite number ) {
+			_renderers["Body"].sprite = tatemon;
 			_renderers["Aura"].sprite = aura;
-			_renderers["Back"].sprite = tatemon;
+			_renderers["Number"].sprite = number;
 
 //			_particles.ForEach( p => p.Play() );
 

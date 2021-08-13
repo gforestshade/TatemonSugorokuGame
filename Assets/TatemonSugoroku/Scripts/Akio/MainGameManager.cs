@@ -51,7 +51,13 @@ namespace TatemonSugoroku.Scripts.Akio
         private UICanvas _UI;
 
         [SerializeField]
+        private UITurn _TurnUI;
+
+        [SerializeField]
         private DiceCanvas _DiceUI;
+
+        [SerializeField]
+        private UIGameEnd _GameEndUI;
 
         [SerializeField]
         private ResultCanvas _ResultUI;
@@ -80,7 +86,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
         private readonly int[] _SpinPowersOfTatemon = { 0, 0, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1 };
         private readonly int _OppositeEnterBonusOne = 20;
-        private readonly int _MaxTurn = 7;
+        private readonly int _MaxTurn = 2;
 
         private FieldModel fieldModel;
         private MotionModel motionModel;
@@ -197,7 +203,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
             // 「さらに！　塗りつぶしが終了したとき、効果発動！オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
             int spinPower = _SpinPowersOfTatemon[dice];
-            if (turnIndex == _MaxTurn - 1)
+            if (turnIndex >= _MaxTurn - 2)
             {
                 // 「最終ターンである場合、さらに効果発動！「たてもん」のパワーが、2倍になるぜッ！」
                 spinPower *= 2;
@@ -247,6 +253,8 @@ namespace TatemonSugoroku.Scripts.Akio
         {
             SMLog.Debug($"ゲーム終了", SMLogTag.Scene);
             _UI.gameObject.SetActive(false);
+            _TurnUI.ChangeTurn( null );
+            _GameEndUI.SetActive( true );
             _CameraManager.SetResultCamera();
             await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: ct);
         }
@@ -256,6 +264,7 @@ namespace TatemonSugoroku.Scripts.Akio
             SMLog.Debug($"{model.Name}のターン", SMLogTag.Scene);
             //_UI.SetCurrentPlayerName(model.Name);
             await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: ct);
+            _TurnUI.ChangeTurn( model.Id );
         }
 
         private async UniTask<int> DoDice(int playerId, CancellationToken ct)

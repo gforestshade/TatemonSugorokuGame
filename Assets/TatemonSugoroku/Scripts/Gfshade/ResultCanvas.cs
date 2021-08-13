@@ -33,6 +33,8 @@ namespace TatemonSugoroku.Scripts
                     audioManager.Stop<SMBGM>(),
                     audioManager.Stop<SMBGS>()
                 );
+                var uiGameEnd = FindObjectOfType<UIGameEnd>();
+                uiGameEnd.SetActive( false );
 
                 gameObject.SetActive(true);
                 _Winner.Switch(winner);

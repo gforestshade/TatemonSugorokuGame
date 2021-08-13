@@ -57,4 +57,14 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3ed82c0c804e5bc4a87114537116aa08, type: 3}
   - {fileID: 21300000, guid: 89491b03727b503469334289b9a1aef3, type: 3}
   - {fileID: 21300000, guid: 5bb325f7fda1d1c4a932e8c41be52f6c, type: 3}
+  _numberSpritesSetter:
+  - {fileID: 21300000, guid: 5d1bad77bbf0ef54683043f7f8254dd7, type: 3}
+  - {fileID: 21300000, guid: 121848073a8224b43869bf41c8a8da85, type: 3}
+  - {fileID: 21300000, guid: 9daece9f8668e3349b835b6f9bc69198, type: 3}
+  - {fileID: 21300000, guid: 7f927a5865687cf459cf84bfcc46f333, type: 3}
+  - {fileID: 21300000, guid: 7ad0ac2122d711148bcd949d18e904ff, type: 3}
+  - {fileID: 21300000, guid: e56b54baacc10b744a4cf73535361e9c, type: 3}
+  - {fileID: 21300000, guid: 78c5f6c938c2b8e4db9226ae10d0b544, type: 3}
+  - {fileID: 21300000, guid: 8ba0e96afad2fb04789d910379630d86, type: 3}
+  - {fileID: 21300000, guid: 86a34817d9e7aa5459dbb1ebddcb050c, type: 3}
   _speedRate: 20

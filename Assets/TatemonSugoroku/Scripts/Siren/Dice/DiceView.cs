@@ -132,6 +132,7 @@ namespace TatemonSugoroku.Scripts {
 					);
 
 					await UTask.WaitWhile( _canceler, () => !_rigidbody.IsSleeping() );
+					await UTask.Delay( _canceler, 500 );
 
 					CalculateValue();
 					return;

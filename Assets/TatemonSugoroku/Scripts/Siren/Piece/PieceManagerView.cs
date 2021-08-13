@@ -26,26 +26,32 @@ namespace TatemonSugoroku.Scripts {
 		public static readonly int PLAYER_COUNT = EnumUtils.GetLength<PlayerType>();
 
 
-		[SerializeField] GameObject _piece1;
-		[SerializeField] GameObject _piece2;
+		[SerializeField] GameObject _prefab;
+		[SerializeField] List<Sprite> _pieceSpritesSetter;
+
+		readonly Dictionary<PlayerType, Sprite> _pieceSprites = new Dictionary<PlayerType, Sprite>();
+
 		public readonly List<PieceView> _views = new List<PieceView>();
 		readonly List<PieceView> _dummyViews = new List<PieceView>();
 
 
 
 		void Start() {
+			_pieceSpritesSetter.ForEach( ( s, i ) => {
+				_pieceSprites[( PlayerType )i] = s;
+			} );
+
 			EnumUtils.GetValues<PlayerType>().ForEach( type => {
-				GameObject prefab = null;
-				switch ( type ) {
-					case PlayerType.Player1:	prefab = _piece1;	break;
-					case PlayerType.Player2:	prefab = _piece2;	break;
-				}
-				var go = prefab.Instantiate( transform );
+				var go = _prefab.Instantiate( transform );
+				var sprite = go.GetComponentInChildren<SpriteRenderer>();
+				sprite.sprite = _pieceSprites[type];
 				var v = go.GetComponent<PieceView>();
 				v.Setup( PieceType.Body, type );
 				_views.Add( v );
 
-				go = prefab.Instantiate( transform );
+				go = _prefab.Instantiate( transform );
+				sprite = go.GetComponentInChildren<SpriteRenderer>();
+				sprite.sprite = _pieceSprites[type];
 				v = go.GetComponent<PieceView>();
 				v.Setup( PieceType.Dummy, type );
 				_dummyViews.Add( v );

@@ -43,5 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0598842a12917aa408b78c51c7c455bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _piece1: {fileID: 2315777800953071186, guid: 0a3478e2d4d25c84dba6d81f59ede2ad, type: 3}
-  _piece2: {fileID: 2315777800953071186, guid: 635b74f90923df04e9ad0290c5f13c7e, type: 3}
+  _prefab: {fileID: 2315777800953071186, guid: 0a3478e2d4d25c84dba6d81f59ede2ad, type: 3}
+  _pieceSpritesSetter:
+  - {fileID: 21300000, guid: c759d9a87f1441345a79a4faba26606b, type: 3}
+  - {fileID: 21300000, guid: 168a288d498040c488dc52ec4306813d, type: 3}

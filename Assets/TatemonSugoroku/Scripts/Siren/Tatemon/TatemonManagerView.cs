@@ -21,10 +21,12 @@ namespace TatemonSugoroku.Scripts {
 		[SerializeField] GameObject _prefab;
 		[SerializeField] List<Sprite> _auraSpritesSetter;
 		[SerializeField] List<Sprite> _tatemonSpritesSetter;
+		[SerializeField] List<Sprite> _numberSpritesSetter;
 		[SerializeField] float _speedRate = 1;
 
 		readonly Dictionary<PlayerType, Sprite> _auraSprites = new Dictionary<PlayerType, Sprite>();
 		readonly Dictionary<int, Sprite> _tatemonSprites = new Dictionary<int, Sprite>();
+		readonly Dictionary<int, Sprite> _numberSprites = new Dictionary<int, Sprite>();
 
 		readonly Dictionary<PlayerType, List<TatemonView>> _views
 			= new Dictionary<PlayerType, List<TatemonView>>();
@@ -41,6 +43,10 @@ namespace TatemonSugoroku.Scripts {
 				var i = s.name.Replace( "tatemon", "" ).ToInt();
 				_tatemonSprites[i] = s;
 			} );
+			_numberSpritesSetter.ForEach( s => {
+				var i = s.name.ToInt();
+				_numberSprites[i] = s;
+			} );
 
 			EnumUtils.GetValues<PlayerType>().ForEach( type => {
 				_views[type] = Enumerable.Range( 0, MAX_PLAYER_TURN )
@@ -55,17 +61,6 @@ namespace TatemonSugoroku.Scripts {
 
 			EnumUtils.GetValues<PlayerType>()
 				.ForEach( type => _turnCounts[type] = 0 );
-
-/*
-			firework._launch.Subscribe( _ => {
-				GetViews()
-					.Where( m => m._isPlaced )
-					.ForEach( m => {
-						m._speedRate *= 2;
-						m.Rotate();
-					} );
-			} );
-*/
 		}
 
 
@@ -121,9 +116,10 @@ namespace TatemonSugoroku.Scripts {
 
 			var tatemonSprite = _tatemonSprites[rotatePower];
 			var auraSprite = _auraSprites[type];
+			var numberSprite = _numberSprites[rotatePower];
 
-			SMLog.Debug( rotatePower );
-			m.Place( tilePosition, rotatePower, tatemonSprite, auraSprite );
+			SMLog.Debug( $"{nameof( rotatePower )} : {rotatePower}" );
+			m.Place( tilePosition, rotatePower, tatemonSprite, auraSprite, numberSprite );
 		}
 	}
 }
