@@ -5,6 +5,8 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
+using static TatemonSugoroku.Gfshade.Utilities;
+
 
 namespace TatemonSugoroku.Scripts
 {
@@ -95,7 +97,7 @@ namespace TatemonSugoroku.Scripts
 
             try
             {
-                Gfshade.Utilities.TweenKill(changeWalkSeq, true);
+                TweenKill(changeWalkSeq, true);
                 changeWalkSeq = DOTween.Sequence()
                     .Insert(0f, panel.Current.DOColor(WhiteTransparent, fadeDuration).SetEase(Ease.Linear))
                     .Insert(latterStart, panel.Reserved.DOColor(White, fadeDuration).SetEase(Ease.Linear));

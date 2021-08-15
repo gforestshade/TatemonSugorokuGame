@@ -6,7 +6,7 @@ using DG.Tweening;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
 using SubmarineMirage.Extension;
-using TatemonSugoroku.Scripts.Akio;
+using TatemonSugoroku.Scripts.FieldLogic;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -82,7 +82,7 @@ namespace TatemonSugoroku.Scripts {
 
 
 		public void Place( int playerID, int tileID,
-							IEnumerable< KeyValuePair<MoveArrowType, MotionStatus> > arrowDatas
+							IEnumerable< KeyValuePair<MoveArrowType, FieldLogic.MotionStatus> > arrowDatas
 		) {
 			Hide();
 			arrowDatas.ForEach( pair => {

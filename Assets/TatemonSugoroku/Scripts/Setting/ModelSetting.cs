@@ -29,11 +29,6 @@ namespace TatemonSugoroku.Scripts.Setting {
 				// --------------------------------------------------------------------------------------------
 				// こんな感じに
 				new SampleModel(),
-
-				new MotionModel(),
-				new FieldModel(),
-				new ScoreModel(),
-				new MainGameManagementModel(),
 			};
 		}
 	}

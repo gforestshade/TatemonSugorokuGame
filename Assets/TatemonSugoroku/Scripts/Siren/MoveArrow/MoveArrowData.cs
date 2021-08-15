@@ -1,5 +1,6 @@
 using UnityEngine;
-using TatemonSugoroku.Scripts.Akio;
+using TatemonSugoroku.Scripts.FieldLogic;
+
 namespace TatemonSugoroku.Scripts {
 
 
@@ -20,25 +21,25 @@ namespace TatemonSugoroku.Scripts {
 			_state = state;
 		}
 
-		public MoveArrowData( int tileID, MoveArrowType type, MotionStatus motionState ) {
+		public MoveArrowData( int tileID, MoveArrowType type, FieldLogic.MotionStatus motionState ) {
 			_tilePosition = TileManagerView.ToTilePosition( tileID );
 			_type = type;
 
 			switch ( motionState ) {
-				case MotionStatus.Unmovable:	_state = MoveArrowState.Hide;		break;
-				case MotionStatus.Movable:		_state = MoveArrowState.Enable;		break;
-				case MotionStatus.Return:		_state = MoveArrowState.Disable;	break;
+				case FieldLogic.MotionStatus.Unmovable: _state = MoveArrowState.Hide;		break;
+				case FieldLogic.MotionStatus.Movable: _state = MoveArrowState.Enable;		break;
+				case FieldLogic.MotionStatus.Return: _state = MoveArrowState.Disable;	break;
 			}
 		}
 
-		public MoveArrowData( Vector2Int tilePosition, MoveArrowType type, MotionStatus motionState ) {
+		public MoveArrowData( Vector2Int tilePosition, MoveArrowType type, FieldLogic.MotionStatus motionState ) {
 			_tilePosition = tilePosition;
 			_type = type;
 
 			switch ( motionState ) {
-				case MotionStatus.Unmovable:	_state = MoveArrowState.Hide;		break;
-				case MotionStatus.Movable:		_state = MoveArrowState.Enable;		break;
-				case MotionStatus.Return:		_state = MoveArrowState.Disable;	break;
+				case FieldLogic.MotionStatus.Unmovable: _state = MoveArrowState.Hide;		break;
+				case FieldLogic.MotionStatus.Movable: _state = MoveArrowState.Enable;		break;
+				case FieldLogic.MotionStatus.Return: _state = MoveArrowState.Disable;	break;
 			}
 		}
 	}
