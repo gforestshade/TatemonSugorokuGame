@@ -28,7 +28,7 @@ namespace TatemonSugoroku.Scripts {
 					switch ( b.name ) {
 						case "Hajimeru":
 							UTask.Void( async () => {
-								await audioManager.Play( SMSE.Title1 );
+								await audioManager.Play( SMSE.Title );
 								sceneManager.GetFSM<MainSMScene>().ChangeState<GameSMScene>().Forget();
 							} );
 							break;

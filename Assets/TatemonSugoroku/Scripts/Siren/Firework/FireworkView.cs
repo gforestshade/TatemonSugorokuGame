@@ -86,7 +86,7 @@ namespace TatemonSugoroku.Scripts {
 				await UTask.Delay( _canceler, Random.Range( 1000, 5000 ) );
 				if ( _isDispose || _canceler._isDispose ) { return; }
 
-				_audioManager.Play( SMSE.Firework2 ).Forget();
+				_audioManager.Play( SMSE.Firework ).Forget();
 
 //				_renderer.material.DOColor( Color.white, 0.02f ).SetEase( Ease.OutCirc ).Play()
 //					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();

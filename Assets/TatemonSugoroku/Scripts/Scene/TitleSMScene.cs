@@ -18,18 +18,14 @@ namespace TatemonSugoroku.Scripts {
 		/// ● コンストラクタ
 		/// </summary>
 		public TitleSMScene() {
-			var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
 
 			// シーン初期化
 			_enterEvent.AddLast( async canceler => {
-//				await audioManager.StopAll();
-				audioManager.Play( SMBGM.Title ).Forget();
 				await UTask.DontWait();
 			} );
 
 			// シーン終了
 			_exitEvent.AddFirst( async canceler => {
-//				audioManager.StopAll().Forget();
 				await UTask.DontWait();
 			} );
 
