@@ -47,7 +47,7 @@ namespace TatemonSugoroku.Scripts.Akio
                 DomainPlayerId = 0
             };
 
-            Debug.Log("FIELD SCORE: " + ScoreModel.CalculateFieldScore(fieldCells, 0, 8, 8));
+            Debug.Log("FIELD SCORE: " + Score.CalculateScore(fieldCells, 0, 8, 8));
         }
 
         // Update is called once per frame

@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace TatemonSugoroku.Scripts
 {
-    class PlayerInternalModel
+    public class PlayerInternalModel
     {
         public int Id;
         public string Name;
@@ -89,6 +89,10 @@ namespace TatemonSugoroku.Scripts
         PlayerInternalModel[] playerModels;
         Difficulty difficulty;
 
+        /// <summary>
+        /// 内部プレイヤー情報を初期化する
+        /// </summary>
+        /// <param name="diff"></param>
         private void InitTestPlayerInternalModels(Difficulty diff)
         {
             playerModels = new PlayerInternalModel[]
@@ -116,13 +120,22 @@ namespace TatemonSugoroku.Scripts
             };
         }
 
+        /// <summary>
+        /// ゲームをする
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         public async UniTask DoGame(CancellationToken ct)
         {
+            // 難易度設定を取得
             DifficultyManager difficultyManager = Singleton<DifficultyManager>.s_instance;
             if (difficultyManager.Diff == null) difficultyManager.Diff = Difficulty.Normal;
             difficulty = difficultyManager.Diff;
 
+            // プレイヤー情報設定
             InitTestPlayerInternalModels(difficulty);
+
+            // 
             inputManager = SMServiceLocator.Resolve<SMInputManager>();
 
             fieldModel = new FieldLogic.Field(difficulty.maxX, difficulty.maxY, playerModels.Select(m => m.TileId).ToArray());
@@ -147,8 +160,16 @@ namespace TatemonSugoroku.Scripts
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    bool turnResult = await DoPlayerTurn(i, j, ct);
-                    if (!turnResult) goto GameEnd;
+                    if (j == 0)
+                    {
+                        bool turnResult = await DoPlayerTurn(i, j, ct);
+                        if (!turnResult) goto GameEnd;
+                    }
+                    else
+                    {
+                        bool turnResult = await DoAITurn(i, j, ct);
+                        if (!turnResult) goto GameEnd;
+                    }
 
                     // たてもんが置かれるたび、それのスコアは再計算される。
                     await UpdateScore(ct);
@@ -173,6 +194,45 @@ namespace TatemonSugoroku.Scripts
             await _ResultUI.WaitForClick(scores, winner, ct);
         }
 
+        private async UniTask<bool> DoAITurn(int turnIndex, int playerId, CancellationToken ct)
+        {
+            System.TimeSpan wait02 = System.TimeSpan.FromSeconds(0.2);
+            System.TimeSpan wait10 = System.TimeSpan.FromSeconds(1.0);
+
+            PlayerInternalModel pTurn = playerModels[playerId];
+
+            // 「たてみのターン！」
+            await TurnStart(pTurn, ct);
+
+            // 「ドロー！」
+            int dice = await DoDice(playerId, false, ct);
+
+            // 「あたしは、12を召喚！」
+            _UI.SetWalkRemaining(dice);
+            await UniTask.Delay(wait02, cancellationToken: ct);
+
+            // 「フィールドを、好きな方向に12回まで塗りつぶすことができるよ！」
+            bool inputResult = await AIMove(turnIndex, playerId, dice, ct);
+            if (!inputResult) return false;
+
+            await UniTask.Delay(wait02, cancellationToken: ct);
+
+            // 「さらに！　塗りつぶしが終了したとき、効果発動！　あたしの最終位置に、設置魔法「たてもん」が発動するよ！」
+            int spinPower = difficulty.GetSpinPower(turnIndex, dice);
+
+            // 「モンスター「たてもん」が召喚される！」
+            fieldModel.PutTatemonAtCurrentPosition(playerId, spinPower);
+            _TatemonManager.Place(playerId, pTurn.TileId, spinPower);
+            await UniTask.Delay(wait02, cancellationToken: ct);
+            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
+            playerModels[playerId].Tatemon -= 1;
+
+            // ターン終了時の時間調整だよ
+            await UniTask.Delay(wait10, cancellationToken: ct);
+
+            return true;
+        }
+
         private async UniTask<bool> DoPlayerTurn(int turnIndex, int playerId, CancellationToken ct)
         {
             System.TimeSpan wait02 = System.TimeSpan.FromSeconds(0.2);
@@ -184,14 +244,15 @@ namespace TatemonSugoroku.Scripts
             await TurnStart(pTurn, ct);
 
             // 「ドロー！」
-            int dice = await DoDice(playerId, ct);
+            int dice = await DoDice(playerId, true, ct);
 
             // 「オレは、12を召喚！」
             _UI.SetWalkRemaining(dice);
             await UniTask.Delay(wait02, cancellationToken: ct);
 
             // 「フィールドを、好きな方向に12回まで塗りつぶすことができるッ！」
-            await InputAndMove(playerId, dice, ct);
+            bool inputResult = await InputAndMove(playerId, dice, ct);
+            if (!inputResult) return false;
 
             await UniTask.Delay(wait02, cancellationToken: ct);
 
@@ -218,7 +279,6 @@ namespace TatemonSugoroku.Scripts
 
             return true;
         }
-
         private void InitUI()
         {
             for (int i = 0; i < playerModels.Length; i++)
@@ -256,15 +316,56 @@ namespace TatemonSugoroku.Scripts
             _TurnUI.ChangeTurn( model.Id );
         }
 
-        private async UniTask<int> DoDice(int playerId, CancellationToken ct)
+        private async UniTask<int> DoDice(int playerId, bool isHuman, CancellationToken ct)
         {
             SMLog.Debug($"サイコロボタンを押してください", SMLogTag.Scene);
             await _DiceManager.ChangeState( DiceState.Rotate );
-            await _DiceUI.WaitForClick(playerId);
+
+            if (isHuman)
+                await _DiceUI.WaitForClick(playerId);
+            
             int dice = await _DiceManager.Roll();
             
             SMLog.Debug($"{dice}が出ました", SMLogTag.Scene);
             return dice;
+        }
+
+        private async UniTask<bool> AIMove(int turnIndex, int playerId, int dice, CancellationToken ct)
+        {
+            PlayerInternalModel pTurn = playerModels[playerId];
+
+            FieldLogic.Motion motionModel = fieldModel.CreateMotion(playerId, dice);
+
+            FieldLogic.MovingGraph g = new FieldLogic.MovingGraph(fieldModel, playerId);
+            // 初期化時、囲まれてて移動できないならゲーム終了
+            if (!g.CanMoveAnyRoute(dice))
+            {
+                return false;
+            }
+
+            FieldLogic.AIMotion ai = new FieldLogic.AIMotion(fieldModel, difficulty, playerModels, turnIndex, playerId, dice);
+            List<int> route = ai.ChooseRoute();
+
+            // ルートを塗る
+            foreach (int tileId in route)
+            {
+                var moveResult = fieldModel.MovePlayer(playerId, tileId);
+
+                // 「罠カードオープン！　おまえがオレの領域(テリトリー)を踏んだ時、オレは20点のスコアを得る！」
+                if (moveResult.IsOppositeEnter)
+                {
+                    playerModels[moveResult.oppositePlayerId].OppositeEnterBonus += difficulty.oppositeEnterBonus;
+                }
+
+                // 塗る
+                _TileManager.ChangeArea(tileId, playerId);
+
+                await _PieceManager.Move(playerId, pTurn.TileId);
+                pTurn.TileId = route[route.Count - 1];
+                HideArrows();
+            }
+
+            return true;
         }
 
         private async UniTask<bool> InputAndMove(int playerId, int dice, CancellationToken ct)
@@ -274,7 +375,8 @@ namespace TatemonSugoroku.Scripts
             FieldLogic.Motion motionModel = fieldModel.CreateMotion(playerId, dice);
 
             // 初期化時、囲まれてて移動できないならゲーム終了
-            if (!motionModel.CanMoveAnyRoute())
+            FieldLogic.MovingGraph g = new FieldLogic.MovingGraph(fieldModel, playerId);
+            if (!g.CanMoveAnyRoute(dice))
             {
                 return false;
             }
@@ -291,6 +393,7 @@ namespace TatemonSugoroku.Scripts
                 // 最終結果は移動ルート受け取り用Subjectに向かってぷっしゅしてもらう
                 inputManager
                     ._touchTileID
+                    .Where(id => id >= 0)
                     .Subscribe(tileId => InputPosition(motionQueueSubject, motionModel, tileId))
                     .AddTo(movementDisposables);
 
@@ -310,10 +413,11 @@ namespace TatemonSugoroku.Scripts
                 var arrowLeft = motionModel.MotionStatusLeft.Select(status => new KeyValuePair<MoveArrowType, FieldLogic.MotionStatus>(MoveArrowType.Left, status));
                 var arrow = Observable.CombineLatest(arrowUp, arrowRight, arrowDown, arrowLeft);
 
-                // 現在の矢印取得
+                // 初回の矢印表示
                 arrow
                     .First()
-                    .Subscribe(arrowInfos => _MoveArrowManager.Place(playerId, pTurn.TileId, arrowInfos));
+                    .Subscribe(arrow => _MoveArrowManager.Place(playerId, pTurn.TileId, arrow))
+                    .AddTo(movementDisposables);
 
                 // コマ移動が起こったら、
                 // コマ座標と最新矢印情報をまとめて矢印表示に流す
@@ -366,11 +470,11 @@ namespace TatemonSugoroku.Scripts
         private async UniTask UpdateScore(CancellationToken ct)
         {
             List<UniTask> changeScore = new List<UniTask>();
-            int[] newScore = new int[playerModels.Length];
+            int[] newScore = FieldLogic.Score.CalculateScore(fieldModel);
 
             for (int i = 0; i < 2; i++)
             {
-                newScore[i] = FieldLogic.ScoreModel.CalculateFieldScore(fieldModel.GetFieldCells(), i, difficulty.maxX, difficulty.maxY) + playerModels[i].OppositeEnterBonus;
+                newScore[i] +=  playerModels[i].OppositeEnterBonus;
                 changeScore.Add(_UI.ChangeScore(i, playerModels[i].Score, newScore[i]));
             }
 

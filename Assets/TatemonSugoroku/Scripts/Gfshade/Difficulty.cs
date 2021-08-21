@@ -38,6 +38,18 @@ namespace TatemonSugoroku
             this.feverSpinPower = feverSpinPower;
         }
 
+        public int GetSpinPower(int turnIndex, int dice)
+        {
+            if (turnIndex < feverTurn)
+            {
+                return spinPower[dice];
+            }
+            else
+            {
+                return feverSpinPower[dice];
+            }
+        }
+
         /// <summary>
         /// 標準設定
         /// </summary>
@@ -112,6 +124,7 @@ namespace TatemonSugoroku
         public SpinPowerDouble(ISpinPower basePower, int multiplier)
         {
             this.basePower = basePower;
+            this.multiplier = multiplier;
         }
         public int this[int index] => basePower[index] * multiplier;
     }

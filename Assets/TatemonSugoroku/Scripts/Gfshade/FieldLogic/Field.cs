@@ -24,10 +24,10 @@ namespace TatemonSugoroku.Scripts.FieldLogic
             else
                 return new CellVector2 { X = id % maxX, Y = id / maxX };
         }
-        public int? ToCellId(int maxX, int maxY)
+        public int ToCellId(int maxX, int maxY)
         {
             if (!(X >= 0 && X < maxX && Y >= 0 && Y < maxY))
-                return null;
+                return -1;
             else
                 return Y * maxX + X;
         }
@@ -46,6 +46,14 @@ namespace TatemonSugoroku.Scripts.FieldLogic
                 default:
                     throw new System.ArgumentException();
             }
+        }
+        public static int IdMove(int id, MoveDirection dir, int maxX, int maxY)
+        {
+            CellVector2? pos = FromCellId(id, maxX, maxY);
+            if (!pos.HasValue) return -1;
+
+            CellVector2 next = MovePeekToDirection(pos.Value, dir);
+            return next.ToCellId(maxX, maxY);
         }
     }
     
@@ -69,15 +77,18 @@ namespace TatemonSugoroku.Scripts.FieldLogic
     public class Field
     {
         // 盤面の大きさ
-        private readonly int maxX;
-        private readonly int maxY;
+        public readonly int maxX;
+        public readonly int maxY;
         private readonly int cellCount;
-        
+
         // 盤面の中身
         private readonly Cell[] cells;
         // プレイヤーの位置
         private readonly int[] playerPositions;
-        
+
+        public int CellCount => cellCount;
+        public int PlayerCount => playerPositions.Length;
+
         public Field(int maxX, int maxY, int[] playerPositionList)
         {
             this.maxX = maxX;
@@ -104,6 +115,38 @@ namespace TatemonSugoroku.Scripts.FieldLogic
             }
         }
 
+        public Field(Field field)
+        {
+            maxX = field.maxX;
+            maxY = field.maxY;
+            cellCount = field.cellCount;
+
+            cells = new Cell[cellCount];
+            for (int i = 0; i < cellCount; i++)
+            {
+                Cell c = field.cells[i];
+                cells[i] = new Cell
+                {
+                    TatemonSpinPower = c.TatemonSpinPower,
+                    TatemonPlayerId = c.TatemonPlayerId,
+                    DomainPlayerId = c.DomainPlayerId,
+                };
+            }
+
+            playerPositions = new int[field.playerPositions.Length];
+            for (int i = 0; i < field.playerPositions.Length; i++)
+            {
+                int posId = field.playerPositions[i];
+                playerPositions[i] = posId;
+                cells[posId].DomainPlayerId = i;
+            }
+        }
+
+        public bool CanMove(int playerId, int moveTo)
+        {
+            int tid = cells[moveTo].TatemonPlayerId;
+            return tid < 0 || tid == playerId;
+        }
 
         public MoveResult MovePlayer(int playerId, int moveTo)
         {
@@ -148,6 +191,12 @@ namespace TatemonSugoroku.Scripts.FieldLogic
         {
             return cells;
         }
+
+        public int Domain(int id) => cells[id].DomainPlayerId;
+
+        public int Tatemon(int id) => cells[id].TatemonPlayerId;
+
+        public int SpinPower(int id) => cells[id].TatemonSpinPower;
 
         public int GetCurrentPositionByPlayerId(int playerId)
         {
