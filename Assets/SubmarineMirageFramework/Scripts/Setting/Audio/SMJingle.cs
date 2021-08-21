@@ -12,7 +12,6 @@ namespace SubmarineMirage.Setting {
 	public enum SMJingle {
 		Result1,
 		Result2,
-		Result3,
 		Start1,
 		Start2,
 	}

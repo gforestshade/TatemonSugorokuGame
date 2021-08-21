@@ -20,6 +20,7 @@ namespace TatemonSugoroku.Scripts {
 		readonly Dictionary<string, SpriteRenderer> _renderers = new Dictionary<string, SpriteRenderer>();
 		readonly List<ParticleSystem> _particles = new List<ParticleSystem>();
 		PieceManagerView _pieceManager { get; set; }
+		SMAudioManager _audioManager { get; set; }
 
 		TatemonState _state { get; set; }
 		/// <summary>プレイヤーのタイプ</summary>
@@ -35,14 +36,15 @@ namespace TatemonSugoroku.Scripts {
 		public float _speedRate		{ get; set; }
 		int _rotatePower	{ get; set; }
 
+		SMVoice _voice { get; set; }
+
 		/// <summary>タイルが配置済みか？</summary>
 		public bool _isPlaced => _state != TatemonState.None;
 		bool _isNearPiece { get; set; }
 		float _placeEndSecond { get; set; }
+		float _windSESeconds { get; set; }
 
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
-		SMAudioManager _audioManager { get; set; }
-		float _windSESeconds { get; set; }
 
 
 
@@ -125,15 +127,7 @@ namespace TatemonSugoroku.Scripts {
 						.SetEase( Ease.OutBounce )
 						.Play();
 					_audioManager?.Play( SMSE.Tatemon ).Forget();
-					var i = Random.Range( 0, 6 );
-					switch ( i ) {
-						case 0:	_audioManager?.Play( SMVoice.Wasshoi1 ).Forget();	break;
-						case 1:	_audioManager?.Play( SMVoice.Wasshoi2 ).Forget();	break;
-						case 2:	_audioManager?.Play( SMVoice.Wasshoi3 ).Forget();	break;
-						case 3:	_audioManager?.Play( SMVoice.Wasshoi4 ).Forget();	break;
-						case 4:	_audioManager?.Play( SMVoice.Wasshoi5 ).Forget();	break;
-						case 5:	_audioManager?.Play( SMVoice.Wasshoi6 ).Forget();	break;
-					}
+					_audioManager?.Play( _voice ).Forget();
 					Rotate().Forget();
 					_placeEndSecond = Time.time + 3;
 					break;
@@ -182,16 +176,19 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>
 		/// ● タイル番号に、たてもんを配置
 		/// </summary>
-		public void Place( int tileID, int rotatePower, Sprite tatemon, Sprite aura, Sprite number )
-			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower, tatemon, aura, number );
+		public void Place( int tileID, int rotatePower, Sprite tatemon, Sprite aura, Sprite number, SMVoice voice )
+			=> Place( TileManagerView.ToTilePosition( tileID ), rotatePower, tatemon, aura, number, voice );
 
 		/// <summary>
 		/// ● タイル位置に、たてもんを配置
 		/// </summary>
-		public void Place( Vector2Int tilePosition, int rotatePower, Sprite tatemon, Sprite aura, Sprite number ) {
+		public void Place( Vector2Int tilePosition, int rotatePower,
+							Sprite tatemon, Sprite aura, Sprite number, SMVoice voice
+		) {
 			_renderers["Body"].sprite = tatemon;
 			_renderers["Aura"].sprite = aura;
 			_renderers["Number"].sprite = number;
+			_voice = voice;
 
 //			_particles.ForEach( p => p.Play() );
 
