@@ -204,7 +204,10 @@ namespace SubmarineMirage.Audio {
 		public async UniTask< SMAudioFile<T> > Load( T enumName ) {
 			// 読込済の場合、キャッシュを返す
 			var audio = _audioCache.GetOrDefault( enumName );
-			if ( audio != null )	{ return audio; }
+			if ( audio != null ) {
+				await UTask.WaitWhile( _runningCanceler, () => audio._state == SMAudioFileState.Loading );
+				return audio;
+			}
 
 			// ファイル名を設定
 			var fileName = _prefixName + enumName.ToString();
@@ -376,7 +379,9 @@ namespace SubmarineMirage.Audio {
 		}
 
 		///------------------------------------------------------------------------------------------------
+		/// <summary>
 		/// ● 音量フェード
+		/// </summary>
 		///------------------------------------------------------------------------------------------------
 		async UniTask FadeVolume( SMAudioSourceFadeType type ) {
 			var duration = type == SMAudioSourceFadeType.In ? _fadeInDuration : _fadeOutDuration;
@@ -388,36 +393,20 @@ namespace SubmarineMirage.Audio {
 				return;
 			}
 
-			// フェードする場合、音量比率を徐々に変更
-			var isDone = false;
-			var volumePercentSequence = DOTween.Sequence();
-			volumePercentSequence
-				.Append( GetVolumePercentTween( target, duration ) )
-				.OnComplete( () => isDone = true )
-				.Play();
-
-			try {
-				// フェードを待機
-				await UTask.WaitUntil( _runningCanceler, () => isDone );
-			} finally {
-				volumePercentSequence.Kill();   // killったら、作り直さないと可笑しくなる
-			}
-		}
-
-		/// <summary>
-		/// ● 音量補完動作を取得
-		/// </summary>
-		TweenerCore<float, float, FloatOptions> GetVolumePercentTween( float end, float duration ) {
 			// 現在音量を考慮
-			var rate = Mathf.Abs( end - _volumePercent.Value );
+			var rate = Mathf.Abs( target - _volumePercent.Value );
 			duration *= rate;
-			// 補完処理を返す
-			return DOTween.To(
-				()		=> _volumePercent.Value,
-				time	=> _volumePercent.Value = time,
-				end,
+
+			// フェードする場合、音量比率を徐々に変更
+			await DOTween.To(
+				() => _volumePercent.Value,
+				time => _volumePercent.Value = time,
+				target,
 				duration
-			).SetEase( Ease.InOutCubic );
+			)
+			.SetEase( Ease.InOutCubic )
+			.Play()
+			.ToUniTask( TweenCancelBehaviour.Kill, _runningCanceler.ToToken() );
 		}
 	}
 }

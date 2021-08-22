@@ -12,7 +12,7 @@ using SubmarineMirage.Utility;
 using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 using TatemonSugoroku.Scripts.Setting;
-
+using SystemTask = System.Threading.Tasks.Task;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -27,20 +27,20 @@ namespace TatemonSugoroku.Scripts {
 		/// ● 外部ライブラリを初期化
 		/// </summary>
 		static async UniTask InitializePlugin() {
-			// UniTask初期化
-			UniTaskScheduler.UnobservedExceptionWriteLogType = LogType.Error;
-
 			// DOTWeen初期化
 			DOTween.Init(
-				false,
+				true,
 				!SMDebugManager.IS_DEVELOP,
-				LogBehaviour.ErrorsOnly
+				LogBehaviour.Verbose
 			);
 			DOTween.defaultAutoPlay = AutoPlay.None;
 
 			Resources.Load<GameObject>( "Prefabs/EffectTap1" ).Instantiate();
 
-			await UTask.DontWait();
+			await SystemTask.Delay( 1 );
+
+			// UniTask初期化
+			UniTaskScheduler.UnobservedExceptionWriteLogType = LogType.Error;
 		}
 
 		/// <summary>
