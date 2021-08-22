@@ -6,14 +6,16 @@
 //---------------------------------------------------------------------------------------------------------
 namespace SubmarineMirage.Utility {
 	using System;
+	using System.Threading;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
-	using Cysharp.Threading.Tasks;
-	using DG.Tweening;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.Networking;
+	using Cysharp.Threading.Tasks;
+	using DG.Tweening;
+	using Extension;
 
 	// 本当はこう書かなければならないが、記述を省く為、省略
 	// 全書類に跨る、別名定義機能は、C#に無い
@@ -188,20 +190,28 @@ namespace SubmarineMirage.Utility {
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static async UniTask ToUniTask( this Tween tween, SMAsyncCanceler canceler ) {
-			var token = canceler.ToToken();
+			var originalToken = canceler.ToToken();
+			var tempSource = new CancellationTokenSource();
+			var linkSource = originalToken.Link( tempSource.Token );
+
 			// どんな設定をしても、DOTween解放と、非同期停止が、実行されない不具合がある。
 			// よって、確実に行われるよう、拡張修正。
 			await UniTask.WhenAny(
-				tween.ToUniTask( TweenCancelBehaviour.Kill, token ),	// DOTween解放のみ、非同期停止は行わない
-				WaitUntilCanceled( canceler )							// 非同期停止時は、絶対に停止する
+				tween.ToUniTask( TweenCancelBehaviour.Kill, originalToken ),	// DOTween解放のみ、非同期停止しない
+				UniTask.WaitUntilCanceled( linkSource.Token )					// 非同期停止時は、絶対停止
 			);
+			tempSource.Cancel();
+			tempSource.Dispose();
+			linkSource.Cancel();
+			linkSource.Dispose();
+
 			// DOTweenは、絶対に解放
 			if ( tween.IsActive() && tween.IsPlaying() ) {
 				tween.Kill();
 			}
 			// 確実に、非同期停止を伝達
-			if ( token.IsCancellationRequested ) {
-				throw new OperationCanceledException( token );
+			if ( originalToken.IsCancellationRequested ) {
+				throw new OperationCanceledException( originalToken );
 			}
 		}
 

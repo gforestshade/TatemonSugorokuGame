@@ -72,7 +72,9 @@ namespace TatemonSugoroku.Scripts {
 			while ( true ) {
 				if ( _isDispose ) { return; }
 
-				var camera = Camera.main.transform;
+				var camera = Camera.main?.transform;
+				if ( camera == null ) { return; }
+
 				var position = camera.position + camera.forward * 20;
 				position += camera.rotation * new Vector3(
 					Random.Range( -10, 10 ),

@@ -57,6 +57,9 @@ namespace TatemonSugoroku.Scripts.Akio
         private DiceCanvas _DiceUI;
 
         [SerializeField]
+        private UIFireworkView _FireworkUI;
+
+        [SerializeField]
         private UIGameEnd _GameEndUI;
 
         [SerializeField]
@@ -145,10 +148,6 @@ namespace TatemonSugoroku.Scripts.Akio
             // げーむがはじまるよ
             await GameStart(ct);
 
-            var audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
-            await audioManager.Play( SMJingle.Start1 );
-            await audioManager.Play( SMJingle.Start2 );
-
             for (int i = 0; i < _MaxTurn; i++)
             {
                 for (int j = 0; j < 2; j++)
@@ -165,6 +164,8 @@ namespace TatemonSugoroku.Scripts.Akio
 
                 // スコア更新時の時間調整だよ
                 await UniTask.Delay(wait10, cancellationToken: ct);
+
+                await UniTask.WaitWhile( () => _FireworkUI._isActive, cancellationToken: ct );
             }
 
             /// 3歩あるいたあとはスコア更新しなくてもいい気がするかなあ
@@ -203,7 +204,7 @@ namespace TatemonSugoroku.Scripts.Akio
 
             // 「さらに！　塗りつぶしが終了したとき、効果発動！オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
             int spinPower = _SpinPowersOfTatemon[dice];
-            if (turnIndex >= _MaxTurn - 2)
+            if ( _DayManager._state.Value == DayState.Night )
             {
                 // 「最終ターンである場合、さらに効果発動！「たてもん」のパワーが、2倍になるぜッ！」
                 spinPower *= 2;
@@ -213,7 +214,7 @@ namespace TatemonSugoroku.Scripts.Akio
             fieldModel.PutTatemonAtCurrentPosition(playerId, spinPower);
             _TatemonManager.Place(playerId, pTurn.TileId, spinPower);
             await UniTask.Delay(wait02, cancellationToken: ct);
-            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
+            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1, 0.1f, ct);
             playerModels[playerId].Tatemon -= 1;
 
             // ターン終了時の時間調整だよ
@@ -235,7 +236,11 @@ namespace TatemonSugoroku.Scripts.Akio
         private async UniTask GameStart(CancellationToken ct)
         {
             SMLog.Debug($"ゲーム開始", SMLogTag.Scene);
-            //await UniTask.Delay(System.TimeSpan.FromSeconds(5));
+            //await UniTask.Delay(System.TimeSpan.FromSeconds(5), cancellationToken: ct);
+
+            var audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+            await audioManager.Play( SMJingle.Start1 );
+            await audioManager.Play( SMJingle.Start2 );
         }
 
         /// <summary>
@@ -271,7 +276,7 @@ namespace TatemonSugoroku.Scripts.Akio
         {
             SMLog.Debug($"サイコロボタンを押してください", SMLogTag.Scene);
             await _DiceManager.ChangeState( DiceState.Rotate );
-            await _DiceUI.WaitForClick(playerId);
+            await _DiceUI.WaitForClick(playerId, ct);
             int dice = await _DiceManager.Roll();
             
             SMLog.Debug($"{dice}が出ました", SMLogTag.Scene);
@@ -382,7 +387,7 @@ namespace TatemonSugoroku.Scripts.Akio
             for (int i = 0; i < 2; i++)
             {
                 newScore[i] = ScoreModel.CalculateFieldScore(fieldModel.GetFieldCells(), i) + playerModels[i].OppositeEnterBonus;
-                changeScore.Add(_UI.ChangeScore(i, playerModels[i].Score, newScore[i]));
+                changeScore.Add(_UI.ChangeScore(i, playerModels[i].Score, newScore[i], 0.5f, ct));
             }
 
             await UniTask.WhenAll(changeScore);

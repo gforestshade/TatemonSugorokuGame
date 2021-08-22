@@ -855,6 +855,7 @@ MonoBehaviour:
   _UI: {fileID: 427004619}
   _TurnUI: {fileID: 1799675542}
   _DiceUI: {fileID: 772293299}
+  _FireworkUI: {fileID: 747348185}
   _GameEndUI: {fileID: 1811964302}
   _ResultUI: {fileID: 1427806945}
   _DiceManager: {fileID: 1355085779}

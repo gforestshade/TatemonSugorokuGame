@@ -25,7 +25,7 @@ namespace TatemonSugoroku.Scripts
             //gameObject.SetActive(false);
         }
 
-        public async UniTask WaitForClick(int playerId, CancellationToken ct = default)
+        public async UniTask WaitForClick(int playerId, CancellationToken ct)
         {
             try
             {

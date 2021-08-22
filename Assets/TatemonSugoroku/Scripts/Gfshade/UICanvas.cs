@@ -62,16 +62,16 @@ namespace TatemonSugoroku.Scripts
         }
 
 
-        public async UniTask ChangeScore(TMPro.TextMeshProUGUI tm, int oldScore, int newScore, float duration, CancellationToken ct = default)
+        public async UniTask ChangeScore(TMPro.TextMeshProUGUI tm, int oldScore, int newScore, float duration, CancellationToken ct)
         {
             await DOVirtual.Float(oldScore, newScore, duration, num => tm.SetText("{0}", (int)num)).Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
         }
-        public UniTask ChangeScore(int playerId, int oldScore, int newScore, float duration = 0.5f, CancellationToken ct = default)
+        public UniTask ChangeScore(int playerId, int oldScore, int newScore, float duration, CancellationToken ct)
         {
             return ChangeScore(PlayerStatusPanels[playerId].Score, oldScore, newScore, duration, ct);
         }
 
-        public async UniTask ChangeTatemon(TMPro.TextMeshProUGUI tm, int oldTatemon, int newTatemon, float duration, CancellationToken ct = default)
+        public async UniTask ChangeTatemon(TMPro.TextMeshProUGUI tm, int oldTatemon, int newTatemon, float duration, CancellationToken ct)
         {
             Sequence seq = DOTween.Sequence()
                 .Append(tm.transform.DOLocalMoveY(20f, duration).SetEase(Ease.OutSine).SetRelative())
@@ -79,12 +79,12 @@ namespace TatemonSugoroku.Scripts
                 .Append(tm.transform.DOLocalMoveY(-20f, duration).SetEase(Ease.InSine).SetRelative());
             await seq.Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
         }
-        public UniTask ChangeTatemon(int playerId, int oldTatemon, int newTatemon, float duration = 0.1f, CancellationToken ct = default)
+        public UniTask ChangeTatemon(int playerId, int oldTatemon, int newTatemon, float duration, CancellationToken ct)
         {
             return ChangeTatemon(PlayerStatusPanels[playerId].Tatemon, oldTatemon, newTatemon, duration, ct);
         }
 
-        public async UniTask ChangeWalkRemaining(WalkRemainingPanel panel, int oldWalk, int newWalk, float duration, CancellationToken ct = default)
+        public async UniTask ChangeWalkRemaining(WalkRemainingPanel panel, int oldWalk, int newWalk, float duration, CancellationToken ct)
         {
             float fadeDuration = duration * 0.6f;
             float latterStart = duration * 0.4f;
@@ -107,7 +107,7 @@ namespace TatemonSugoroku.Scripts
                 panel.Swap();
             }
         }
-        public UniTask ChangeWalkRemaining(int oldWalk, int newWalk, float duration = 0.5f, CancellationToken ct = default)
+        public UniTask ChangeWalkRemaining(int oldWalk, int newWalk, float duration, CancellationToken ct)
         {
             return ChangeWalkRemaining(WalkRemaining, oldWalk, newWalk, duration, ct);
         }

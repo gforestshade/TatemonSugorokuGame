@@ -17,6 +17,7 @@ namespace TatemonSugoroku.Scripts {
 	public class UIFireworkView : SMStandardMonoBehaviour {
 		CanvasGroup _group { get; set; }
 		SMAudioManager _audioManager { get; set; }
+		public bool _isActive { get; private set; }
 
 
 
@@ -42,8 +43,9 @@ namespace TatemonSugoroku.Scripts {
 
 
 		void SetActive( bool isActive ) {
-			_group.alpha = isActive ? 1 : 0;
-			_group.blocksRaycasts = isActive;
+			_isActive = isActive;
+			_group.alpha = _isActive ? 1 : 0;
+			_group.blocksRaycasts = _isActive;
 		}
 	}
 }
