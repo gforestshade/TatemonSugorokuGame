@@ -67,4 +67,4 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 78c5f6c938c2b8e4db9226ae10d0b544, type: 3}
   - {fileID: 21300000, guid: 8ba0e96afad2fb04789d910379630d86, type: 3}
   - {fileID: 21300000, guid: 86a34817d9e7aa5459dbb1ebddcb050c, type: 3}
-  _speedRate: 20
+  _maxSpeed: 4

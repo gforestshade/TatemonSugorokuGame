@@ -30,18 +30,12 @@ namespace TatemonSugoroku.Scripts
         [SerializeField]
         Button _Close;
 
+        [SerializeField]
+        Button _End;
+
 
         readonly List<GameObject> _pages = new List<GameObject>();
-        SMAudioManager audioManager = null;
-        SMSceneManager sceneManager = null;
-
-        /// <summary>
-        /// フレームワーク初期化前に独自の初期化
-        /// </summary>
-        private void Init()
-        {
-            SetExplanations();
-        }
+        readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
         private void SetExplanations()
         {
@@ -51,39 +45,18 @@ namespace TatemonSugoroku.Scripts
             SetPage(0);
         }
 
-        /// <summary>
-        /// フレームワーク初期化後に独自の初期化
-        /// </summary>
-        private void InitAfterFrameWork()
-        {
-            audioManager = SMServiceLocator.Resolve<SMAudioManager>();
-            sceneManager = SMServiceLocator.Resolve<SMSceneManager>();
-        }
-
         private void Awake()
         {
-            Init();
+            SetExplanations();
 
-            var f = SMServiceLocator.Resolve<SubmarineMirageFramework>();
-
-            // Frameworkの初期化終了イベント
-            var initFrameworkAsObservable = f.ObserveEveryValueChanged(f => f._isInitialized).Where(b => b).First().Publish();
-            System.IDisposable initFrameworkConnectDisposable = null;
-
-            // Frameworkと独自の初期化が両方終了したよイベント
-            AsyncSubject<Unit> init = new AsyncSubject<Unit>();
+            var sceneManager = SMServiceLocator.Resolve<SMSceneManager>();
+            SMAudioManager audioManager = null;
+            UTask.Void(async () => {
+                audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+            });
 
             // ページが変わったよイベント
-            // 初期化が終わらない限り発火しない
-            var pageRP = new ReactiveProperty<int>(0);
-            var page = init.SelectMany(pageRP);
-
-            // Frameworkの初期化終了をつかまえて独自の初期化を挟み込む
-            initFrameworkAsObservable.Subscribe(_ => {
-                InitAfterFrameWork();
-                init.OnNext(Unit.Default);
-                init.OnCompleted();
-            });
+            var page = new ReactiveProperty<int>(0);
 
             // ページが変わったら見た目も切り替える
             page.Pairwise().Subscribe(pair => UpdatePage(pair.Previous, pair.Current));
@@ -93,8 +66,8 @@ namespace TatemonSugoroku.Scripts
             page.Select(p => p < _pages.Count - 1).Subscribe(next => _Next.interactable = next);
 
             // ボタンでページを操作する
-            _Prev.OnClickAsObservable().Subscribe(_ => pageRP.Value--);
-            _Next.OnClickAsObservable().Subscribe(_ => pageRP.Value++);
+            _Prev.OnClickAsObservable().Subscribe(_ => page.Value--);
+            _Next.OnClickAsObservable().Subscribe(_ => page.Value++);
 
             // ページが変わったら音を鳴らす
             // 増えても減っても同じ音
@@ -104,15 +77,23 @@ namespace TatemonSugoroku.Scripts
             _Close.OnClickAsObservable().Subscribe( _ => {
                 // 音
                 audioManager?.Play( SMSE.Decide ).Forget();
-
-                // 初期化イベントを開放するのを忘れない
-                initFrameworkConnectDisposable.DisposeIfNotNull();
                 
                 // シーン爆破
                 sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget();
             } );
 
-            initFrameworkConnectDisposable = initFrameworkAsObservable.Connect();
+            // タイトルに戻る
+            _End.OnClickAsObservable().Subscribe( _ => {
+                UTask.Void( async () => {
+                    audioManager?.Play( SMSE.Decide ).Forget();
+                    await UTask.Delay( _canceler, 500 );
+                    sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget();
+                    sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
+                } );
+            } );
+            
+            // タイトル画面でなければタイトルに戻れる
+            _End.interactable = !( sceneManager.GetFSM<MainSMScene>()._state is TitleSMScene );
         }
 
         /// <summary>
@@ -136,5 +117,9 @@ namespace TatemonSugoroku.Scripts
             _pages[previous].SetActive(false);
             _pages[current].SetActive(true);
         }
-    }
+
+		private void OnDestroy() {
+            _canceler.Dispose();
+		}
+	}
 }

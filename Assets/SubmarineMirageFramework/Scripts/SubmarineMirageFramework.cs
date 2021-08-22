@@ -103,11 +103,11 @@ namespace SubmarineMirage {
 		/// </summary>
 		async UniTask Initialize( Func<UniTask> initializePluginEvent, Func<UniTask> registerSettingsEvent )
 		{
-			await SystemTask.Delay( 1, _asyncCanceler.ToToken() );
-
 			_disposables.AddFirst( Observable.OnceApplicationQuit().Subscribe( _ => Shutdown( false ) ) );
 
 			await initializePluginEvent();
+
+			await SystemTask.Delay( 1, _asyncCanceler.ToToken() );
 
 			var taskManager = SMServiceLocator.Register( new SMTaskManager() );
 			SMServiceLocator.Register( new SMUIFade() );

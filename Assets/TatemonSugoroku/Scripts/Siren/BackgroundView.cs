@@ -1,9 +1,13 @@
 using System.Linq;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
+using SubmarineMirage.Utility;
+using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -12,47 +16,40 @@ namespace TatemonSugoroku.Scripts {
 	/// ■ 背景の描画クラス
 	/// </summary>
 	public class BackgroundView : SMStandardMonoBehaviour {
-		readonly Dictionary<DayState, GameObject> _images = new Dictionary<DayState, GameObject>();
-
-		[SerializeField] Color _nightColor = new Color( 0.2f, 0.2f, 0.2f );
+		readonly Dictionary<DayState, SpriteRenderer> _images = new Dictionary<DayState, SpriteRenderer>();
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 
 
 		void Start() {
 			var rs = GetComponentsInChildren<SpriteRenderer>( true );
 			rs.ForEach( r => {
+				r.gameObject.SetActive( true );
+				r.color = new Color( 1, 1, 1, 0 );
 				var s = r.gameObject.name.ToEnum<DayState>();
-				_images[s] = r.gameObject;
+				_images[s] = r;
 			} );
+			_images[DayState.Sun].color = Color.white;
 
 			var day = FindObjectOfType<DayView>();
-//			day._sunsetRate.Subscribe( r => SetBrightness( r ) );
-//			SetBrightness( day._sunsetRate.Value );
+			day._state.Subscribe( state => ChangeImage( state ).Forget() );
 
-			day._state.Subscribe( state => {
-				_images.ForEach( pair => pair.Value.SetActive( false ) );
-				_images[state].SetActive( true );
+			_disposables.AddLast( () => {
+				_canceler.Dispose();
 			} );
 		}
 
 
-/*
-		void SetBrightness( float brightness ) {
-			var c = Color.Lerp( _nightColor, Color.white, brightness );
-			_renderers.ForEach( r => r.material.color = c );
-		}
-*/
 
-
-/*
 		/// <summary>
 		/// ● 画像を変更
 		/// </summary>
-		public void ChangeImage() {
-			_showIndex = ( _showIndex + 1 ) % _renderers.Length;
-			_renderers.ForEach( r => r.gameObject.SetActive( false ) );
-			_renderers[_showIndex].gameObject.SetActive( true );
+		async UniTask ChangeImage( DayState state ) {
+			await _images[state]
+				.DOFade( 1, 3 )
+				.SetEase( Ease.InQuart )
+				.Play()
+				.ToUniTask( _canceler );
 		}
-*/
 	}
 }

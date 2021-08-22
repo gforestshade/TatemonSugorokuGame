@@ -29,13 +29,15 @@ namespace TatemonSugoroku.Scripts {
 			_angles.z = 0;
 
 			_inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			_inputManager.GetKey( SMInputKey.Finger2 )._enablingEvent.AddLast()
-				.Where( _ => _state == GameCameraState.Input )
-				.Subscribe( _ => {
-					var axis = _inputManager.GetAxis( SMInputAxis.Rotate );
-					var add = new Vector3( -axis.y, axis.x, 0 ) * 200 * Time.deltaTime;
-					RotateCamera( add );
-				} );
+			_disposables.AddFirst(
+				_inputManager.GetKey( SMInputKey.Finger2 )._enablingEvent.AddLast()
+					.Where( _ => _state == GameCameraState.Input )
+					.Subscribe( _ => {
+						var axis = _inputManager.GetAxis( SMInputAxis.Rotate );
+						var add = new Vector3( -axis.y, axis.x, 0 ) * 200 * Time.deltaTime;
+						RotateCamera( add );
+					} )
+			);
 		}
 
 

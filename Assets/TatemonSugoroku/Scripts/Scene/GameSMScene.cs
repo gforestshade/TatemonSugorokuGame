@@ -1,3 +1,4 @@
+using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using SubmarineMirage.Service;
@@ -34,7 +35,7 @@ namespace TatemonSugoroku.Scripts {
 
 			// 更新（非同期的に実行）
 			_asyncUpdateEvent.AddLast( async canceler => {
-				var game = UnityEngine.GameObject.FindObjectOfType<MainGameManager>();
+				var game = Object.FindObjectOfType<MainGameManager>();
 				game.DoGame( canceler.ToToken() ).Forget();
 				await UTask.DontWait();
 			} );

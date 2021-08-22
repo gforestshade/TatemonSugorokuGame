@@ -70,35 +70,44 @@ namespace TatemonSugoroku.Scripts {
 			_canceler.Cancel();
 
 			while ( true ) {
-				if ( _isDispose || _canceler._isDispose ) { return; }
-				var c = Camera.main.transform;
-				var pos = c.position + c.forward * 20;
-				pos += c.rotation * new Vector3(
+				if ( _isDispose ) { return; }
+
+				var camera = Camera.main?.transform;
+				if ( camera == null ) { return; }
+
+				var position = camera.position + camera.forward * 20;
+				position += camera.rotation * new Vector3(
 					Random.Range( -10, 10 ),
 					Random.Range( 2, 6 ),
 					Random.Range( -1, 1 )
 				);
-				transform.position = pos;
-				transform.rotation = c.rotation;
+				transform.position = position;
+				transform.rotation = camera.rotation;
 				transform.localScale = Vector3.zero;
 				_renderer.material.color = Color.white;
 
 				await UTask.Delay( _canceler, Random.Range( 1000, 5000 ) );
-				if ( _isDispose || _canceler._isDispose ) { return; }
 
 				_audioManager.Play( SMSE.Firework ).Forget();
 
-//				_renderer.material.DOColor( Color.white, 0.02f ).SetEase( Ease.OutCirc ).Play()
-//					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();
-				await transform.DOScale( _maxScale, 0.2f ).SetEase( Ease.OutCirc ).Play()
-					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
-				if ( _isDispose || _canceler._isDispose ) { return; }
+				await transform
+					.DOScale( _maxScale, 0.2f )
+					.SetEase( Ease.OutCirc )
+					.Play()
+					.ToUniTask( _canceler );
 
-				_renderer.material.DOColor( Color.clear, 4 ).SetEase( Ease.OutCirc ).Play()
-					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() ).Forget();
-				await transform.DOScale( _maxScale + Vector3.one * 0.3f, 4 ).SetEase( Ease.OutCirc ).Play()
-					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
-				if ( _isDispose || _canceler._isDispose ) { return; }
+				_renderer.material
+					.DOColor( Color.clear, 4 )
+					.SetEase( Ease.OutCirc )
+					.Play()
+					.ToUniTask( _canceler )
+					.Forget();
+
+				await transform
+					.DOScale( _maxScale + Vector3.one * 0.3f, 4 )
+					.SetEase( Ease.OutCirc )
+					.Play()
+					.ToUniTask( _canceler );
 			}
 		}
 	}

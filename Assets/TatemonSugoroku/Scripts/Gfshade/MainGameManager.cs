@@ -57,6 +57,9 @@ namespace TatemonSugoroku.Scripts
         private DiceCanvas _DiceUI;
 
         [SerializeField]
+        private UIFireworkView _FireworkUI;
+
+        [SerializeField]
         private UIGameEnd _GameEndUI;
 
         [SerializeField]
@@ -152,10 +155,6 @@ namespace TatemonSugoroku.Scripts
             // げーむがはじまるよ
             await GameStart(ct);
 
-            var audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
-            await audioManager.Play( SMJingle.Start1 );
-            await audioManager.Play( SMJingle.Start2 );
-
             for (int i = 0; i < difficulty.maxTurn; i++)
             {
                 for (int j = 0; j < 2; j++)
@@ -180,6 +179,8 @@ namespace TatemonSugoroku.Scripts
 
                 // スコア更新時の時間調整だよ
                 await UniTask.Delay(wait10, cancellationToken: ct);
+
+                await UniTask.WaitWhile(() => _FireworkUI._isActive, cancellationToken: ct);
             }
 
             /// 3歩あるいたあとはスコア更新しなくてもいい気がするかなあ
@@ -224,7 +225,7 @@ namespace TatemonSugoroku.Scripts
             fieldModel.PutTatemonAtCurrentPosition(playerId, spinPower);
             _TatemonManager.Place(playerId, pTurn.TileId, spinPower);
             await UniTask.Delay(wait02, cancellationToken: ct);
-            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
+            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1, 0.1f, ct);
             playerModels[playerId].Tatemon -= 1;
 
             // ターン終了時の時間調整だよ
@@ -257,21 +258,13 @@ namespace TatemonSugoroku.Scripts
             await UniTask.Delay(wait02, cancellationToken: ct);
 
             // 「さらに！　塗りつぶしが終了したとき、効果発動！オレの最終位置に、設置魔法「たてもん」が発動するぜ！」
-            int spinPower;
-            if (turnIndex < difficulty.feverTurn)
-            {
-                spinPower = difficulty.spinPower[dice];
-            }
-            else
-            {
-                spinPower = difficulty.feverSpinPower[dice];
-            }
+            int spinPower = difficulty.GetSpinPower(turnIndex, dice);
 
             // 「モンスター「たてもん」が召喚される！」
             fieldModel.PutTatemonAtCurrentPosition(playerId, spinPower);
             _TatemonManager.Place(playerId, pTurn.TileId, spinPower);
             await UniTask.Delay(wait02, cancellationToken: ct);
-            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1);
+            await _UI.ChangeTatemon(playerId, pTurn.Tatemon, pTurn.Tatemon - 1, 0.1f, ct);
             playerModels[playerId].Tatemon -= 1;
 
             // ターン終了時の時間調整だよ
@@ -292,7 +285,10 @@ namespace TatemonSugoroku.Scripts
         private async UniTask GameStart(CancellationToken ct)
         {
             SMLog.Debug($"ゲーム開始", SMLogTag.Scene);
-            //await UniTask.Delay(System.TimeSpan.FromSeconds(5));
+
+            var audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+            await audioManager.Play(SMJingle.Start1);
+            await audioManager.Play(SMJingle.Start2);
         }
 
         /// <summary>
@@ -322,7 +318,7 @@ namespace TatemonSugoroku.Scripts
             await _DiceManager.ChangeState( DiceState.Rotate );
 
             if (isHuman)
-                await _DiceUI.WaitForClick(playerId);
+                await _DiceUI.WaitForClick(playerId, ct);
             
             int dice = await _DiceManager.Roll();
             
@@ -475,7 +471,7 @@ namespace TatemonSugoroku.Scripts
             for (int i = 0; i < 2; i++)
             {
                 newScore[i] +=  playerModels[i].OppositeEnterBonus;
-                changeScore.Add(_UI.ChangeScore(i, playerModels[i].Score, newScore[i]));
+                changeScore.Add(_UI.ChangeScore(i, playerModels[i].Score, newScore[i], 0.5f, ct));
             }
 
             await UniTask.WhenAll(changeScore);
@@ -499,4 +495,6 @@ namespace TatemonSugoroku.Scripts
         }
 
     }
+
 }
+

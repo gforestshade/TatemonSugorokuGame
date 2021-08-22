@@ -24,7 +24,7 @@ namespace TatemonSugoroku.Scripts
         Button _Button;
 
 
-        public async UniTask WaitForClick(IList<int> scores, int winner, CancellationToken ct = default)
+        public async UniTask WaitForClick(IList<int> scores, int winner, CancellationToken ct)
         {
             try
             {
@@ -48,13 +48,14 @@ namespace TatemonSugoroku.Scripts
                 audioManager.Play( SMBGS.Night ).Forget();
                 await audioManager.Play( SMJingle.Result1 );
                 await audioManager.Play( SMJingle.Result2 );
+
                 await _Button.OnClickAsync(ct);
+
                 audioManager.Play( SMSE.Result ).Forget();
-                await UniTask.Delay( 500 );
-                var taskManager = await SMServiceLocator.WaitResolve<SMTaskManager>();
-                taskManager.Finalize().Forget();
-//                var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
-//                sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
+                await UniTask.Delay( 500, cancellationToken: ct);
+
+                var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
+                sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
                 
             }
             finally

@@ -21,6 +21,8 @@ namespace TatemonSugoroku.Scripts {
 
 			// シーン初期化
 			_enterEvent.AddLast( async canceler => {
+				var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
+				audioManager.Play( SMBGM.Title ).Forget();
 				await UTask.DontWait();
 			} );
 

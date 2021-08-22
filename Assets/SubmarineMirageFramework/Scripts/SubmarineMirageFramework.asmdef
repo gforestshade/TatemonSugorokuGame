@@ -2,8 +2,10 @@
     "name": "SubmarineMirageFramework",
     "rootNamespace": "",
     "references": [
+        "DOTween.Modules",
         "UniRx",
         "UniTask",
+        "UniTask.DOTween",
         "KoganeUnityLib",
         "GameDevWare.Serialization",
         "BuildBaseSMLog"

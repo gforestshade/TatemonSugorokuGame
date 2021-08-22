@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using UniRx;
 using KoganeUnityLib;
 using SubmarineMirage.Base;
 using SubmarineMirage.Service;
 using SubmarineMirage.Audio;
-using SubmarineMirage.Setting;
+using SubmarineMirage.Extension;
 using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 using SubmarineMirage.Debug;
 namespace TatemonSugoroku.Scripts {
 
@@ -33,7 +35,7 @@ namespace TatemonSugoroku.Scripts {
 		/// <summary>タイル位置</summary>
 		public Vector2Int _tilePosition { get; private set; }
 
-		public float _speedRate		{ get; set; }
+		public float _maxSpeed		{ get; set; }
 		int _rotatePower	{ get; set; }
 
 		SMVoice _voice { get; set; }
@@ -42,16 +44,15 @@ namespace TatemonSugoroku.Scripts {
 		public bool _isPlaced => _state != TatemonState.None;
 		bool _isNearPiece { get; set; }
 		float _placeEndSecond { get; set; }
-		float _windSESeconds { get; set; }
 
 		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
 
 
 
-		public void Setup( PlayerType playerType, int turnID, float speedRate ) {
+		public void Setup( PlayerType playerType, int turnID, float maxSpeed ) {
 			_playerType = playerType;
 			_turnID = turnID;
-			_speedRate = speedRate;
+			_maxSpeed = maxSpeed;
 
 			gameObject.name = $"Tatemon {_playerType} {_turnID}";
 
@@ -139,33 +140,17 @@ namespace TatemonSugoroku.Scripts {
 		async UniTask Rotate() {
 			_canceler.Cancel();
 
-			while ( true ) {
-				if ( _isDispose || _canceler._isCancel ) { return; }
+			var speed =
+				Mathf.Pow( _rotatePower, 2 ) / Mathf.Pow( TatemonManagerView.MAX_ROTATE_POWER, 2 )
+				* _maxSpeed;
+			var duration = 1 / speed;
 
-				var duration = 1f / ( _rotatePower * _rotatePower ) * _speedRate;
-				var rate = 0f;
-				await DOTween.To(
-						() => rate,
-						r => {
-							rate = r;
-							transform.rotation = Quaternion.Euler( 0, 360 * r, 0 );
-						},
-						1,
-						duration
-					)
-					.SetEase( Ease.Linear )
-					.Play()
-					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
-				if ( _isDispose || _canceler._isCancel ) { return; }
-/*
-				if ( _rotatePower > 6 ) {
-					if ( _windSESeconds < Time.time ) {
-						_windSESeconds = Time.time + 0.5f;
-						_audioManager?.Play( SMSE.TatemonWind ).Forget();
-					}
-				}
-*/
-			}
+			await transform
+				.DORotate( new Vector3( 0, 360, 0 ), duration, RotateMode.LocalAxisAdd )
+				.SetEase( Ease.Linear )
+				.SetLoops( -1, LoopType.Restart )
+				.Play()
+				.ToUniTask( _canceler );
 		}
 
 
