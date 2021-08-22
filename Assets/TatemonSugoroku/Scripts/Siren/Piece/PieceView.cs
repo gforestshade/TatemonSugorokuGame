@@ -59,11 +59,6 @@ namespace TatemonSugoroku.Scripts {
 			_tilePosition = TileManagerView.ToTilePosition( tileID );
 			transform.position = TileManagerView.ToRealPosition( _tilePosition ) + _offset;
 
-#if TestPiece
-			if ( _playerType == PlayerType.Player2 ) {
-				_renderers.ForEach( r => r.material.color = Color.red );
-			}
-#endif
 			if ( _type == PieceType.Dummy ) {
 				_renderers.ForEach( r => {
 					var c = r.material.color;
@@ -116,22 +111,27 @@ namespace TatemonSugoroku.Scripts {
 			var distance = Vector3.Distance( targetRealPosition, transform.position );
 			var jumpCount = Mathf.RoundToInt( distance ) * 3;
 			var duration = distance / 2;
+
 			_particles.ForEach( p => p.gameObject.SetActive( true ) );
+
 			if ( _moveSESecond < Time.time ) {
 				_audioManager.Play( SMSE.Walk ).Forget();
 				_moveSESecond = Time.time + 2;
 			}
+
 			try {
 				_isMoving = true;
 				await transform
 					.DOJump( targetRealPosition, 0.2f, jumpCount, duration )
-					.SetEase( Ease.Linear ).Play()
-					.ToUniTask( TweenCancelBehaviour.Kill, _canceler.ToToken() );
+					.SetEase( Ease.Linear )
+					.Play()
+					.ToUniTask( _canceler );
 			} finally {
 				_isMoving = false;
 			}
-			_particles.ForEach( p => p.gameObject.SetActive( false ) );
 			transform.position = targetRealPosition;
+
+			_particles.ForEach( p => p.gameObject.SetActive( false ) );
 		}
 
 

@@ -406,7 +406,7 @@ namespace SubmarineMirage.Audio {
 			)
 			.SetEase( Ease.InOutCubic )
 			.Play()
-			.ToUniTask( TweenCancelBehaviour.Kill, _runningCanceler.ToToken() );
+			.ToUniTask( _runningCanceler );
 		}
 	}
 }

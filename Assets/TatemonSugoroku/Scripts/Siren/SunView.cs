@@ -1,8 +1,11 @@
 //#define TestSun
 using UnityEngine;
 using UnityEngine.Rendering;
+using Cysharp.Threading.Tasks;
 using UniRx;
+using DG.Tweening;
 using SubmarineMirage.Base;
+using SubmarineMirage.Utility;
 namespace TatemonSugoroku.Scripts {
 
 
@@ -21,6 +24,8 @@ namespace TatemonSugoroku.Scripts {
 		Light _light;
 		Vector3 _firstAngles;
 
+		readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
+
 
 
 		void Start() {
@@ -28,39 +33,31 @@ namespace TatemonSugoroku.Scripts {
 			_firstAngles = transform.eulerAngles;
 
 			var day = FindObjectOfType<DayView>();
-//			day._hour.Subscribe( h => SetAngle( h ) );
-//			SetAngle( day._hour.Value );
-
-			day._state.Subscribe( state => {
-				switch ( state ) {
-					case DayState.Sun:
-						RenderSettings.ambientMode = AmbientMode.Flat;
-						RenderSettings.ambientLight = _sunColor;
-						break;
-
-					case DayState.Evening:
-						RenderSettings.ambientMode = AmbientMode.Flat;
-						RenderSettings.ambientLight = _eveningColor;
-						break;
-
-					case DayState.Night:
-						RenderSettings.ambientMode = AmbientMode.Flat;
-						RenderSettings.ambientLight = _nightColor;
-						break;
-				}
-			} );
+			day._state.Subscribe( state => ChangeLight( state ).Forget() );
 		}
 
 
 
-		void SetAngle( float hour ) {
-			var angle = hour * ANGLE_TO_HOUR + ANGLE_OFFSET;
-			_firstAngles.x = angle;
-			transform.eulerAngles = _firstAngles;
+		async UniTask ChangeLight( DayState state ) {
+			var target = Color.clear;
+			switch ( state ) {
+				case DayState.Sun:		target = _sunColor;		break;
+				case DayState.Evening:	target = _eveningColor;	break;
+				case DayState.Night:	target = _nightColor;	break;
+			}
 
-			var delta = Mathf.Abs( angle - 90 );
-			var rate = Mathf.Clamp01( delta / 90 );
-			_light.color = Color.Lerp( _sunColor, _nightColor, rate );
+			await DOTween.To(
+				() => RenderSettings.ambientLight,
+				c => {
+					RenderSettings.ambientMode = AmbientMode.Flat;
+					RenderSettings.ambientLight = c;
+				},
+				target,
+				3
+			)
+			.SetEase( Ease.InQuart )
+			.Play()
+			.ToUniTask( _canceler );
 		}
 	}
 }

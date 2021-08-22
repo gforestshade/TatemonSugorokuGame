@@ -199,7 +199,10 @@ namespace SubmarineMirage.Utility {
 			if ( tween.IsActive() && tween.IsPlaying() ) {
 				tween.Kill();
 			}
-			throw new OperationCanceledException( token );	// 確実に、非同期停止を伝達
+			// 確実に、非同期停止を伝達
+			if ( token.IsCancellationRequested ) {
+				throw new OperationCanceledException( token );
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

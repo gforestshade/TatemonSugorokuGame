@@ -29,10 +29,13 @@ namespace TatemonSugoroku.Siren {
 			var sceneManager = SMServiceLocator.Resolve<SMSceneManager>();
 			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
 			inputManager.GetKey( SMInputKey.Quit )._enabledEvent.AddLast().Subscribe( _ => {
-				sceneManager.GetFSM<MainSMScene>().ChangeState<SirenSMScene>().Forget();
+				sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
 			} );
 
+
 			return;
+
+
 			var effects = GameObject.Find( "EffectTap1" ).GetComponentsInChildren<ParticleSystem>();
 			var effectTop = effects.First().transform;
 			effectTop.SetParent( null );
