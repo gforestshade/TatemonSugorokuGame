@@ -24,17 +24,19 @@ namespace TatemonSugoroku.Scripts {
 			var effectTop = effects.First().transform;
 
 			var inputManager = SMServiceLocator.Resolve<SMInputManager>();
-			inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
-				var camera = Camera.main;
-				if ( camera == null ) { return; }
+			_disposables.AddFirst(
+				inputManager.GetKey( SMInputKey.Decide )._enabledEvent.AddLast().Subscribe( _ => {
+					var camera = Camera.main;
+					if ( camera == null ) { return; }
 
-				var mouse = inputManager.GetAxis( SMInputAxis.Mouse );
-				var mousePosition = new Vector3( mouse.x, mouse.y, 1 );
-				var position = camera.ScreenToWorldPoint( mousePosition );
+					var mouse = inputManager.GetAxis( SMInputAxis.Mouse );
+					var mousePosition = new Vector3( mouse.x, mouse.y, 1 );
+					var position = camera.ScreenToWorldPoint( mousePosition );
 
-				effectTop.position = position;
-				effects.ForEach( e => e.Play() );
-			} );
+					effectTop.position = position;
+					effects.ForEach( e => e.Play() );
+				} )
+			);
 		}
 	}
 }

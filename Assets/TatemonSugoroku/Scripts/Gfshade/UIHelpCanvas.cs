@@ -30,8 +30,13 @@ namespace TatemonSugoroku.Scripts
         [SerializeField]
         Button _Close;
 
+        [SerializeField]
+        Button _End;
+
 
         readonly List<GameObject> _pages = new List<GameObject>();
+        readonly SMAsyncCanceler _canceler = new SMAsyncCanceler();
+
 
         private void SetExplanations()
         {
@@ -79,6 +84,15 @@ namespace TatemonSugoroku.Scripts
                 audioManager?.Play( SMSE.Decide ).Forget();
                 sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget();
             } );
+            _End.OnClickAsObservable().Subscribe( _ => {
+                UTask.Void( async () => {
+                    audioManager?.Play( SMSE.Decide ).Forget();
+                    await UTask.Delay( _canceler, 500 );
+                    sceneManager.GetFSM<UISMScene>().ChangeState<UINoneSMScene>().Forget();
+                    sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
+                } );
+            } );
+            _End.interactable = !( sceneManager.GetFSM<MainSMScene>()._state is TitleSMScene );
 
             initf.Connect();
         }
@@ -88,5 +102,9 @@ namespace TatemonSugoroku.Scripts
             _pages.ForEach( go => go.SetActive( false ) );
             _pages[i].SetActive( true );
         }
-    }
+
+		private void OnDestroy() {
+            _canceler.Dispose();
+		}
+	}
 }
