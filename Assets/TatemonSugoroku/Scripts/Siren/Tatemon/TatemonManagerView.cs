@@ -18,6 +18,7 @@ namespace TatemonSugoroku.Scripts {
 	public class TatemonManagerView : SMStandardMonoBehaviour {
 		/// <summary>最大の1プレイヤーの手番</summary>
 		const int MAX_PLAYER_TURN = 7;
+		public const int MAX_ROTATE_POWER = 12;
 
 		static readonly List<SMVoice> VOICES = new List<SMVoice> {
 			SMVoice.Wasshoi1,
@@ -33,7 +34,7 @@ namespace TatemonSugoroku.Scripts {
 		[SerializeField] List<Sprite> _auraSpritesSetter;
 		[SerializeField] List<Sprite> _tatemonSpritesSetter;
 		[SerializeField] List<Sprite> _numberSpritesSetter;
-		[SerializeField] float _speedRate = 1;
+		[SerializeField] float _maxSpeed = 4;
 
 		readonly Dictionary<PlayerType, Sprite> _auraSprites = new Dictionary<PlayerType, Sprite>();
 		readonly Dictionary<int, Sprite> _tatemonSprites = new Dictionary<int, Sprite>();
@@ -64,7 +65,7 @@ namespace TatemonSugoroku.Scripts {
 					.Select( i => {
 						var go = _prefab.Instantiate( transform );
 						var v = go.GetComponent<TatemonView>();
-						v.Setup( type, i, _speedRate );
+						v.Setup( type, i, _maxSpeed );
 						return v;
 					} )
 					.ToList();

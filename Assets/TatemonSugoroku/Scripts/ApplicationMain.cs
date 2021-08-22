@@ -29,7 +29,7 @@ namespace TatemonSugoroku.Scripts {
 		static async UniTask InitializePlugin() {
 			// DOTWeen初期化
 			DOTween.Init(
-				true,
+				false,
 				!SMDebugManager.IS_DEVELOP,
 				LogBehaviour.Verbose
 			);

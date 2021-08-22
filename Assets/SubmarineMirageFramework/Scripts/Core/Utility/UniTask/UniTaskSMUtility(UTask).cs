@@ -10,6 +10,7 @@ namespace SubmarineMirage.Utility {
 	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
 	using Cysharp.Threading.Tasks;
+	using DG.Tweening;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.Networking;
@@ -185,6 +186,21 @@ namespace SubmarineMirage.Utility {
 											PlayerLoopTiming timing = PlayerLoopTiming.Update
 		) => enumerator.ToUniTask( timing, canceler.ToToken() );
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		public static async UniTask ToUniTask( this Tween tween, SMAsyncCanceler canceler ) {
+			var token = canceler.ToToken();
+			// どんな設定をしても、DOTween解放と、非同期停止が、実行されない不具合がある。
+			// よって、確実に行われるよう、拡張修正。
+			await UniTask.WhenAny(
+				tween.ToUniTask( TweenCancelBehaviour.Kill, token ),	// DOTween解放のみ、非同期停止は行わない
+				WaitUntilCanceled( canceler )							// 非同期停止時は、絶対に停止する
+			);
+			// DOTweenは、絶対に解放
+			if ( tween.IsActive() && tween.IsPlaying() ) {
+				tween.Kill();
+			}
+			throw new OperationCanceledException( token );	// 確実に、非同期停止を伝達
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerator ToCoroutine( Func<UniTask> taskFactory )
