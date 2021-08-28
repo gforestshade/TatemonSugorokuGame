@@ -4,6 +4,10 @@ using DG.Tweening;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using SubmarineMirage.Service;
+using SubmarineMirage.Audio;
+using SubmarineMirage.Utility;
+using SubmarineMirage.Setting;
 
 
 namespace TatemonSugoroku.Scripts
@@ -23,6 +27,17 @@ namespace TatemonSugoroku.Scripts
         private readonly Color White = new Color(1f, 1f, 1f, 1f);
 
         private Sequence changeWalkSeq = null;
+
+        SMAudioManager _audioManager { get; set; }
+        float _seScoreSeconds { get; set; }
+
+
+        void Start() {
+            UTask.Void( async () => {
+                _audioManager = await SMServiceLocator.WaitResolve<SMAudioManager>();
+            } );
+        }
+
 
         private void SetString(TMPro.TextMeshProUGUI tm, string str)
         {
@@ -64,7 +79,20 @@ namespace TatemonSugoroku.Scripts
 
         public async UniTask ChangeScore(TMPro.TextMeshProUGUI tm, int oldScore, int newScore, float duration, CancellationToken ct)
         {
-            await DOVirtual.Float(oldScore, newScore, duration, num => tm.SetText("{0}", (int)num)).Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
+            await DOVirtual.Float(
+                oldScore,
+                newScore,
+                duration,
+                num => {
+                    if ( _seScoreSeconds < Time.time ) {
+                        _seScoreSeconds = Time.time + 0.1f;
+                        _audioManager?.Play( SMSE.Score ).Forget();
+                    }
+                    tm.SetText( "{0}", ( int )num );
+                }
+            )
+            .Play()
+            .ToUniTask( TweenCancelBehaviour.Complete, ct );
         }
         public UniTask ChangeScore(int playerId, int oldScore, int newScore, float duration, CancellationToken ct)
         {
@@ -75,7 +103,10 @@ namespace TatemonSugoroku.Scripts
         {
             Sequence seq = DOTween.Sequence()
                 .Append(tm.transform.DOLocalMoveY(20f, duration).SetEase(Ease.OutSine).SetRelative())
-                .AppendCallback(() => tm.SetText("{0}", newTatemon))
+                .AppendCallback( () => {
+                    _audioManager?.Play( SMSE.Score ).Forget();
+                    tm.SetText( "{0}", newTatemon );
+                } )
                 .Append(tm.transform.DOLocalMoveY(-20f, duration).SetEase(Ease.InSine).SetRelative());
             await seq.Play().ToUniTask(TweenCancelBehaviour.Complete, ct);
         }

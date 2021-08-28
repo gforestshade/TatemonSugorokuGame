@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
@@ -24,27 +22,45 @@ namespace TatemonSugoroku.Scripts {
 			var buttons = GetComponentsInChildren<Button>( true );
 			buttons.ForEach( b => {
 				b.onClick.AddListener( () => {
+					UTask.Void( async () => {
+						switch ( b.name ) {
+							case "ButtonTourism":
+								await audioManager.Play( SMSE.Decide );
+								Application.OpenURL( "https://uozu-kanko.jp/jyantokoi-uozu-fest/" );
+								break;
 
-					switch ( b.name ) {
-						case "Hajimeru":
-							UTask.Void( async () => {
+							case "ButtonUOZU":
+								await audioManager.Play( SMSE.Decide );
+								Application.OpenURL( "https://detail.uozugame.com/" );
+								break;
+
+							case "ButtonFramework":
+								await audioManager.Play( SMSE.Decide );
+								Application.OpenURL(
+									"https://github.com/FromSeabedOfReverie/SubmarineMirageFrameworkForUnity" );
+								break;
+
+							case "ButtonStart":
 								await audioManager.Play( SMSE.Title );
 								sceneManager.GetFSM<MainSMScene>().ChangeState<GameSMScene>().Forget();
-							} );
-							break;
+								break;
 
-						case "Asobikara":
-							audioManager.Play( SMSE.Decide ).Forget();
-							sceneManager.GetFSM<UISMScene>().ChangeState<UIHelpSMScene>().Forget();
-							break;
+							case "ButtonHelp":
+								await audioManager.Play( SMSE.Decide );
+								sceneManager.GetFSM<UISMScene>().ChangeState<UIHelpSMScene>().Forget();
+								break;
 
-						case "Yameru":
-							UTask.Void( async () => {
+							case "ButtonCredit":
+								await audioManager.Play( SMSE.Decide );
+								sceneManager.GetFSM<MainSMScene>().ChangeState<CreditSMScene>().Forget();
+								break;
+
+							case "ButtonEnd":
 								await audioManager.Play( SMSE.Decide );
 								taskManager.Finalize().Forget();
-							} );
-							break;
-					}
+								break;
+						}
+					} );
 				} );
 			} );
 		}
