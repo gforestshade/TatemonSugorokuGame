@@ -107,7 +107,7 @@ namespace SubmarineMirage {
 
 			await initializePluginEvent();
 
-			await SystemTask.Delay( 1, _asyncCanceler.ToToken() );
+//			await SystemTask.Delay( 1, _asyncCanceler.ToToken() );
 
 			var taskManager = SMServiceLocator.Register( new SMTaskManager() );
 			SMServiceLocator.Register( new SMUIFade() );
@@ -127,7 +127,7 @@ namespace SubmarineMirage {
 
 			await registerSettingsEvent();
 
-			new SMSplashScreenWaiter();
+//			new SMSplashScreenWaiter();
 			SMServiceLocator.Register( new SMSceneManager() );
 
 			await taskManager.Initialize();

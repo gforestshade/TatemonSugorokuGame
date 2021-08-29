@@ -26,42 +26,36 @@ namespace TatemonSugoroku.Scripts
 
         public async UniTask WaitForClick(IList<int> scores, int winner, CancellationToken ct)
         {
-            try
+            var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
+            await UniTask.WhenAll(
+                audioManager.Stop<SMBGM>(),
+                audioManager.Stop<SMBGS>()
+            );
+            var uiGameEnd = FindObjectOfType<UIGameEnd>();
+            uiGameEnd.SetActive( false );
+
+            gameObject.SetActive(true);
+            _Winner.Switch(winner);
+            for (int i = 0; i < scores.Count; i++)
             {
-                var audioManager = SMServiceLocator.Resolve<SMAudioManager>();
-                await UniTask.WhenAll(
-                    audioManager.Stop<SMBGM>(),
-                    audioManager.Stop<SMBGS>()
-                );
-                var uiGameEnd = FindObjectOfType<UIGameEnd>();
-                uiGameEnd.SetActive( false );
-
-                gameObject.SetActive(true);
-                _Winner.Switch(winner);
-                for (int i = 0; i < scores.Count; i++)
-                {
-                    _ResultScores[i].Image.Switch(i);
-                    _ResultScores[i].Score.SetText("{0}", scores[i]);
-                }
-
-                audioManager.Play( SMBGM.Result ).Forget();
-                audioManager.Play( SMBGS.Night ).Forget();
-                await audioManager.Play( SMJingle.Result1 );
-                await audioManager.Play( SMJingle.Result2 );
-
-                await _Button.OnClickAsync(ct);
-
-                audioManager.Play( SMSE.Result ).Forget();
-                await UniTask.Delay( 500, cancellationToken: ct);
-
-                var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
-                sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
-                
+                _ResultScores[i].Image.Switch(i);
+                _ResultScores[i].Score.SetText("{0}", scores[i]);
             }
-            finally
-            {
-                gameObject.SetActive(false);
-            }
+
+            audioManager.Play( SMBGM.Result ).Forget();
+            audioManager.Play( SMBGS.Night ).Forget();
+            await audioManager.Play( SMJingle.Result1 );
+            await audioManager.Play( SMJingle.Result2 );
+
+            await _Button.OnClickAsync(ct);
+
+            audioManager.Play( SMSE.Result ).Forget();
+            await UniTask.Delay( 500, cancellationToken: ct);
+
+            var sceneManager = await SMServiceLocator.WaitResolve<SMSceneManager>();
+            sceneManager.GetFSM<MainSMScene>().ChangeState<TitleSMScene>().Forget();
+
+            gameObject.SetActive( false );
         }
     }
 }

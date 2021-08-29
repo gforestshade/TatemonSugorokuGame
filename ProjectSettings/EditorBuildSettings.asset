@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/TatemonSugoroku/Scenes/Title.unity
     guid: 9cd1eea21fddc074d81d90400b560ea2
   - enabled: 1
+    path: Assets/TatemonSugoroku/Scenes/Credit.unity
+    guid: 4a8653ef10fd93c4595e543e44c966ea
+  - enabled: 1
     path: Assets/TatemonSugoroku/Scenes/Game.unity
     guid: cdc8ce4c018423d4e9dac7b1dc363a25
   - enabled: 1

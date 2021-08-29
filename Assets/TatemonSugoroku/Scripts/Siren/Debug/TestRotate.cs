@@ -22,7 +22,7 @@ namespace TatemonSugoroku.Siren {
 
 
 		void Start() {
-			_disposables.AddLast( () => {
+			_disposables.AddFirst( () => {
 				SMLog.Warning( "Dispose" );
 				_canceler.Dispose();
 			} );
